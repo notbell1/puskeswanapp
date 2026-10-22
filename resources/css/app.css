@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../js/**/*.{js,jsx,ts,tsx}';
+
+@theme {
+    --font-sans:
+        'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --color-primary-50: #faf5ff;
+    --color-primary-100: #f3e8ff;
+    --color-primary-200: #e9d5ff;
+    --color-primary-300: #d8b4fe;
+    --color-primary-400: #c084fc;
+    --color-primary-500: #a855f7;
+    --color-primary-600: #9333ea;
+    --color-primary-700: #7e22ce;
+    --color-primary-800: #6b21a8;
+    --color-primary-900: #581c87;
+    --color-primary-950: #3b0764;
+
+    --color-brand: #7e22ce;
+    --color-brand-hover: #9333ea;
+    --color-brand-dark: #581c87;
+    --color-brand-light: #f3e8ff;
+    --color-brand-subtle: #faf5ff;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes float-reverse {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(12px);
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 0.35;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.65;
+        transform: scale(1.1);
+    }
+}
+
+.animate-float {
+    animation: float 5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+    animation: float-reverse 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 7s ease-in-out infinite;
+}
+
+@keyframes toastSlideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-14px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-toast-in {
+    animation: toastSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+
+.sidebar-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.sidebar-scrollbar:hover {
+    scrollbar-color: #d1d5db transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: transparent;
+}
+
+.sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+}

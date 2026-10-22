@@ -1,0 +1,88 @@
+# Dependencies & Build Artifacts
+/node_modules
+/vendor
+/bootstrap/ssr
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+
+# Wayfinder Auto-generated Routes
+/resources/js/actions
+/resources/js/routes
+/resources/js/wayfinder
+
+# Environment & Credentials (Never Commit)
+.env
+.env.*
+!.env.example
+/auth.json
+/storage/*.key
+
+# Database Seeders, Factories & SQL Dumps
+/database
+*.sql
+*.sql.gz
+*.dump
+*.bak
+
+# Automated Tests & Static Analysis Configs
+/tests/
+/phpunit.xml
+/phpstan.neon
+/.phpunit.cache
+.phpunit.result.cache
+/.github/workflows/tests.yml
+
+# Storage Uploads, Photos & Application Logs
+/public/storage
+/storage/pail
+/storage/logs/*
+!/storage/logs/.gitignore
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/app/private/*
+!/storage/app/private/.gitignore
+/storage/framework/cache/data/*
+!/storage/framework/cache/data/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# AI Assistants, Agents & MCP Configs
+/.agents
+/.ai
+/.gemini
+/.amp
+/.claude
+/.cursor
+/.factory
+/.grok
+/.junie
+/.kiro
+/.pi
+/.mcp.json
+/AGENTS.md
+/CLAUDE.md
+/boost.json
+/opencode.json
+/opencode.jsonc
+
+# IDE & OS Files
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+.phpactor.json
+Homestead.json
+Homestead.yaml
+.DS_Store
+Thumbs.db

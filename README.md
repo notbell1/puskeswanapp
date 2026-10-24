@@ -234,7 +234,7 @@ flowchart LR
 - **Captcha Anti-Bot Dinamis:** Perlindungan dari _scraping_ otomatis menggunakan generator kode acak berbasis SVG biner di sisi server.
 - **Informasi Klinis Lengkap:** Menampilkan riwayat pemeriksaan, diagnosa dokter, berat badan, suhu tubuh, tindakan medis, serta rincian terapi obat.
 - **Pratinjau & Cetak PDF:** Dilengkapi tombol cetak dokumen resmi rekam medis yang siap diunduh atau dicetak.
-      </details>
+  </details>
 
 <details>
 <summary><strong>📊 2. Modul Surveilans Epidemiologi Rabies (GHPR)</strong></summary>
@@ -243,7 +243,7 @@ flowchart LR
 - **Status Hewan & Masa Observasi 14 Hari:** Pelacakan kondisi hewan penggigit (_Observasi Lapangan_, _Mati / Positif Rabies_, _Sehat_).
 - **Monitoring Vaksin Anti Rabies (VAR):** Rekapitulasi status pemberian vaksin pada manusia (_Belum_, _Dosis 1_, _Lengkap_).
 - **Format Cetak Laporan Resmi:** Template laporan investigasi epidemiologi untuk koordinasi lintas sektoral dengan Dinas Kesehatan.
-      </details>
+  </details>
 
 <details>
 <summary><strong>🛡️ 3. Arsitektur Keamanan Berlapis (Two-Tier Rate Limiting)</strong></summary>
@@ -251,14 +251,14 @@ flowchart LR
 - **Tier 1 (Cooldown 20 Detik):** Jika pengguna salah memasukkan kredensial 5 kali berturut-turut, tombol login dinonaktifkan sementara dengan timer hitung mundur.
 - **Tier 2 (IP Block 30 Menit):** Jika penalti cooldown terulang hingga 3 kali (3 _strikes_), alamat IP penyerang diblokir total selama 30 menit ke halaman error `429 Too Many Requests`.
 - **Zero-Trust Upload Validation:** Seluruh unggahan foto profil dan gambar artikel diperiksa biner _magic bytes_-nya menggunakan ekstensi PHP `finfo` dan `getimagesize()` untuk mencegah penyelundupan _web shell_.
-      </details>
+  </details>
 
 <details>
 <summary><strong>📦 4. Manajemen Logistik Obat & Inventaris Klinik</strong></summary>
 
 - **Indikator Stok Cerdas:** Otomatisasi pengelompokan status obat (_Kritis: ≤ 10 unit_, _Menipis: 11–30 unit_, _Aman: > 30 unit_).
 - **Inventaris Alat Medis:** Pengawasan kondisi peralatan medis dan operasional lapangan (_Baik_, _Rusak Ringan_, _Rusak Berat_) lengkap dengan riwayat pencatatan penanggung jawab.
-      </details>
+  </details>
 
 ---
 
@@ -447,6 +447,6 @@ npm run build
 
 <p align="center">
   <strong>UPTD Pusat Kesehatan Hewan & Inseminasi Buatan (IB) Kota Pariaman</strong><br>
-  <em>Jl. Sidi Tukar Arif, Desa Rambai, Kec. Pariaman Selatan, Kota Pariaman, Sumatera Barat 25538</em><br>
+  <em>Jl. Sentot Ali Basa, Jati Mudik, Kec. Pariaman Tengah, Kota Pariaman, Sumatera Barat 25519</em><br>
   © 2026 PuskeswanApp. All rights reserved.
 </p>

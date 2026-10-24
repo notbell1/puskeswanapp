@@ -42,7 +42,7 @@
 
 ## 🏛️ Tentang Instansi
 
-**Pusat Kesehatan Hewan (Puskeswan)** merupakan unit pelaksana teknis daerah di bidang kesehatan hewan yang menyelenggarakan pelayanan medik veteriner secara langsung kepada masyarakat dan peternak. Keberadaan Puskeswan berperan sebagai garda terdepan dalam menjaga kesehatan hewan kesayangan, meningkatkan produktivitas ternak rakyat, melindungi masyarakat dari ancaman penyakit menular asal hewan (*zoonosis*), serta menjamin keamanan pangan asal hewan.
+**Pusat Kesehatan Hewan (Puskeswan)** merupakan unit pelaksana teknis daerah di bidang kesehatan hewan yang menyelenggarakan pelayanan medik veteriner secara langsung kepada masyarakat dan peternak. Keberadaan Puskeswan berperan sebagai garda terdepan dalam menjaga kesehatan hewan kesayangan, meningkatkan produktivitas ternak rakyat, melindungi masyarakat dari ancaman penyakit menular asal hewan (_zoonosis_), serta menjamin keamanan pangan asal hewan.
 
 Melalui integrasi unit **Inseminasi Buatan (IB)**, Puskeswan juga menjalankan fungsi strategis dalam peningkatan mutu genetik dan populasi ternak ruminansia (sapi potong dan kerbau) guna mendukung ketahanan pangan daerah Kota Pariaman.
 
@@ -50,11 +50,11 @@ Melalui integrasi unit **Inseminasi Buatan (IB)**, Puskeswan juga menjalankan fu
 
 ## 📋 Tugas Pokok & Fungsi Puskeswan
 
-1. **Pelayanan Medik Veteriner & Poliklinik Hewan:** Pemeriksaan fisik klinis, diagnosa patologis, pengobatan kuratif, pemberian multivitamin/antiparasit, sterilisasi (*ovariohisterektomi* & *kastrasi*), hingga tindakan bedah minor bagi hewan kesayangan maupun ternak masyarakat.
-2. **Pengendalian Penyakit Hewan Menular Strategis (PHMS) & Zoonosis:** Pelaksanaan program vaksinasi massal—khususnya **Vaksinasi Rabies** pada Hewan Penular Rabies (HPR: anjing, kucing, kera, musang), serta vaksinasi ternak (*Septicaemia Epizootica*, *Newcastle Disease*, *Avian Influenza*).
-3. **Surveilans & Respons Cepat Kasus Gigitan Rabies (GHPR):** Pencatatan epidemiologi kasus gigitan, pemantauan masa observasi klinis hewan penggigit selama 14 hari, dan monitoring kepatuhan Vaksin Anti Rabies (VAR) bagi korban dengan pendekatan *One Health*.
-4. **Pelayanan Inseminasi Buatan (IB) & Reproduksi Ternak:** Layanan kawin suntik semen beku bersertifikat, Pemeriksaan Kebuntingan (PKB), penanganan gangguan reproduksi (*repeat breeder*, *anestrus*, *distokia*), dan pendampingan kelahiran.
-5. **Kesehatan Masyarakat Veteriner (Kesmavet):** Pengawasan higiene sanitasi, pemeriksaan *antemortem* & *postmortem* hewan kurban, jaminan pangan **ASUH** (*Aman, Sehat, Utuh, Halal*), dan penerbitan Surat Keterangan Kesehatan Hewan (SKKH).
+1. **Pelayanan Medik Veteriner & Poliklinik Hewan:** Pemeriksaan fisik klinis, diagnosa patologis, pengobatan kuratif, pemberian multivitamin/antiparasit, sterilisasi (_ovariohisterektomi_ & _kastrasi_), hingga tindakan bedah minor bagi hewan kesayangan maupun ternak masyarakat.
+2. **Pengendalian Penyakit Hewan Menular Strategis (PHMS) & Zoonosis:** Pelaksanaan program vaksinasi massal—khususnya **Vaksinasi Rabies** pada Hewan Penular Rabies (HPR: anjing, kucing, kera, musang), serta vaksinasi ternak (_Septicaemia Epizootica_, _Newcastle Disease_, _Avian Influenza_).
+3. **Surveilans & Respons Cepat Kasus Gigitan Rabies (GHPR):** Pencatatan epidemiologi kasus gigitan, pemantauan masa observasi klinis hewan penggigit selama 14 hari, dan monitoring kepatuhan Vaksin Anti Rabies (VAR) bagi korban dengan pendekatan _One Health_.
+4. **Pelayanan Inseminasi Buatan (IB) & Reproduksi Ternak:** Layanan kawin suntik semen beku bersertifikat, Pemeriksaan Kebuntingan (PKB), penanganan gangguan reproduksi (_repeat breeder_, _anestrus_, _distokia_), dan pendampingan kelahiran.
+5. **Kesehatan Masyarakat Veteriner (Kesmavet):** Pengawasan higiene sanitasi, pemeriksaan _antemortem_ & _postmortem_ hewan kurban, jaminan pangan **ASUH** (_Aman, Sehat, Utuh, Halal_), dan penerbitan Surat Keterangan Kesehatan Hewan (SKKH).
 6. **Pelayanan Kesehatan Hewan Keliling:** Pelayanan jemput bola ke kelompok tani ternak di nagari dan desa untuk pengobatan massal dan biosekuriti kandang.
 
 ---
@@ -90,13 +90,13 @@ flowchart TD
 ## 📐 Pemodelan Sistem & Diagram UML (Non-Sensitif)
 
 > [!NOTE]
-> Guna mematuhi standar integritas keamanan data dan melindungi struktur sistem internal, diagram tingkat implementasi yang bersifat rahasia—seperti *Entity Relationship Diagram (ERD)*, *Activity Diagram* rincian kueri logika, dan struktur relasi basis data internal—**sengaja tidak dipublikasikan secara terbuka**.
+> Guna mematuhi standar integritas keamanan data dan melindungi struktur sistem internal, diagram tingkat implementasi mendalam yang bersifat sensitif—seperti *Entity Relationship Diagram (ERD)*, *Activity Diagram* rincian kueri logika, dan struktur relasi basis data internal—**sengaja tidak dipublikasikan secara terbuka**.
 > 
 > Bagian ini menampilkan pemodelan arsitektur fungsional tingkat tinggi (*high-level functional UML*) yang aman, baku, dan merefleksikan alur kerja sistem informasi terpadu PuskeswanApp:
 
 ### 1. 🎯 UML Use Case Diagram (Sistem Baru)
 
-Memetakan hubungan antara 4 peran pengguna (*Super Admin*, *Admin Loket*, *Dokter Hewan*, dan *Masyarakat / Pemilik Pasien*) terhadap batasan fungsionalitas sistem informasi:
+Memetakan hubungan antara 4 peran pengguna (_Super Admin_, _Admin Loket_, _Dokter Hewan_, dan _Masyarakat / Pemilik Pasien_) terhadap batasan fungsionalitas sistem informasi:
 
 ```mermaid
 flowchart LR
@@ -173,27 +173,27 @@ Menggambarkan transisi status antrean pasien secara otomatis sejak didaftarkan d
 ```mermaid
 stateDiagram-v2
     [*] --> Terdaftar: Admin loket daftarkan pasien & keluhan awal
-    
+
     state Terdaftar {
         [*] --> Antri
         Antri: Menunggu Panggilan di Ruang Tunggu Pasien
     }
-    
+
     Terdaftar --> SedangDiperiksa: Dokter memilih pasien pada dashboard antrean
-    
+
     state SedangDiperiksa {
         [*] --> PemeriksaanFisik
         PemeriksaanFisik --> PenegakanDiagnosa
         PenegakanDiagnosa --> ResepTerapiDanTindakan
     }
-    
+
     SedangDiperiksa --> Selesai: Dokter menyimpan hasil pemeriksaan rekam medis
-    
+
     state Selesai {
         [*] --> RekamMedisTercatat
         RekamMedisTercatat: Status antrean ditutup & lembar rekam medis siap dicetak
     }
-    
+
     Selesai --> [*]
 ```
 
@@ -235,35 +235,35 @@ flowchart LR
 <details open>
 <summary><strong>🔍 1. Portal Cek Rekam Medis Mandiri oleh Masyarakat</strong></summary>
 
-* **Verifikasi Identitas Aman:** Pemilik cukup memasukkan 16 digit NIK dan Nama Lengkap yang dicocokkan dengan data registrasi poliklinik.
-* **Captcha Anti-Bot Dinamis:** Perlindungan dari *scraping* otomatis menggunakan generator kode acak berbasis SVG biner di sisi server.
-* **Informasi Klinis Lengkap:** Menampilkan riwayat pemeriksaan, diagnosa dokter, berat badan, suhu tubuh, tindakan medis, serta rincian terapi obat.
-* **Pratinjau & Cetak PDF:** Dilengkapi tombol cetak dokumen resmi rekam medis yang siap diunduh atau dicetak.
-</details>
+- **Verifikasi Identitas Aman:** Pemilik cukup memasukkan 16 digit NIK dan Nama Lengkap yang dicocokkan dengan data registrasi poliklinik.
+- **Captcha Anti-Bot Dinamis:** Perlindungan dari _scraping_ otomatis menggunakan generator kode acak berbasis SVG biner di sisi server.
+- **Informasi Klinis Lengkap:** Menampilkan riwayat pemeriksaan, diagnosa dokter, berat badan, suhu tubuh, tindakan medis, serta rincian terapi obat.
+- **Pratinjau & Cetak PDF:** Dilengkapi tombol cetak dokumen resmi rekam medis yang siap diunduh atau dicetak.
+    </details>
 
 <details>
 <summary><strong>📊 2. Modul Surveilans Epidemiologi Rabies (GHPR)</strong></summary>
 
-* **Pencatatan Epidemiologi Rinci:** Mendokumentasikan identitas korban, lokasi luka gigitan, tanggal kejadian, serta kepemilikan hewan.
-* **Status Hewan & Masa Observasi 14 Hari:** Pelacakan kondisi hewan penggigit (*Observasi Lapangan*, *Mati / Positif Rabies*, *Sehat*).
-* **Monitoring Vaksin Anti Rabies (VAR):** Rekapitulasi status pemberian vaksin pada manusia (*Belum*, *Dosis 1*, *Lengkap*).
-* **Format Cetak Laporan Resmi:** Template laporan investigasi epidemiologi untuk koordinasi lintas sektoral dengan Dinas Kesehatan.
-</details>
+- **Pencatatan Epidemiologi Rinci:** Mendokumentasikan identitas korban, lokasi luka gigitan, tanggal kejadian, serta kepemilikan hewan.
+- **Status Hewan & Masa Observasi 14 Hari:** Pelacakan kondisi hewan penggigit (_Observasi Lapangan_, _Mati / Positif Rabies_, _Sehat_).
+- **Monitoring Vaksin Anti Rabies (VAR):** Rekapitulasi status pemberian vaksin pada manusia (_Belum_, _Dosis 1_, _Lengkap_).
+- **Format Cetak Laporan Resmi:** Template laporan investigasi epidemiologi untuk koordinasi lintas sektoral dengan Dinas Kesehatan.
+    </details>
 
 <details>
 <summary><strong>🛡️ 3. Arsitektur Keamanan Berlapis (Two-Tier Rate Limiting)</strong></summary>
 
-* **Tier 1 (Cooldown 20 Detik):** Jika pengguna salah memasukkan kredensial 5 kali berturut-turut, tombol login dinonaktifkan sementara dengan timer hitung mundur.
-* **Tier 2 (IP Block 30 Menit):** Jika penalti cooldown terulang hingga 3 kali (3 *strikes*), alamat IP penyerang diblokir total selama 30 menit ke halaman error `429 Too Many Requests`.
-* **Zero-Trust Upload Validation:** Seluruh unggahan foto profil dan gambar artikel diperiksa biner *magic bytes*-nya menggunakan ekstensi PHP `finfo` dan `getimagesize()` untuk mencegah penyelundupan *web shell*.
-</details>
+- **Tier 1 (Cooldown 20 Detik):** Jika pengguna salah memasukkan kredensial 5 kali berturut-turut, tombol login dinonaktifkan sementara dengan timer hitung mundur.
+- **Tier 2 (IP Block 30 Menit):** Jika penalti cooldown terulang hingga 3 kali (3 _strikes_), alamat IP penyerang diblokir total selama 30 menit ke halaman error `429 Too Many Requests`.
+- **Zero-Trust Upload Validation:** Seluruh unggahan foto profil dan gambar artikel diperiksa biner _magic bytes_-nya menggunakan ekstensi PHP `finfo` dan `getimagesize()` untuk mencegah penyelundupan _web shell_.
+    </details>
 
 <details>
 <summary><strong>📦 4. Manajemen Logistik Obat & Inventaris Klinik</strong></summary>
 
-* **Indikator Stok Cerdas:** Otomatisasi pengelompokan status obat (*Kritis: ≤ 10 unit*, *Menipis: 11–30 unit*, *Aman: > 30 unit*).
-* **Inventaris Alat Medis:** Pengawasan kondisi peralatan medis dan operasional lapangan (*Baik*, *Rusak Ringan*, *Rusak Berat*) lengkap dengan riwayat pencatatan penanggung jawab.
-</details>
+- **Indikator Stok Cerdas:** Otomatisasi pengelompokan status obat (_Kritis: ≤ 10 unit_, _Menipis: 11–30 unit_, _Aman: > 30 unit_).
+- **Inventaris Alat Medis:** Pengawasan kondisi peralatan medis dan operasional lapangan (_Baik_, _Rusak Ringan_, _Rusak Berat_) lengkap dengan riwayat pencatatan penanggung jawab.
+    </details>
 
 ---
 
@@ -271,21 +271,21 @@ flowchart LR
 
 Aplikasi dibangun menggunakan kombinasi pustaka dan kerangka kerja modern versi stabil terbaru:
 
-| Komponen Arsitektur | Teknologi / Pustaka | Versi Terpasang | Peran & Deskripsi Kunci |
-| :--- | :--- | :---: | :--- |
-| **Backend Runtime** | **PHP** | `v8.4.27 (NTS x64)` | Runtime modern dengan performa JIT engine dan konstruktor properti terpromosi |
-| **Backend Framework** | **Laravel Framework** | `v13.37.0` | Framework inti MVC (Patched terhadap celah `CVE-2026-114509`) |
-| **Frontend Runtime** | **Node.js** | `v24.22.1 (LTS)` | Lingkungan eksekusi JavaScript modern dengan npm `v11.19.1` |
-| **Frontend Framework** | **React** | `v19.2.0` | Pustaka antarmuka pengguna berbasis komponen reaktif SPA |
-| **Language Extension** | **TypeScript** | `v5.7.2` | Pengetikan statis ketat untuk mencegah *runtime type error* di antarmuka |
-| **Full-Stack Adapter** | **Inertia.js Core / Laravel** | `v3.5.1` | Jembatan komunikasi server-driven SPA tanpa pembuatan REST API redundan |
-| **CSS & Design Engine**| **Tailwind CSS** | `v4.0.0` | Mesin CSS generasi baru berbasis *lightningcss* untuk styling ultra cepat |
-| **Iconography** | **Lucide Icons** | `v1.16.0` | Pustaka ikon SVG modern yang ringan dan konsisten |
-| **Type-Safe Routing** | **Laravel Wayfinder** | `v0.1.23` | Generator otomatis fungsi rute TypeScript langsung dari controller Laravel |
-| **Database Engine** | **MySQL / MariaDB** | `v8.0+ / v10.5+` | Basis data relasional dengan indeks komposit pada tabel frekuensi tinggi |
-| **Automated Testing** | **Pest PHP** | `v5.3.3` | Kerangka pengujian fitur otomatis (60 Feature Tests, 100% Passed) |
-| **Code Style Linter** | **Laravel Pint** | `v1.32.1` | Formatter kode otomatis berstandar PSR-12 dan panduan Laravel |
-| **Build Tooling** | **Vite-Plus (VoidZero)** | `v1.4.0` | Bundler modul berkas frontend super cepat untuk lingkungan produksi |
+| Komponen Arsitektur     | Teknologi / Pustaka           |   Versi Terpasang   | Peran & Deskripsi Kunci                                                       |
+| :---------------------- | :---------------------------- | :-----------------: | :---------------------------------------------------------------------------- |
+| **Backend Runtime**     | **PHP**                       | `v8.4.27 (NTS x64)` | Runtime modern dengan performa JIT engine dan konstruktor properti terpromosi |
+| **Backend Framework**   | **Laravel Framework**         |     `v13.37.0`      | Framework inti MVC (Patched terhadap celah `CVE-2026-114509`)                 |
+| **Frontend Runtime**    | **Node.js**                   |  `v24.22.1 (LTS)`   | Lingkungan eksekusi JavaScript modern dengan npm `v11.19.1`                   |
+| **Frontend Framework**  | **React**                     |      `v19.2.0`      | Pustaka antarmuka pengguna berbasis komponen reaktif SPA                      |
+| **Language Extension**  | **TypeScript**                |      `v5.7.2`       | Pengetikan statis ketat untuk mencegah _runtime type error_ di antarmuka      |
+| **Full-Stack Adapter**  | **Inertia.js Core / Laravel** |      `v3.5.1`       | Jembatan komunikasi server-driven SPA tanpa pembuatan REST API redundan       |
+| **CSS & Design Engine** | **Tailwind CSS**              |      `v4.0.0`       | Mesin CSS generasi baru berbasis _lightningcss_ untuk styling ultra cepat     |
+| **Iconography**         | **Lucide Icons**              |      `v1.16.0`      | Pustaka ikon SVG modern yang ringan dan konsisten                             |
+| **Type-Safe Routing**   | **Laravel Wayfinder**         |      `v0.1.23`      | Generator otomatis fungsi rute TypeScript langsung dari controller Laravel    |
+| **Database Engine**     | **MySQL / MariaDB**           |  `v8.0+ / v10.5+`   | Basis data relasional dengan indeks komposit pada tabel frekuensi tinggi      |
+| **Automated Testing**   | **Pest PHP**                  |      `v5.3.3`       | Kerangka pengujian fitur otomatis (60 Feature Tests, 100% Passed)             |
+| **Code Style Linter**   | **Laravel Pint**              |      `v1.32.1`      | Formatter kode otomatis berstandar PSR-12 dan panduan Laravel                 |
+| **Build Tooling**       | **Vite-Plus (VoidZero)**      |      `v1.4.0`       | Bundler modul berkas frontend super cepat untuk lingkungan produksi           |
 
 ---
 
@@ -305,10 +305,10 @@ Pencarian Pasien : 2 Kueri SQL (Eager Loading via latestOfMany 'latestVisit')-> 
 Dokter Dashboard : 0 Kueri Duplikat (Reuse hasil kueri agregasi 30 hari)     -> Beban berkurang 50%
 ```
 
-* **Indeks Komposit yang Ditambahkan:**
-  * `visits(tgl_kunjungan, status_antrean)`: Mempercepat filter antrean harian dan dashboard.
-  * `examinations(id_dokter, waktu_selesai)`: Mempercepat kalkulasi grafik analitik dokter.
-  * `examinations(waktu_selesai)`: Mempercepat filter laporan rekam medis berkala.
+- **Indeks Komposit yang Ditambahkan:**
+    - `visits(tgl_kunjungan, status_antrean)`: Mempercepat filter antrean harian dan dashboard.
+    - `examinations(id_dokter, waktu_selesai)`: Mempercepat kalkulasi grafik analitik dokter.
+    - `examinations(waktu_selesai)`: Mempercepat filter laporan rekam medis berkala.
 
 ---
 
@@ -317,22 +317,23 @@ Dokter Dashboard : 0 Kueri Duplikat (Reuse hasil kueri agregasi 30 hari)     -> 
 <details>
 <summary><strong>Klik untuk melihat rincian hak akses peran (*Role Access Matrix*)</strong></summary>
 
-| Modul & Fitur | Publik / Tamu | Petugas Loket (Admin) | Dokter Hewan | Super Administrator |
-| :--- | :---: | :---: | :---: | :---: |
-| **Landing Page & Edukasi** | ✅ Akses | ✅ Akses | ✅ Akses | ✅ Akses |
-| **Cek Rekam Medis Mandiri** | ✅ Akses | ✅ Akses | ✅ Akses | ✅ Akses |
-| **Dashboard Loket Pendaftaran** | ❌ Ditolak | ✅ Penuh | ❌ Ditolak | ❌ Ditolak |
-| **Registrasi Pemilik & Pasien** | ❌ Ditolak | ✅ Penuh | ❌ Ditolak | ❌ Ditolak |
-| **Manajemen Antrean Loket** | ❌ Ditolak | ✅ Penuh | ❌ Ditolak | ❌ Ditolak |
-| **Surveilans Rabies (GHPR)** | ❌ Ditolak | ✅ Penuh | ❌ Ditolak | 👁️ Monitoring |
-| **Dashboard Dokter Hewan** | ❌ Ditolak | ❌ Ditolak | ✅ Penuh | ❌ Ditolak |
-| **Pemeriksaan & Diagnosa Medis**| ❌ Ditolak | ❌ Ditolak | ✅ Penuh | ❌ Ditolak |
-| **Riwayat Pelayanan Dokter** | ❌ Ditolak | ❌ Ditolak | ✅ Penuh | ❌ Ditolak |
-| **Dashboard Eksekutif** | ❌ Ditolak | ❌ Ditolak | ❌ Ditolak | ✅ Penuh |
-| **Manajemen Akun Pengguna** | ❌ Ditolak | ❌ Ditolak | ❌ Ditolak | ✅ Penuh |
-| **Manajemen Pegawai & Staf** | ❌ Ditolak | ❌ Ditolak | ❌ Ditolak | ✅ Penuh |
-| **Logistik Obat & Inventaris** | ❌ Ditolak | ❌ Ditolak | ❌ Ditolak | ✅ Penuh |
-| **Laporan & Ekspor Terpadu** | ❌ Ditolak | ❌ Ditolak | ❌ Ditolak | ✅ Penuh |
+| Modul & Fitur                    | Publik / Tamu | Petugas Loket (Admin) | Dokter Hewan | Super Administrator |
+| :------------------------------- | :-----------: | :-------------------: | :----------: | :-----------------: |
+| **Landing Page & Edukasi**       |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
+| **Cek Rekam Medis Mandiri**      |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
+| **Dashboard Loket Pendaftaran**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |     ❌ Ditolak      |
+| **Registrasi Pemilik & Pasien**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |     ❌ Ditolak      |
+| **Manajemen Antrean Loket**      |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |     ❌ Ditolak      |
+| **Surveilans Rabies (GHPR)**     |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
+| **Dashboard Dokter Hewan**       |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |     ❌ Ditolak      |
+| **Pemeriksaan & Diagnosa Medis** |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |     ❌ Ditolak      |
+| **Riwayat Pelayanan Dokter**     |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |     ❌ Ditolak      |
+| **Dashboard Eksekutif**          |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Manajemen Akun Pengguna**      |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Manajemen Pegawai & Staf**     |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Logistik Obat & Inventaris**   |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Laporan & Ekspor Terpadu**     |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+
 </details>
 
 ---
@@ -345,229 +346,75 @@ Berikut adalah dokumentasi tampilan visual antarmuka sistem PuskeswanApp V.2.0.0
 
 ### 🌐 1. Portal Publik & Edukasi Masyarakat (Landing Page)
 
-#### A. Hero Section & Profil Instansi
-Tampilan beranda utama dengan navigasi layanan, sambutan resmi, serta ringkasan profil UPTD Puskeswan dan IB Kota Pariaman.
+| 1. Hero Section | 2. Profil UPTD Puskeswan | 3. Cek Mandiri Rekam Medis | 4. Artikel Edukasi Kesehatan |
+| :---: | :---: | :---: | :---: |
+| <a href="screenshot/index/1_hero_section.png"><img src="screenshot/index/1_hero_section.png" width="185" alt="Hero Section Puskeswan Kota Pariaman" /></a> | <a href="screenshot/index/2_about_section.png"><img src="screenshot/index/2_about_section.png" width="185" alt="Tentang UPTD Puskeswan dan IB" /></a> | <a href="screenshot/index/3_cek_section.png"><img src="screenshot/index/3_cek_section.png" width="185" alt="Fitur Cek Mandiri Rekam Medis" /></a> | <a href="screenshot/index/4_article_section.png"><img src="screenshot/index/4_article_section.png" width="185" alt="Daftar Artikel Edukasi Kesehatan Hewan" /></a> |
 
-<p align="center">
-  <img src="screenshot/index/1_hero_section.png" alt="Hero Section Puskeswan Kota Pariaman" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/index/2_about_section.png" alt="Tentang UPTD Puskeswan dan IB" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### B. Fitur Cek Mandiri Rekam Medis Pasien
-Pencarian riwayat medis mandiri oleh pemilik hewan menggunakan 16 digit NIK dan Nama Lengkap yang dilindungi verifikasi kode captcha anti-bot.
-
-<p align="center">
-  <img src="screenshot/index/3_cek_section.png" alt="Fitur Cek Mandiri Rekam Medis" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### C. Portal Artikel Edukasi Kesehatan Hewan & Publikasi Staf Medis
-Pusat edukasi kesehatan hewan dan vaksinasi rabies terbitan tim medis serta struktur pegawai UPTD Puskeswan Kota Pariaman.
-
-<p align="center">
-  <img src="screenshot/index/4_article_section.png" alt="Daftar Artikel Edukasi Kesehatan Hewan" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/index/5_staff_section.png" alt="Struktur Staf dan Tenaga Medis Puskeswan" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### D. Pengelompokan Kategori Edukasi, Arsip Penulis & Informasi Kontak
-Arsip artikel yang dikelompokkan berdasarkan kategori topik dan profil dokter hewan penulis, serta informasi kontak poliklinik.
-
-<p align="center">
-  <img src="screenshot/index/7_category_section.png" alt="Kategori Artikel Edukasi" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/index/8_author_section.png" alt="Arsip Artikel Berdasarkan Penulis Medis" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/index/6_contact_section.png" alt="Kontak dan Lokasi Klinik Puskeswan" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+| 5. Struktur Tenaga Staf | 6. Direktori Kategori Edukasi | 7. Arsip Berdasarkan Penulis | 8. Lokasi Poliklinik & Kontak |
+| :---: | :---: | :---: | :---: |
+| <a href="screenshot/index/5_staff_section.png"><img src="screenshot/index/5_staff_section.png" width="185" alt="Struktur Staf dan Tenaga Medis Puskeswan" /></a> | <a href="screenshot/index/7_category_section.png"><img src="screenshot/index/7_category_section.png" width="185" alt="Kategori Artikel Edukasi" /></a> | <a href="screenshot/index/8_author_section.png"><img src="screenshot/index/8_author_section.png" width="185" alt="Arsip Artikel Berdasarkan Penulis Medis" /></a> | <a href="screenshot/index/6_contact_section.png"><img src="screenshot/index/6_contact_section.png" width="185" alt="Kontak dan Lokasi Klinik Puskeswan" /></a> |
 
 ---
 
 ### 🔐 2. Modul Autentikasi & Keamanan Berlapis
 
-#### A. Form Login & Proteksi Rate Limiting (Tier 1 Cooldown)
-Halaman login petugas terpadu dilengkapi indikator penonaktifan tombol sementara (*cooldown*) saat terdeteksi kegagalan login berulang.
+| 1. Form Login Petugas | 2. Cooldown Tombol (Tier 1) | 3. Form Lupa Kata Sandi | 4. Reset Kata Sandi Baru |
+| :---: | :---: | :---: | :---: |
+| <a href="screenshot/auth/login_section.png"><img src="screenshot/auth/login_section.png" width="185" alt="Form Login Petugas" /></a> | <a href="screenshot/auth/rate_limiting_section.png"><img src="screenshot/auth/rate_limiting_section.png" width="185" alt="Indikator Cooldown Tombol Login" /></a> | <a href="screenshot/auth/forgot_section.png"><img src="screenshot/auth/forgot_section.png" width="185" alt="Form Lupa Kata Sandi" /></a> | <a href="screenshot/auth/reset_section.png"><img src="screenshot/auth/reset_section.png" width="185" alt="Form Reset Kata Sandi Baru" /></a> |
 
-<p align="center">
-  <img src="screenshot/auth/login_section.png" alt="Form Login Petugas" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/auth/rate_limiting_section.png" alt="Indikator Cooldown Tombol Login" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### B. Pemulihan Kata Sandi (Forgot & Reset Password)
-Alur pemulihan kata sandi petugas menggunakan token verifikasi aman via email terdaftar.
-
-<p align="center">
-  <img src="screenshot/auth/forgot_section.png" alt="Form Lupa Kata Sandi" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/auth/reset_section.png" alt="Form Reset Kata Sandi Baru" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### C. Halaman Kesalahan & Proteksi Akses (403, 404, 429 IP Blocked)
-Antarmuka status respon HTTP khusus, termasuk halaman 429 saat alamat IP penyerang diblokir total (Tier 2).
-
-<p align="center">
-  <img src="screenshot/auth/403_section.png" alt="Halaman 403 Forbidden Akses Ditolak" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/auth/404_section.png" alt="Halaman 404 Not Found" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/auth/429_section.png" alt="Halaman 429 Too Many Requests IP Blocked" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+| 5. Akses Ditolak (403 Forbidden) | 6. Halaman Tidak Ditemukan (404) | 7. IP Blocked Penalti 30 Menit (429) |
+| :---: | :---: | :---: |
+| <a href="screenshot/auth/403_section.png"><img src="screenshot/auth/403_section.png" width="250" alt="Halaman 403 Forbidden Akses Ditolak" /></a> | <a href="screenshot/auth/404_section.png"><img src="screenshot/auth/404_section.png" width="250" alt="Halaman 404 Not Found" /></a> | <a href="screenshot/auth/429_section.png"><img src="screenshot/auth/429_section.png" width="250" alt="Halaman 429 Too Many Requests IP Blocked" /></a> |
 
 ---
 
 ### 🏥 3. Modul Petugas Administrasi & Loket Rekam Medis (Admin Role)
 
-#### A. Dashboard Operasional Loket Admin
-Kartu metrik antrean harian, grafik pelayanan rekam medis, grafik surveilans kasus gigitan rabies, serta antrean terkini.
+| 1. Dashboard Operasional Loket | 2. Formulir Registrasi (Autofill NIK) | 3. Pemantauan Antrean Hari Ini |
+| :---: | :---: | :---: |
+| <a href="screenshot/admin/1_dashboard.png"><img src="screenshot/admin/1_dashboard.png" width="250" alt="Dashboard Loket Admin" /></a> | <a href="screenshot/admin/2_visit_add.png"><img src="screenshot/admin/2_visit_add.png" width="250" alt="Formulir Pendaftaran Pasien Baru" /></a> | <a href="screenshot/admin/3_visit_list.png"><img src="screenshot/admin/3_visit_list.png" width="250" alt="Daftar Antrean Pasien Poliklinik Hari Ini" /></a> |
 
-<p align="center">
-  <img src="screenshot/admin/1_dashboard.png" alt="Dashboard Loket Admin" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### B. Pendaftaran Pasien & Manajemen Antrean Poliklinik
-Pendaftaran pasien hewan baru/lama dengan autofill NIK, nomor RM otomatis, serta pemantauan antrean loket harian.
-
-<p align="center">
-  <img src="screenshot/admin/2_visit_add.png" alt="Formulir Pendaftaran Pasien Baru" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/admin/3_visit_list.png" alt="Daftar Antrean Pasien Poliklinik Hari Ini" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### C. Riwayat Rekam Medis Selesai & Surveilans Kasus Gigitan Rabies (GHPR)
-Pencatatan kasus gigitan rabies secara rinci (data korban, luka gigitan, status VAR, observasi hewan) serta rekapitulasi riwayat medis selesai.
-
-<p align="center">
-  <img src="screenshot/admin/4_visit_history.png" alt="Riwayat Rekam Medis Selesai Diperiksa" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/admin/5_ghpr_add.png" alt="Formulir Pencatatan Kasus Gigitan Rabies" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/admin/6_ghpr_history.png" alt="Daftar Riwayat Kasus Gigitan Rabies GHPR" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+| 4. Riwayat Rekam Medis Selesai | 5. Input Kasus Gigitan Rabies (GHPR) | 6. Monitoring Epidemiologi GHPR |
+| :---: | :---: | :---: |
+| <a href="screenshot/admin/4_visit_history.png"><img src="screenshot/admin/4_visit_history.png" width="250" alt="Riwayat Rekam Medis Selesai Diperiksa" /></a> | <a href="screenshot/admin/5_ghpr_add.png"><img src="screenshot/admin/5_ghpr_add.png" width="250" alt="Formulir Pencatatan Kasus Gigitan Rabies" /></a> | <a href="screenshot/admin/6_ghpr_history.png"><img src="screenshot/admin/6_ghpr_history.png" width="250" alt="Daftar Riwayat Kasus Gigitan Rabies GHPR" /></a> |
 
 ---
 
 ### 🩺 4. Modul Dokter Hewan / Medik Veteriner (Dokter Role)
 
-#### A. Dashboard Utama Dokter Hewan
-Statistik beban kerja dokter, antrean prioritas yang menunggu diperiksa, serta pasien yang baru selesai ditangani.
-
-<p align="center">
-  <img src="screenshot/doctor/1_dashboard.png" alt="Dashboard Dokter Hewan" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### B. Ruang Periksa Antrean & Riwayat Pelayanan Medik Dokter
-Tabel antrean pasien dokter dengan pemantauan riwayat medis lampau dan formulir penegakan diagnosa klinis & terapi obat.
-
-<p align="center">
-  <img src="screenshot/doctor/2_visit.png" alt="Daftar Antrean Pasien Dokter Hewan" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/doctor/3_visit_history.png" alt="Riwayat Pemeriksaan dan Diagnosa Dokter" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+| 1. Dashboard Beban Kerja Dokter | 2. Ruang Periksa & Antrean Pasien | 3. Riwayat Diagnosa & Rekam Medis |
+| :---: | :---: | :---: |
+| <a href="screenshot/doctor/1_dashboard.png"><img src="screenshot/doctor/1_dashboard.png" width="250" alt="Dashboard Dokter Hewan" /></a> | <a href="screenshot/doctor/2_visit.png"><img src="screenshot/doctor/2_visit.png" width="250" alt="Daftar Antrean Pasien Dokter Hewan" /></a> | <a href="screenshot/doctor/3_visit_history.png"><img src="screenshot/doctor/3_visit_history.png" width="250" alt="Riwayat Pemeriksaan dan Diagnosa Dokter" /></a> |
 
 ---
 
 ### 👑 5. Modul Super Administrator (Eksekutif & Tata Kelola Data Master)
 
-#### A. Dashboard Eksekutif Super Administrator
-Analisis terpadu 6 bulan terakhir yang mencakup tren kunjungan, persentase kepatuhan vaksinasi VAR, dan sebaran spesies pasien.
+| 1. Dashboard Analisis Eksekutif | 2. Manajemen Akun Pengguna | 3. Tata Kelola Data Tenaga Staf |
+| :---: | :---: | :---: |
+| <a href="screenshot/super_admin/1_dashboard.png"><img src="screenshot/super_admin/1_dashboard.png" width="250" alt="Dashboard Eksekutif Super Admin" /></a> | <a href="screenshot/super_admin/2_user.png"><img src="screenshot/super_admin/2_user.png" width="250" alt="Manajemen Akun Pengguna" /></a> | <a href="screenshot/super_admin/3_staff.png"><img src="screenshot/super_admin/3_staff.png" width="250" alt="Manajemen Staf Pegawai dan Dokter" /></a> |
 
-<p align="center">
-  <img src="screenshot/super_admin/1_dashboard.png" alt="Dashboard Eksekutif Super Admin" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+| 4. Master Data Jenis Hewan | 5. Manajemen Stok Obat & Vaksin | 6. Inventaris Peralatan Medis |
+| :---: | :---: | :---: |
+| <a href="screenshot/super_admin/4_animal_category.png"><img src="screenshot/super_admin/4_animal_category.png" width="250" alt="Master Data Jenis Hewan" /></a> | <a href="screenshot/super_admin/5_examination.png"><img src="screenshot/super_admin/5_examination.png" width="250" alt="Manajemen Stok Obat dan Vaksin" /></a> | <a href="screenshot/super_admin/6_inventory.png"><img src="screenshot/super_admin/6_inventory.png" width="250" alt="Manajemen Inventaris Alat Medis" /></a> |
 
-#### B. Manajemen Akun Pengguna, Staf Medis & Master Jenis Hewan
-Manajemen peran pengguna (*User & Role Management*), data staf medis, serta master data jenis hewan kesayangan dan ternak.
-
-<p align="center">
-  <img src="screenshot/super_admin/2_user.png" alt="Manajemen Akun Pengguna" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/super_admin/3_staff.png" alt="Manajemen Staf Pegawai dan Dokter" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/super_admin/4_animal_category.png" alt="Master Data Jenis Hewan" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### C. Manajemen Logistik Obat, Inventaris Alat & Publikasi Edukasi
-Monitoring stok obat otomatis (*Aman*, *Menipis*, *Kritis*), pencatatan inventaris alat medis, serta kurasi artikel edukasi.
-
-<p align="center">
-  <img src="screenshot/super_admin/5_examination.png" alt="Manajemen Stok Obat dan Vaksin" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/super_admin/6_inventory.png" alt="Manajemen Inventaris Alat Medis" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/super_admin/7_article.png" alt="Manajemen Artikel dan Berita Edukasi" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### D. Pusat Laporan Terpadu & Profil Akun
-Rekapitulasi data rekam medis dan kasus rabies periode dinamis yang siap difilter, serta pengaturan profil administrator.
-
-<p align="center">
-  <img src="screenshot/super_admin/8_history_visit.png" alt="Laporan Rekam Medis Periode Terpadu" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/super_admin/9_history_ghpr.png" alt="Laporan Kasus Gigitan Rabies Terpadu" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-<p align="center">
-  <img src="screenshot/super_admin/10_profil.png" alt="Pengaturan Profil Akun Pengguna" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+| 7. Manajemen Konten Edukasi | 8. Laporan Kunjungan Terpadu | 9. Laporan Kasus Rabies (GHPR) | 10. Pengaturan Profil Akun |
+| :---: | :---: | :---: | :---: |
+| <a href="screenshot/super_admin/7_article.png"><img src="screenshot/super_admin/7_article.png" width="185" alt="Manajemen Artikel dan Berita Edukasi" /></a> | <a href="screenshot/super_admin/8_history_visit.png"><img src="screenshot/super_admin/8_history_visit.png" width="185" alt="Laporan Rekam Medis Periode Terpadu" /></a> | <a href="screenshot/super_admin/9_history_ghpr.png"><img src="screenshot/super_admin/9_history_ghpr.png" width="185" alt="Laporan Kasus Gigitan Rabies Terpadu" /></a> | <a href="screenshot/super_admin/10_profil.png"><img src="screenshot/super_admin/10_profil.png" width="185" alt="Pengaturan Profil Akun Pengguna" /></a> |
 
 ---
 
-### 📄 6. Modul Ekspor & Cetak Dokumen Resmi
+### 📄 6. Modul Ekspor & Format Cetak Dokumen Kedinasan
 
-#### A. Dokumen Cetak Rekam Medis Pasien Hewan
-Dokumen cetak rekam medis resmi dengan identitas pemilik, nomor RM, riwayat anamnesa, hasil diagnosa, dan terapi obat bertanda tangan dokter hewan.
-
-<p align="center">
-  <img src="screenshot/export/2_visit_export.png" alt="Format Cetak Lembar Rekam Medis Pasien" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
-
-#### B. Dokumen Cetak Laporan Surveilans Kasus Gigitan Rabies (GHPR)
-Format laporan epidemiologi penanganan kasus gigitan HPR yang memuat data korban, lokasi gigitan, status VAR, observasi hewan penggigit, dan legalitas kedinasan.
-
-<p align="center">
-  <img src="screenshot/export/3_ghpr_export.png" alt="Format Cetak Laporan Surveilans Kasus Rabies" width="700" style="border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
-</p>
+| 1. Format Cetak Lembar Rekam Medis Resmi | 2. Format Cetak Laporan Surveilans Rabies (GHPR) |
+| :---: | :---: |
+| <a href="screenshot/export/2_visit_export.png"><img src="screenshot/export/2_visit_export.png" width="380" alt="Format Cetak Lembar Rekam Medis Pasien" /></a> | <a href="screenshot/export/3_ghpr_export.png"><img src="screenshot/export/3_ghpr_export.png" width="380" alt="Format Cetak Laporan Surveilans Kasus Rabies" /></a> |
 
 ---
 
 ## 🧪 Verifikasi Kualitas Kode & Pengujian Otomatis
 
-Aplikasi dilengkapi *automated regression testing* menggunakan Pest PHP dan standardisasi gaya kode Laravel Pint:
+Aplikasi dilengkapi _automated regression testing_ menggunakan Pest PHP dan standardisasi gaya kode Laravel Pint:
 
 ```bash
 # Menjalankan seluruh pengujian otomatis fitur (60 Tests)
@@ -598,8 +445,8 @@ npm run build
 
 ## 📄 Lisensi & Riwayat Pembaruan
 
-* **Lisensi Perangkat Lunak:** Dilisensikan di bawah [MIT License](LICENSE).
-* **Catatan Perubahan Versi:** Seluruh riwayat pembaruan, perbaikan bug, dan penambahan fitur dapat dilihat pada berkas [CHANGELOG.md](CHANGELOG.md).
+- **Lisensi Perangkat Lunak:** Dilisensikan di bawah [MIT License](LICENSE).
+- **Catatan Perubahan Versi:** Seluruh riwayat pembaruan, perbaikan bug, dan penambahan fitur dapat dilihat pada berkas [CHANGELOG.md](CHANGELOG.md).
 
 ---
 

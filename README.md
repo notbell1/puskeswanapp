@@ -29,6 +29,7 @@
 - [🏛️ Tentang Instansi](#️-tentang-instansi)
 - [📋 Tugas Pokok & Fungsi Puskeswan](#-tugas-pokok--fungsi-puskeswan)
 - [🔄 Alur Pelayanan Poliklinik Terpadu](#-alur-pelayanan-poliklinik-terpadu)
+- [📐 Pemodelan Sistem & Diagram UML (Non-Sensitif)](#-pemodelan-sistem--diagram-uml-non-sensitif)
 - [✨ Fitur-Fitur Utama](#-fitur-fitur-utama)
 - [🛠️ Spesifikasi Teknologi Rinci (Tech Stack)](#️-spesifikasi-teknologi-rinci-tech-stack)
 - [⚡ Optimasi Kinerja Basis Data (Laravel Debugbar)](#-optimasi-kinerja-basis-data-laravel-debugbar)
@@ -82,6 +83,149 @@ flowchart TD
     classDef admin fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#fff;
     classDef doctor fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
     classDef public fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff;
+```
+
+---
+
+## 📐 Pemodelan Sistem & Diagram UML (Non-Sensitif)
+
+> [!NOTE]
+> Guna mematuhi standar integritas keamanan data dan melindungi struktur sistem internal, diagram tingkat implementasi yang bersifat rahasia—seperti *Entity Relationship Diagram (ERD)*, *Activity Diagram* rincian kueri logika, dan struktur relasi basis data internal—**sengaja tidak dipublikasikan secara terbuka**.
+> 
+> Bagian ini menampilkan pemodelan arsitektur fungsional tingkat tinggi (*high-level functional UML*) yang aman, baku, dan merefleksikan alur kerja sistem informasi terpadu PuskeswanApp:
+
+### 1. 🎯 UML Use Case Diagram (Sistem Baru)
+
+Memetakan hubungan antara 4 peran pengguna (*Super Admin*, *Admin Loket*, *Dokter Hewan*, dan *Masyarakat / Pemilik Pasien*) terhadap batasan fungsionalitas sistem informasi:
+
+```mermaid
+flowchart LR
+    %% Actors
+    subgraph Actors ["👥 Aktor Pengguna"]
+        direction TB
+        PUB["🌐 Masyarakat / Pemilik"]:::actor
+        ADM["📋 Admin Loket"]:::actor
+        DOK["🩺 Dokter Hewan"]:::actor
+        SA["👑 Super Admin"]:::actor
+    end
+
+    %% System Boundary
+    subgraph System ["💻 Sistem Informasi Puskeswan Kota Pariaman"]
+        direction TB
+        subgraph ModulPublik ["Portal Publik & Mandiri"]
+            UC_CekRM(["🔍 Cek Rekam Medis Mandiri (NIK)"]):::uc
+            UC_Edukasi(["📰 Baca Berita & Edukasi Hewan"]):::uc
+            UC_ProfilStaf(["👨‍⚕️ Lihat Profil Tenaga Staf"]):::uc
+        end
+
+        subgraph ModulLoket ["Pelayanan Loket & Registrasi"]
+            UC_Daftar(["📝 Pendaftaran Pasien & Autofill NIK"]):::uc
+            UC_Antrean(["🎫 Penerbitan Nomor Antrean"]):::uc
+            UC_Rabies(["🐕 Surveilans Kasus Gigitan Rabies"]):::uc
+            UC_CetakRM(["🖨️ Cetak Lembar Rekam Medis"]):::uc
+        end
+
+        subgraph ModulKlinis ["Pelayanan Medis Veteriner"]
+            UC_AntreanDokter(["📋 Monitoring Antrean Realtime"]):::uc
+            UC_Periksa(["🩺 Pemeriksaan Fisik & Diagnosa"]):::uc
+            UC_Terapi(["💊 Terapi Obat & Tindakan Medis"]):::uc
+            UC_RiwayatMedis(["📜 Telusur Riwayat Medis Pasien"]):::uc
+        end
+
+        subgraph ModulManajerial ["Tata Kelola & Keamanan"]
+            UC_UserRole(["🔐 Manajemen Akun & Hak Akses"]):::uc
+            UC_Inventaris(["📦 Inventaris Obat & Alat Medis"]):::uc
+            UC_Laporan(["📊 Laporan Multi-Filter & Ekspor PDF"]):::uc
+            UC_AuditLog(["🛡️ Audit Log & Two-Tier Security"]):::uc
+        end
+    end
+
+    %% Use Case Connections
+    PUB --> UC_CekRM
+    PUB --> UC_Edukasi
+    PUB --> UC_ProfilStaf
+
+    ADM --> UC_Daftar
+    ADM --> UC_Antrean
+    ADM --> UC_Rabies
+    ADM --> UC_CetakRM
+
+    DOK --> UC_AntreanDokter
+    DOK --> UC_Periksa
+    DOK --> UC_Terapi
+    DOK --> UC_RiwayatMedis
+
+    SA --> UC_UserRole
+    SA --> UC_Inventaris
+    SA --> UC_Laporan
+    SA --> UC_AuditLog
+
+    classDef actor fill:#f1f5f9,stroke:#475569,stroke-width:2px,font-weight:bold;
+    classDef uc fill:#ffffff,stroke:#0284c7,stroke-width:1.5px;
+```
+
+---
+
+### 2. 🔄 UML State Machine Diagram (Siklus Status Kunjungan Pasien)
+
+Menggambarkan transisi status antrean pasien secara otomatis sejak didaftarkan di loket pendaftaran, dipanggil ke ruang pemeriksaan dokter, hingga penerbitan lembar rekam medis resmi:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Terdaftar: Admin loket daftarkan pasien & keluhan awal
+    
+    state Terdaftar {
+        [*] --> Antri
+        Antri: Menunggu Panggilan di Ruang Tunggu Pasien
+    }
+    
+    Terdaftar --> SedangDiperiksa: Dokter memilih pasien pada dashboard antrean
+    
+    state SedangDiperiksa {
+        [*] --> PemeriksaanFisik
+        PemeriksaanFisik --> PenegakanDiagnosa
+        PenegakanDiagnosa --> ResepTerapiDanTindakan
+    }
+    
+    SedangDiperiksa --> Selesai: Dokter menyimpan hasil pemeriksaan rekam medis
+    
+    state Selesai {
+        [*] --> RekamMedisTercatat
+        RekamMedisTercatat: Status antrean ditutup & lembar rekam medis siap dicetak
+    }
+    
+    Selesai --> [*]
+```
+
+---
+
+### 3. 🌐 UML Deployment Diagram (Topologi Fisik & Infrastruktur)
+
+Menjelaskan arsitektur perangkat keras, jaringan, dan lingkungan eksekusi aplikasi secara aman:
+
+```mermaid
+flowchart LR
+    subgraph ClientTier ["💻 Client Tier (Perangkat Pengguna)"]
+        direction TB
+        Browser["🌐 Web Browser Modern<br/>(Chrome / Firefox / Edge / Safari)"]
+    end
+
+    subgraph AppTier ["🖥️ Application Tier (Server Puskeswan)"]
+        direction TB
+        WebServer["⚡ Web Server (Nginx / Apache)<br/>Reverse Proxy & TLS Termination"]
+        LaravelApp["⚙️ Backend Runtime (PHP 8.4.27)<br/>Laravel 13.37.0 & Inertia.js 3.5.1"]
+        WebServer --- LaravelApp
+    end
+
+    subgraph DataTier ["🗄️ Storage Tier (Penyimpanan Terpadu)"]
+        direction TB
+        Database[("🗄️ Relational Database (MySQL 8.0+)<br/>Composite Indexed Performance Tables")]
+        CacheStore[("⚡ High-Speed Cache<br/>(Session & Rate Limiter Security)")]
+    end
+
+    Browser -- "HTTPS / TLS Encrypted (Port 443)" --> WebServer
+    LaravelApp -- "PDO / MySQL Socket Connection" --> Database
+    LaravelApp -- "Key-Value State Store" --> CacheStore
 ```
 
 ---

@@ -23,6 +23,7 @@ dan proyek ini menganut standar [Semantic Versioning](https://semver.org/lang/id
   - Pemantauan stok obat dengan indikator visual otomatis (*Kritis*, *Menipis*, *Aman*).
   - Manajemen peralatan medis klinik dengan status kondisi (*Baik*, *Rusak Ringan*, *Rusak Berat*).
 - **Dokumentasi Visual Antarmuka**: Penambahan 36 tangkapan layar antarmuka sistem di direktori `screenshot/` yang diklasifikasikan per alur pengguna.
+- **Pemodelan UML Non-Sensitif**: Integrasi diagram fungsional baku (UML Use Case, State Machine antrean kunjungan, dan Deployment topologi jaringan) berbasis Mermaid interaktif di README.
 
 ### ⚡ Dioptimalkan (Optimized)
 - **Kueri SQL & Kinerja Basis Data (Laravel Debugbar Audit)**:

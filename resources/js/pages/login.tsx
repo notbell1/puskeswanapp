@@ -470,7 +470,7 @@ function LoginFormContent({
                     className={`relative z-10 p-12 max-w-lg flex flex-col items-center text-center text-white transition-all duration-1000 transform ${isMounted ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}`}
                 >
                     <img
-                        src="/images/logo_puskeswan.png"
+                        src="/images/logo_puskeswan.webp"
                         alt="Logo Puskeswan Pariaman"
                         className="w-32 sm:w-40 h-auto mb-8 drop-shadow-xl"
                     />
@@ -530,7 +530,7 @@ function LoginFormContent({
                     >
                         <div className="text-center mb-6">
                             <img
-                                src="/images/logo_puskeswan.png"
+                                src="/images/logo_puskeswan.webp"
                                 alt="Logo Puskeswan Pariaman"
                                 className="w-16 sm:w-20 h-auto mx-auto mb-4 lg:hidden drop-shadow-sm"
                             />

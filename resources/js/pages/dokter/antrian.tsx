@@ -818,7 +818,7 @@ export default function DokterAntrianPage({
                                     No. RM
                                 </th>
                                 <th className="py-2.5 px-3 border-r border-gray-200 w-44 whitespace-nowrap">
-                                    Tanggal &amp; Waktu
+                                    Tanggal
                                 </th>
                                 <th className="py-2.5 px-3 border-r border-gray-200 w-36 whitespace-nowrap">
                                     Pasien Hewan
@@ -881,12 +881,6 @@ export default function DokterAntrianPage({
                                         <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap text-xs text-gray-700">
                                             <span className="font-semibold text-gray-900">
                                                 {visit.tgl_kunjungan}
-                                            </span>
-                                            <span className="text-gray-400 mx-1">
-                                                •
-                                            </span>
-                                            <span className="font-mono text-gray-500 text-[11px]">
-                                                {visit.jam_kunjungan || "-"}
                                             </span>
                                         </td>
 

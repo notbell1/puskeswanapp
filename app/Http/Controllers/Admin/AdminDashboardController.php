@@ -8,6 +8,7 @@ use App\Models\Owner;
 use App\Models\RabiesCase;
 use App\Models\Visit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,27 +27,43 @@ class AdminDashboardController extends Controller
             $period = '30d';
         }
 
-        $totalAntreanHariIni = Visit::whereDate('tgl_kunjungan', $today)->count();
-        $antreHariIni = Visit::whereDate('tgl_kunjungan', $today)
-            ->where('status_antrean', 'Antri')
-            ->count();
-        $periksaHariIni = Visit::whereDate('tgl_kunjungan', $today)
-            ->where('status_antrean', 'Pemeriksaan')
-            ->count();
-        $selesaiHariIni = Visit::whereDate('tgl_kunjungan', $today)
-            ->where('status_antrean', 'Selesai')
-            ->count();
+        $todaySummary = Visit::query()
+            ->whereDate('tgl_kunjungan', $today)
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as antri,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as periksa,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as selesai
+            ', ['Antri', 'Pemeriksaan', 'Selesai'])
+            ->first();
+
+        $totalAntreanHariIni = (int) ($todaySummary->total ?? 0);
+        $antreHariIni = (int) ($todaySummary->antri ?? 0);
+        $periksaHariIni = (int) ($todaySummary->periksa ?? 0);
+        $selesaiHariIni = (int) ($todaySummary->selesai ?? 0);
 
         $totalPemilik = Owner::count();
         $totalHewan = Animal::count();
         $totalRabies = RabiesCase::count();
         $nextNoRm = Animal::generateNextNoRm();
 
-        $todayVisits = Visit::with(['animal.pemilik', 'animal.jenisHewan'])
+        $todayVisits = Visit::with([
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan',
+            'animal.pemilik:id,nama_lengkap,no_hp_wa',
+            'animal.jenisHewan:id,nama_jenis',
+        ])
             ->whereDate('tgl_kunjungan', $today)
             ->orderBy('tgl_kunjungan', 'desc')
             ->take(5)
-            ->get()
+            ->get([
+                'id',
+                'id_hewan',
+                'tgl_kunjungan',
+                'berat_badan',
+                'suhu_tubuh',
+                'anamnesa',
+                'status_antrean',
+            ])
             ->map(function ($visit, $index) {
                 return [
                     'id' => $visit->id,
@@ -78,8 +95,39 @@ class AdminDashboardController extends Controller
         $totalVarInPeriod = 0;
         $totalObservasiInPeriod = 0;
 
+        $driver = DB::connection()->getDriverName();
+
         if ($period === '7d' || $period === '30d') {
             $daysCount = $period === '7d' ? 7 : 30;
+            $startDate = now()->subDays($daysCount - 1)->startOfDay();
+            $endDate = now()->endOfDay();
+
+            $visitDateExpr = $driver === 'sqlite'
+                ? "strftime('%Y-%m-%d', tgl_kunjungan)"
+                : 'DATE(tgl_kunjungan)';
+
+            $rabiesDateExpr = $driver === 'sqlite'
+                ? "strftime('%Y-%m-%d', tgl_kejadian)"
+                : 'DATE(tgl_kejadian)';
+
+            $dailyVisits = Visit::query()
+                ->selectRaw("{$visitDateExpr} as date_key, COUNT(*) as total, SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as selesai", ['Selesai'])
+                ->whereBetween('tgl_kunjungan', [$startDate, $endDate])
+                ->groupByRaw($visitDateExpr)
+                ->get()
+                ->keyBy('date_key');
+
+            $dailyRabies = RabiesCase::query()
+                ->selectRaw("{$rabiesDateExpr} as date_key,
+                    COUNT(*) as kasus,
+                    SUM(CASE WHEN status_var LIKE ? OR status_var LIKE ? OR status_var LIKE ? THEN 1 ELSE 0 END) as var,
+                    SUM(CASE WHEN status_hewan LIKE ? THEN 1 ELSE 0 END) as observasi",
+                    ['%Sudah%', '%Dosis%', '%diberikan%', '%Observasi%']
+                )
+                ->whereBetween('tgl_kejadian', [$startDate, $endDate])
+                ->groupByRaw($rabiesDateExpr)
+                ->get()
+                ->keyBy('date_key');
 
             for ($i = $daysCount - 1; $i >= 0; $i--) {
                 $targetDate = now()->subDays($i);
@@ -88,8 +136,9 @@ class AdminDashboardController extends Controller
                 $label = $targetDate->format('d/m');
                 $fullLabel = $targetDate->format('d').' '.$indonesianMonths[$monthNum].' '.$targetDate->year;
 
-                $countTotal = Visit::whereDate('tgl_kunjungan', $dateString)->count();
-                $countSelesai = Visit::whereDate('tgl_kunjungan', $dateString)->where('status_antrean', 'Selesai')->count();
+                $vStats = $dailyVisits->get($dateString);
+                $countTotal = (int) ($vStats->total ?? 0);
+                $countSelesai = (int) ($vStats->selesai ?? 0);
                 $countAntri = max(0, $countTotal - $countSelesai);
 
                 $totalVisitsInPeriod += $countTotal;
@@ -105,16 +154,10 @@ class AdminDashboardController extends Controller
                     'antri' => $countAntri,
                 ];
 
-                $countKasus = RabiesCase::whereDate('tgl_kejadian', $dateString)->count();
-                $countVar = RabiesCase::whereDate('tgl_kejadian', $dateString)
-                    ->where(function ($q) {
-                        $q->where('status_var', 'like', '%Sudah%')
-                            ->orWhere('status_var', 'like', '%Dosis%');
-                    })
-                    ->count();
-                $countObservasi = RabiesCase::whereDate('tgl_kejadian', $dateString)
-                    ->where('status_hewan', 'like', '%Observasi%')
-                    ->count();
+                $rStats = $dailyRabies->get($dateString);
+                $countKasus = (int) ($rStats->kasus ?? 0);
+                $countVar = (int) ($rStats->var ?? 0);
+                $countObservasi = (int) ($rStats->observasi ?? 0);
 
                 $totalRabiesInPeriod += $countKasus;
                 $totalVarInPeriod += $countVar;
@@ -131,6 +174,42 @@ class AdminDashboardController extends Controller
             }
         } else {
             $monthsCount = $period === '6m' ? 6 : 12;
+            $startMonth = now()->startOfMonth()->subMonths($monthsCount - 1);
+            $endMonth = now()->endOfMonth();
+
+            $visitYearExpr = $driver === 'sqlite'
+                ? "CAST(strftime('%Y', tgl_kunjungan) AS INTEGER)"
+                : 'YEAR(tgl_kunjungan)';
+
+            $visitMonthExpr = $driver === 'sqlite'
+                ? "CAST(strftime('%m', tgl_kunjungan) AS INTEGER)"
+                : 'MONTH(tgl_kunjungan)';
+
+            $monthlyVisits = Visit::query()
+                ->selectRaw("{$visitYearExpr} as yr, {$visitMonthExpr} as mo, COUNT(*) as total, SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as selesai", ['Selesai'])
+                ->whereBetween('tgl_kunjungan', [$startMonth, $endMonth])
+                ->groupByRaw("{$visitYearExpr}, {$visitMonthExpr}")
+                ->get()
+                ->keyBy(fn ($r) => sprintf('%04d-%02d', (int) $r->yr, (int) $r->mo));
+
+            $rabiesYearExpr = $driver === 'sqlite'
+                ? "CAST(strftime('%Y', tgl_kejadian) AS INTEGER)"
+                : 'YEAR(tgl_kejadian)';
+
+            $rabiesMonthExpr = $driver === 'sqlite'
+                ? "CAST(strftime('%m', tgl_kejadian) AS INTEGER)"
+                : 'MONTH(tgl_kejadian)';
+
+            $monthlyRabies = RabiesCase::query()
+                ->selectRaw("{$rabiesYearExpr} as yr, {$rabiesMonthExpr} as mo, COUNT(*) as kasus,
+                    SUM(CASE WHEN status_var LIKE ? OR status_var LIKE ? OR status_var LIKE ? THEN 1 ELSE 0 END) as var,
+                    SUM(CASE WHEN status_hewan LIKE ? THEN 1 ELSE 0 END) as observasi",
+                    ['%Sudah%', '%Dosis%', '%diberikan%', '%Observasi%']
+                )
+                ->whereBetween('tgl_kejadian', [$startMonth, $endMonth])
+                ->groupByRaw("{$rabiesYearExpr}, {$rabiesMonthExpr}")
+                ->get()
+                ->keyBy(fn ($r) => sprintf('%04d-%02d', (int) $r->yr, (int) $r->mo));
 
             for ($i = $monthsCount - 1; $i >= 0; $i--) {
                 $targetDate = now()->subMonths($i);
@@ -140,13 +219,9 @@ class AdminDashboardController extends Controller
                 $label = $indonesianMonths[$month];
                 $fullLabel = $indonesianMonths[$month].' '.$year;
 
-                $countTotal = Visit::whereYear('tgl_kunjungan', $year)
-                    ->whereMonth('tgl_kunjungan', $month)
-                    ->count();
-                $countSelesai = Visit::whereYear('tgl_kunjungan', $year)
-                    ->whereMonth('tgl_kunjungan', $month)
-                    ->where('status_antrean', 'Selesai')
-                    ->count();
+                $vStats = $monthlyVisits->get($monthKey);
+                $countTotal = (int) ($vStats->total ?? 0);
+                $countSelesai = (int) ($vStats->selesai ?? 0);
                 $countAntri = max(0, $countTotal - $countSelesai);
 
                 $totalVisitsInPeriod += $countTotal;
@@ -162,20 +237,10 @@ class AdminDashboardController extends Controller
                     'antri' => $countAntri,
                 ];
 
-                $countKasus = RabiesCase::whereYear('tgl_kejadian', $year)
-                    ->whereMonth('tgl_kejadian', $month)
-                    ->count();
-                $countVar = RabiesCase::whereYear('tgl_kejadian', $year)
-                    ->whereMonth('tgl_kejadian', $month)
-                    ->where(function ($q) {
-                        $q->where('status_var', 'like', '%Sudah%')
-                            ->orWhere('status_var', 'like', '%Dosis%');
-                    })
-                    ->count();
-                $countObservasi = RabiesCase::whereYear('tgl_kejadian', $year)
-                    ->whereMonth('tgl_kejadian', $month)
-                    ->where('status_hewan', 'like', '%Observasi%')
-                    ->count();
+                $rStats = $monthlyRabies->get($monthKey);
+                $countKasus = (int) ($rStats->kasus ?? 0);
+                $countVar = (int) ($rStats->var ?? 0);
+                $countObservasi = (int) ($rStats->observasi ?? 0);
 
                 $totalRabiesInPeriod += $countKasus;
                 $totalVarInPeriod += $countVar;

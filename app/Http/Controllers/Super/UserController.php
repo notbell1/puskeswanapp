@@ -30,7 +30,7 @@ class UserController extends Controller
         $search = trim((string) $request->input('search', ''));
         $roleFilter = $request->input('role');
 
-        $users = User::with(['role', 'staf'])
+        $users = User::with(['role:id,nama_role', 'staf:id,nama_staf'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -235,7 +235,7 @@ class UserController extends Controller
      * - Wajib verifikasi magic bytes menggunakan finfo.
      * - Wajib verifikasi integritas binary gambar dengan getimagesize().
      * - Batasi ukuran maksimum 5MB.
-     * - Simpan menggunakan nama acak hash (mencegah path traversal & double extension).
+     * - Simpan menggunakan nama acak hash.
      */
     protected function handleProfilePhotoUpload(Request $request, ?string $currentPhotoPath = null): ?string
     {

@@ -741,7 +741,7 @@ export default function DokterRiwayatPage({
                                 <div className="flex items-center justify-between gap-3 pb-1">
                                     <div className="w-[80px] shrink-0 flex items-center justify-center">
                                         <img
-                                            src="/images/logo-pariaman.png"
+                                            src="/images/logo-pariaman.webp"
                                             alt="Logo Kota Pariaman"
                                             style={{
                                                 height: "64px",
@@ -775,7 +775,7 @@ export default function DokterRiwayatPage({
 
                                     <div className="w-[80px] shrink-0 flex items-center justify-center">
                                         <img
-                                            src="/images/logo-pdhi.png"
+                                            src="/images/logo-pdhi.webp"
                                             alt="Logo PDHI"
                                             style={{
                                                 height: "64px",
@@ -1095,7 +1095,7 @@ export default function DokterRiwayatPage({
                                         No. RM
                                     </th>
                                     <th className="py-2.5 px-3 border-r border-gray-200 w-44 whitespace-nowrap">
-                                        Tanggal &amp; Waktu
+                                        Tanggal
                                     </th>
                                     <th className="py-2.5 px-3 border-r border-gray-200 w-36 whitespace-nowrap">
                                         Pasien Hewan
@@ -1160,13 +1160,6 @@ export default function DokterRiwayatPage({
                                                 <span className="font-semibold text-gray-900">
                                                     {item.tgl_kunjungan}
                                                 </span>
-                                                <span className="text-gray-400 mx-1">
-                                                    •
-                                                </span>
-                                                <span className="font-mono text-gray-500 text-[11px]">
-                                                    {item.jam_kunjungan ||
-                                                        item.waktu_selesai}
-                                                </span>
                                             </td>
 
                                             <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
@@ -1189,7 +1182,7 @@ export default function DokterRiwayatPage({
 
                                             <td className="py-2 px-3 border-r border-gray-200">
                                                 <span
-                                                    className="text-gray-700 text-xs truncate block max-w-sm"
+                                                    className="text-gray-700 text-xs truncate block w-full"
                                                     title={item.diagnosa}
                                                 >
                                                     {item.diagnosa}

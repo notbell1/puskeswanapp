@@ -24,11 +24,22 @@ class DokterHistoryController extends Controller
         $dateFilter = $request->input('tanggal');
 
         $query = Visit::with([
-            'animal.pemilik',
-            'animal.jenisHewan',
-            'animal.visits.examination.dokter.staf',
-            'examination.dokter.staf',
-            'admin',
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
+            'animal.pemilik:id,nama_lengkap,nik,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+            'animal.visits' => function ($q) {
+                $q->where('status_antrean', 'Selesai')
+                    ->with([
+                        'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+                        'examination.dokter:id,name,foto,id_staf',
+                        'examination.dokter.staf:id,nama_staf,foto',
+                    ])
+                    ->orderBy('tgl_kunjungan', 'desc');
+            },
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan,waktu_selesai',
+            'examination.dokter:id,name,foto,email,id_staf',
+            'examination.dokter.staf:id,nama_staf,nip_strv,jabatan,foto',
+            'admin:id,name',
         ])
             ->where('status_antrean', 'Selesai')
             ->whereHas('examination', function ($q) use ($user) {
@@ -134,19 +145,18 @@ class DokterHistoryController extends Controller
         ]);
 
         $today = now()->toDateString();
-        $totalSelesaiDokter = Visit::where('status_antrean', 'Selesai')
+        $summary = Visit::where('status_antrean', 'Selesai')
             ->whereHas('examination', fn ($q) => $q->where('id_dokter', $user->id))
-            ->count();
+            ->selectRaw('
+                COUNT(*) as total_selesai,
+                SUM(CASE WHEN date(tgl_kunjungan) = ? THEN 1 ELSE 0 END) as selesai_today,
+                COUNT(DISTINCT id_hewan) as total_hewan_unik
+            ', [$today])
+            ->first();
 
-        $selesaiHariIniDokter = Visit::where('status_antrean', 'Selesai')
-            ->whereHas('examination', fn ($q) => $q->where('id_dokter', $user->id))
-            ->whereDate('tgl_kunjungan', $today)
-            ->count();
-
-        $totalHewanUnikDokter = Visit::where('status_antrean', 'Selesai')
-            ->whereHas('examination', fn ($q) => $q->where('id_dokter', $user->id))
-            ->distinct('id_hewan')
-            ->count('id_hewan');
+        $totalSelesaiDokter = (int) ($summary->total_selesai ?? 0);
+        $selesaiHariIniDokter = (int) ($summary->selesai_today ?? 0);
+        $totalHewanUnikDokter = (int) ($summary->total_hewan_unik ?? 0);
 
         return Inertia::render('dokter/riwayat', [
             'results' => $history,

@@ -8,27 +8,21 @@ class AuthSecurityService
 {
     /**
      * Waktu cooldown penonaktifan tombol login saat 5x salah (Tier 1).
-     * Nilai default: 180 detik (3 Menit).
-     * PANDUAN PENGUJIAN CEPAT: Ubah nilai 180 menjadi 10 atau 15 detik untuk tes cepat!
      */
-    public const LOCKOUT_SECONDS = 20;
+    public const LOCKOUT_SECONDS = 180;
 
     /**
      * Batas maksimal percobaan salah sebelum tombol login dinonaktifkan sementara.
-     * Nilai default: 5 kali percobaan.
      */
     public const MAX_ATTEMPTS = 5;
 
     /**
      * Ambang batas jumlah pengulangan rate limiting (strikes) sebelum IP diblokir total (Tier 2).
-     * Nilai default: 3 kali.
      */
     public const MAX_STRIKES = 3;
 
     /**
      * Durasi pemblokiran alamat IP di halaman /429 (Tier 2).
-     * Nilai default: 1800 detik (30 Menit).
-     * PANDUAN PENGUJIAN CEPAT: Ubah nilai 1800 menjadi 30 atau 60 detik untuk tes cepat!
      */
     public const BLOCK_IP_SECONDS = 1800;
 
@@ -159,21 +153,21 @@ class AuthSecurityService
 
     protected function getBlockKey(string $ip): string
     {
-        return 'auth_ip_blocked_'.md5($ip);
+        return 'auth_ip_blocked_' . md5($ip);
     }
 
     protected function getStrikesKey(string $ip): string
     {
-        return 'auth_ip_strikes_'.md5($ip);
+        return 'auth_ip_strikes_' . md5($ip);
     }
 
     protected function getLockoutKey(string $ip): string
     {
-        return 'auth_login_lockout_'.md5($ip);
+        return 'auth_login_lockout_' . md5($ip);
     }
 
     protected function getAttemptsKey(string $ip): string
     {
-        return 'auth_login_attempts_'.md5($ip);
+        return 'auth_login_attempts_' . md5($ip);
     }
 }

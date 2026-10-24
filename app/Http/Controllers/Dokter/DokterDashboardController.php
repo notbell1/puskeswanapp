@@ -53,11 +53,24 @@ class DokterDashboardController extends Controller
         $chartPoints = [];
         $maxCount = 0;
 
-        $examinationsGrouped = Examination::where('id_dokter', $user->id)
-            ->whereBetween('waktu_selesai', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
+        $thirtyDaysStart = $today->copy()->subDays(29)->startOfDay();
+        $thirtyDaysEnd = $today->copy()->endOfDay();
+
+        $examinationsGrouped30d = Examination::where('id_dokter', $user->id)
+            ->whereBetween('waktu_selesai', [$thirtyDaysStart, $thirtyDaysEnd])
             ->selectRaw('DATE(waktu_selesai) as exam_date, COUNT(*) as total')
             ->groupBy('exam_date')
             ->pluck('total', 'exam_date');
+
+        if ($startDate->gte($thirtyDaysStart) && $endDate->lte($thirtyDaysEnd)) {
+            $examinationsGrouped = $examinationsGrouped30d;
+        } else {
+            $examinationsGrouped = Examination::where('id_dokter', $user->id)
+                ->whereBetween('waktu_selesai', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
+                ->selectRaw('DATE(waktu_selesai) as exam_date, COUNT(*) as total')
+                ->groupBy('exam_date')
+                ->pluck('total', 'exam_date');
+        }
 
         for ($i = 0; $i < $totalDays; $i++) {
             $curDate = $startDate->copy()->addDays($i);
@@ -89,20 +102,13 @@ class DokterDashboardController extends Controller
         $chartAll = [];
         foreach (['7d' => 7, '30d' => 30] as $pKey => $pDays) {
             $pStart = $today->copy()->subDays($pDays - 1)->startOfDay();
-            $pEnd = $today->copy()->endOfDay();
             $pPoints = [];
             $pMax = 0;
-
-            $pGrouped = Examination::where('id_dokter', $user->id)
-                ->whereBetween('waktu_selesai', [$pStart, $pEnd])
-                ->selectRaw('DATE(waktu_selesai) as exam_date, COUNT(*) as total')
-                ->groupBy('exam_date')
-                ->pluck('total', 'exam_date');
 
             for ($i = 0; $i < $pDays; $i++) {
                 $d = $pStart->copy()->addDays($i);
                 $dStr = $d->toDateString();
-                $c = (int) ($pGrouped[$dStr] ?? 0);
+                $c = (int) ($examinationsGrouped30d[$dStr] ?? 0);
                 if ($c > $pMax) {
                     $pMax = $c;
                 }
@@ -122,12 +128,24 @@ class DokterDashboardController extends Controller
             ];
         }
 
-        $priorityQueue = Visit::with(['animal.pemilik', 'animal.jenisHewan'])
+        $priorityQueue = Visit::with([
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan',
+            'animal.pemilik:id,nama_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+        ])
             ->whereDate('tgl_kunjungan', $todayStr)
             ->where('status_antrean', 'Antri')
             ->orderBy('tgl_kunjungan', 'asc')
             ->limit(5)
-            ->get()
+            ->get([
+                'id',
+                'id_hewan',
+                'tgl_kunjungan',
+                'berat_badan',
+                'suhu_tubuh',
+                'anamnesa',
+                'status_antrean',
+            ])
             ->map(fn ($visit) => [
                 'id' => $visit->id,
                 'no_rm' => $visit->animal?->no_rm ?? '-',
@@ -141,13 +159,11 @@ class DokterDashboardController extends Controller
                 'status_antrean' => $visit->status_antrean,
             ]);
 
-        $totalAntreanAktif = Visit::whereDate('tgl_kunjungan', $todayStr)
-            ->where('status_antrean', 'Antri')
-            ->count();
-
         $antreanHariIni = Visit::whereDate('tgl_kunjungan', $todayStr)
             ->where('status_antrean', 'Antri')
             ->count();
+
+        $totalAntreanAktif = $antreanHariIni;
 
         $pemeriksaanAktif = Visit::whereDate('tgl_kunjungan', $todayStr)
             ->where('status_antrean', 'Pemeriksaan')
@@ -159,11 +175,23 @@ class DokterDashboardController extends Controller
 
         $totalPemeriksaanDokter = Examination::where('id_dokter', $user->id)->count();
 
-        $recentExaminations = Examination::with(['kunjungan.animal.pemilik', 'kunjungan.animal.jenisHewan'])
+        $recentExaminations = Examination::with([
+            'kunjungan:id,id_hewan',
+            'kunjungan.animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan',
+            'kunjungan.animal.pemilik:id,nama_lengkap',
+            'kunjungan.animal.jenisHewan:id,nama_jenis',
+        ])
             ->where('id_dokter', $user->id)
             ->orderBy('waktu_selesai', 'desc')
             ->limit(5)
-            ->get()
+            ->get([
+                'id',
+                'id_kunjungan',
+                'id_dokter',
+                'waktu_selesai',
+                'diagnosa',
+                'terapi_pengobatan',
+            ])
             ->map(fn ($exam) => [
                 'id' => $exam->kunjungan?->id,
                 'no_rm' => $exam->kunjungan?->animal?->no_rm ?? '-',

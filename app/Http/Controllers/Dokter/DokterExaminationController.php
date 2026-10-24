@@ -20,14 +20,34 @@ class DokterExaminationController extends Controller
      */
     public function create(Visit $visit): Response
     {
-        $visit->load(['animal.pemilik', 'animal.jenisHewan', 'admin', 'examination.dokter.staf']);
+        $visit->load([
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
+            'animal.pemilik:id,nama_lengkap,nik,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+            'admin:id,name',
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan,waktu_selesai',
+            'examination.dokter:id,name,foto,id_staf',
+            'examination.dokter.staf:id,nama_staf,foto',
+        ]);
 
-        $historicalRecords = Visit::with(['examination.dokter.staf', 'animal.jenisHewan'])
+        $historicalRecords = Visit::with([
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+            'examination.dokter:id,name,foto,id_staf',
+            'examination.dokter.staf:id,nama_staf,foto',
+        ])
             ->where('id_hewan', $visit->id_hewan)
             ->where('id', '!=', $visit->id)
             ->where('status_antrean', 'Selesai')
             ->orderBy('tgl_kunjungan', 'desc')
-            ->get()
+            ->get([
+                'id',
+                'id_hewan',
+                'tgl_kunjungan',
+                'berat_badan',
+                'suhu_tubuh',
+                'anamnesa',
+                'status_antrean',
+            ])
             ->map(fn ($oldVisit) => [
                 'id' => $oldVisit->id,
                 'tgl_kunjungan' => $oldVisit->tgl_kunjungan ? $oldVisit->tgl_kunjungan->format('d/m/Y H:i') : '-',

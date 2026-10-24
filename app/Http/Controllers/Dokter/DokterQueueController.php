@@ -20,17 +20,23 @@ class DokterQueueController extends Controller
     public function index(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
-        $statusFilter = $request->input('status');
         $dateFilter = $request->input('tanggal');
 
         $query = Visit::with([
-            'animal.pemilik',
-            'animal.jenisHewan',
-            'admin',
-            'examination.dokter.staf',
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
+            'animal.pemilik:id,nama_lengkap,nik,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+            'admin:id,name',
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+            'examination.dokter:id,name,foto,id_staf',
+            'examination.dokter.staf:id,nama_staf,foto',
             'animal.visits' => function ($q) {
                 $q->where('status_antrean', 'Selesai')
-                    ->with(['examination.dokter.staf'])
+                    ->with([
+                        'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+                        'examination.dokter:id,name,foto,id_staf',
+                        'examination.dokter.staf:id,nama_staf,foto',
+                    ])
                     ->orderBy('tgl_kunjungan', 'desc');
             },
         ])
@@ -117,9 +123,16 @@ class DokterQueueController extends Controller
         ]);
 
         $today = now()->toDateString();
-        $totalAntriHariIni = Visit::whereDate('tgl_kunjungan', $today)->where('status_antrean', 'Antri')->count();
         $totalAntriSemua = Visit::where('status_antrean', 'Antri')->count();
-        $totalSelesaiHariIni = Visit::whereDate('tgl_kunjungan', $today)->where('status_antrean', 'Selesai')->count();
+        $todayStats = Visit::whereDate('tgl_kunjungan', $today)
+            ->selectRaw('
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as antri,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as selesai
+            ', ['Antri', 'Selesai'])
+            ->first();
+
+        $totalAntriHariIni = (int) ($todayStats->antri ?? 0);
+        $totalSelesaiHariIni = (int) ($todayStats->selesai ?? 0);
 
         return Inertia::render('dokter/antrian', [
             'visits' => $visits,
@@ -188,30 +201,47 @@ class DokterQueueController extends Controller
     public function realtimeQueue(): JsonResponse
     {
         $today = now()->toDateString();
-        $totalAntri = Visit::whereDate('tgl_kunjungan', $today)
-            ->where('status_antrean', 'Antri')
-            ->count();
-
-        $totalSelesai = Visit::whereDate('tgl_kunjungan', $today)
-            ->where('status_antrean', 'Selesai')
-            ->count();
-
-        $waitingList = Visit::with(['animal.pemilik', 'animal.jenisHewan'])
+        $summary = Visit::query()
             ->whereDate('tgl_kunjungan', $today)
-            ->where('status_antrean', 'Antri')
-            ->orderBy('tgl_kunjungan', 'asc')
-            ->take(6)
-            ->get()
-            ->map(fn ($v) => [
-                'id' => $v->id,
-                'no_rm' => $v->animal?->no_rm ?? '-',
-                'nama_hewan' => $v->animal?->nama_hewan ?? 'Hewan Pasien',
-                'jenis_hewan' => $v->animal?->jenisHewan?->nama_jenis ?? 'Hewan',
-                'pemilik' => $v->animal?->pemilik?->nama_lengkap ?? 'Umum',
-                'anamnesa' => $v->anamnesa ?? '-',
-                'jam_kunjungan' => $v->tgl_kunjungan ? $v->tgl_kunjungan->format('H:i').' WIB' : '-',
-                'waktu_relatif' => $v->tgl_kunjungan ? $v->tgl_kunjungan->diffForHumans() : '-',
-            ]);
+            ->selectRaw('
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as antri,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as selesai
+            ', ['Antri', 'Selesai'])
+            ->first();
+
+        $totalAntri = (int) ($summary->antri ?? 0);
+        $totalSelesai = (int) ($summary->selesai ?? 0);
+
+        $waitingList = [];
+        if ($totalAntri > 0) {
+            $waitingList = Visit::with([
+                'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan',
+                'animal.pemilik:id,nama_lengkap',
+                'animal.jenisHewan:id,nama_jenis',
+            ])
+                ->whereDate('tgl_kunjungan', $today)
+                ->where('status_antrean', 'Antri')
+                ->orderBy('tgl_kunjungan', 'asc')
+                ->take(6)
+                ->get([
+                    'id',
+                    'id_hewan',
+                    'tgl_kunjungan',
+                    'anamnesa',
+                    'status_antrean',
+                ])
+                ->map(fn ($v) => [
+                    'id' => $v->id,
+                    'no_rm' => $v->animal?->no_rm ?? '-',
+                    'nama_hewan' => $v->animal?->nama_hewan ?? 'Hewan Pasien',
+                    'jenis_hewan' => $v->animal?->jenisHewan?->nama_jenis ?? 'Hewan',
+                    'pemilik' => $v->animal?->pemilik?->nama_lengkap ?? 'Umum',
+                    'anamnesa' => $v->anamnesa ?? '-',
+                    'jam_kunjungan' => $v->tgl_kunjungan ? $v->tgl_kunjungan->format('H:i').' WIB' : '-',
+                    'waktu_relatif' => $v->tgl_kunjungan ? $v->tgl_kunjungan->diffForHumans() : '-',
+                ])
+                ->all();
+        }
 
         return response()->json([
             'count' => $totalAntri,

@@ -42,11 +42,11 @@ export interface PrintableMedicalRecord {
  * Normalisasi gelar dokter agar tidak terjadi duplikasi seperti "drh. drh."
  */
 export function formatDoctorName(rawName?: string | null): string {
-    if (!rawName || rawName === '-' || !rawName.trim()) {
-        return 'drh. Tim Medis Puskeswan';
+    if (!rawName || rawName === "-" || !rawName.trim()) {
+        return "drh. Tim Medis Puskeswan";
     }
     let clean = rawName.trim();
-    clean = clean.replace(/^(drh\.\s*)+/gi, '');
+    clean = clean.replace(/^(drh\.\s*)+/gi, "");
     return `drh. ${clean}`;
 }
 
@@ -54,13 +54,13 @@ export function formatDoctorName(rawName?: string | null): string {
  * Mengambil format tanggal saja tanpa jam/waktu (contoh: 21/10/2026)
  */
 export function formatDateOnly(val?: string | null): string {
-    if (!val || val === '-') return '-';
-    const firstPart = val.trim().split(' ')[0];
-    if (firstPart.includes('/')) {
+    if (!val || val === "-") return "-";
+    const firstPart = val.trim().split(" ")[0];
+    if (firstPart.includes("/")) {
         return firstPart;
     }
-    if (firstPart.includes('-')) {
-        const parts = firstPart.split('-');
+    if (firstPart.includes("-")) {
+        const parts = firstPart.split("-");
         if (parts.length === 3 && parts[0].length === 4) {
             return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
@@ -73,46 +73,46 @@ export function formatDateOnly(val?: string | null): string {
  */
 export function formatIndonesianDate(val?: string | Date | null): string {
     const months = [
-        'Januari',
-        'Februari',
-        'Maret',
-        'April',
-        'Mei',
-        'Juni',
-        'Juli',
-        'Agustus',
-        'September',
-        'Oktober',
-        'November',
-        'Desember',
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
     ];
 
     if (val instanceof Date) {
         return `${val.getDate()} ${months[val.getMonth()]} ${val.getFullYear()}`;
     }
 
-    if (typeof val === 'string' && val.trim() && val !== '-') {
+    if (typeof val === "string" && val.trim() && val !== "-") {
         // Cek format dd/mm/yyyy
-        if (val.includes('/')) {
-            const parts = val.split(' ')[0].split('/');
+        if (val.includes("/")) {
+            const parts = val.split(" ")[0].split("/");
             if (parts.length === 3) {
                 const day = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
                 const year = parseInt(parts[2], 10);
                 if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                    return `${day} ${months[month] || ''} ${year}`;
+                    return `${day} ${months[month] || ""} ${year}`;
                 }
             }
         }
         // Cek format yyyy-mm-dd
-        if (val.includes('-')) {
-            const parts = val.split(' ')[0].split('-');
+        if (val.includes("-")) {
+            const parts = val.split(" ")[0].split("-");
             if (parts.length === 3 && parts[0].length === 4) {
                 const year = parseInt(parts[0], 10);
                 const month = parseInt(parts[1], 10) - 1;
                 const day = parseInt(parts[2], 10);
                 if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-                    return `${day} ${months[month] || ''} ${year}`;
+                    return `${day} ${months[month] || ""} ${year}`;
                 }
             }
         }
@@ -125,7 +125,9 @@ export function formatIndonesianDate(val?: string | Date | null): string {
 /**
  * Menghasilkan markup HTML mandiri untuk dokumen cetak A4 resmi
  */
-export function generateMedicalCardHtml(record: PrintableMedicalRecord): string {
+export function generateMedicalCardHtml(
+    record: PrintableMedicalRecord,
+): string {
     // 1. Kumpulkan seluruh kunjungan (kunjungan terdahulu + kunjungan saat ini)
     const pastVisits = (record.historical_records || []).map((h) => ({
         id: h.id,
@@ -139,7 +141,7 @@ export function generateMedicalCardHtml(record: PrintableMedicalRecord): string 
 
     const currentVisit = {
         id: record.id || 999999,
-        tgl_kunjungan: record.tgl_kunjungan || '-',
+        tgl_kunjungan: record.tgl_kunjungan || "-",
         berat_badan: record.berat_badan,
         suhu_tubuh: record.suhu_tubuh,
         anamnesa: record.anamnesa,
@@ -148,7 +150,10 @@ export function generateMedicalCardHtml(record: PrintableMedicalRecord): string 
     };
 
     // Gabung dan urutkan kronologis dari kunjungan pertama s/d terakhir
-    const allVisits = [...pastVisits.filter((p) => p.id !== currentVisit.id), currentVisit];
+    const allVisits = [
+        ...pastVisits.filter((p) => p.id !== currentVisit.id),
+        currentVisit,
+    ];
     allVisits.sort((a, b) => (a.id || 0) - (b.id || 0));
 
     const signatureDate = formatIndonesianDate(new Date()); // Tanggal cetak adalah tanggal saat itu juga
@@ -160,13 +165,13 @@ export function generateMedicalCardHtml(record: PrintableMedicalRecord): string 
         <tr style="vertical-align: top;">
             <td style="border: 1px solid #000; padding: 4px 3px; text-align: center; white-space: nowrap; width: 14%;">${formatDateOnly(item.tgl_kunjungan)}</td>
             <td style="border: 1px solid #000; padding: 4px 3px; text-align: center; white-space: nowrap; width: 14%;">${item.berat_badan} kg / ${item.suhu_tubuh}&deg;C</td>
-            <td style="border: 1px solid #000; padding: 4px 5px; line-height: 1.25; width: 24%; word-break: break-word;">${(item.anamnesa || '-').trim()}</td>
-            <td style="border: 1px solid #000; padding: 4px 5px; font-weight: 500; line-height: 1.25; width: 24%; word-break: break-word;">${(item.diagnosa || '-').trim()}</td>
-            <td style="border: 1px solid #000; padding: 4px 5px; white-space: pre-line; line-height: 1.25; width: 24%; word-break: break-word;">${(item.terapi_pengobatan || '-').trim()}</td>
+            <td style="border: 1px solid #000; padding: 4px 5px; line-height: 1.25; width: 24%; word-break: break-word;">${(item.anamnesa || "-").trim()}</td>
+            <td style="border: 1px solid #000; padding: 4px 5px; font-weight: 500; line-height: 1.25; width: 24%; word-break: break-word;">${(item.diagnosa || "-").trim()}</td>
+            <td style="border: 1px solid #000; padding: 4px 5px; white-space: pre-line; line-height: 1.25; width: 24%; word-break: break-word;">${(item.terapi_pengobatan || "-").trim()}</td>
         </tr>
-    `
+    `,
         )
-        .join('');
+        .join("");
 
     return `<!DOCTYPE html>
 <html lang="id">
@@ -260,7 +265,7 @@ export function generateMedicalCardHtml(record: PrintableMedicalRecord): string 
             <!-- Kop Surat Puskeswan Resmi (Logo Pariaman & Logo PDHI Proporsional) -->
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 2px;">
             <div style="width: 80px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                <img src="/images/logo-pariaman.png" alt="Logo Kota Pariaman" style="height: 64px; width: auto; max-width: 76px; object-fit: contain;" />
+                <img src="/images/logo-pariaman.webp" alt="Logo Kota Pariaman" style="height: 64px; width: auto; max-width: 76px; object-fit: contain;" />
             </div>
 
             <div style="flex: 1; text-align: center;">
@@ -282,7 +287,7 @@ export function generateMedicalCardHtml(record: PrintableMedicalRecord): string 
             </div>
 
             <div style="width: 80px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                <img src="/images/logo-pdhi.png" alt="Logo PDHI" style="height: 64px; width: auto; max-width: 76px; object-fit: contain;" />
+                <img src="/images/logo-pdhi.webp" alt="Logo PDHI" style="height: 64px; width: auto; max-width: 76px; object-fit: contain;" />
             </div>
         </div>
 
@@ -317,7 +322,7 @@ export function generateMedicalCardHtml(record: PrintableMedicalRecord): string 
                     <span style="width: 60px; font-weight: 600; flex-shrink: 0; padding-top: 1px;">Alamat</span>
                     <span style="margin-right: 6px; padding-top: 1px;">:</span>
                     <div style="flex: 1; min-height: 16px; line-height: 1.25; border-bottom: 1px dotted #555; padding: 0 4px; word-break: break-word;">
-                        ${record.alamat_pemilik || '-'}
+                        ${record.alamat_pemilik || "-"}
                     </div>
                 </div>
                 <div style="display: flex; align-items: baseline;">
@@ -406,9 +411,11 @@ export function generateMedicalCardHtml(record: PrintableMedicalRecord): string 
  * tanpa memunculkan toast serta tanpa mencetak footer URL & header browser.
  */
 export function printMedicalRecordCard(record: PrintableMedicalRecord): void {
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (!printWindow) {
-        alert('Gagal membuka jendela cetak. Pastikan izin pop-up browser aktif.');
+        alert(
+            "Gagal membuka jendela cetak. Pastikan izin pop-up browser aktif.",
+        );
         return;
     }
 
@@ -416,12 +423,12 @@ export function printMedicalRecordCard(record: PrintableMedicalRecord): void {
 
     printWindow.document.open();
     printWindow.document.write(html);
-    printWindow.document.title = '';
+    printWindow.document.title = "";
     printWindow.document.close();
 
     const doPrint = () => {
         try {
-            printWindow.document.title = '';
+            printWindow.document.title = "";
             printWindow.focus();
             printWindow.print();
         } catch {
@@ -429,7 +436,7 @@ export function printMedicalRecordCard(record: PrintableMedicalRecord): void {
         }
     };
 
-    if (printWindow.document.readyState === 'complete') {
+    if (printWindow.document.readyState === "complete") {
         setTimeout(doPrint, 250);
     } else {
         printWindow.onload = () => {

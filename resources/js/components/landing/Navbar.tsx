@@ -50,7 +50,7 @@ export default function Navbar({
                         className="flex items-center gap-2.5 group focus:outline-none focus:ring-0 [-webkit-tap-highlight-color:transparent]"
                     >
                         <img
-                            src="/images/logo_puskeswan.png"
+                            src="/images/logo_puskeswan.webp"
                             alt="Logo Puskeswan"
                             /* Tambahan bg-white dan p-0.5 jika logo butuh dasar putih agar tidak terlihat terlalu tembus pandang */
                             className="h-9 sm:h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105 bg-white rounded-lg"

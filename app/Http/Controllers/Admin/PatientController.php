@@ -21,9 +21,11 @@ class PatientController extends Controller
         $speciesFilter = $request->input('jenis_hewan');
 
         $query = Animal::with([
-            'pemilik',
-            'jenisHewan',
-            'visits.examination.dokter',
+            'pemilik:id,nama_lengkap,nik,no_hp_wa,alamat_lengkap',
+            'jenisHewan:id,nama_jenis',
+            'visits:id,id_hewan,tgl_kunjungan,berat_badan,suhu_tubuh,anamnesa,status_antrean',
+            'visits.examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+            'visits.examination.dokter:id,name',
         ])
             ->when($speciesFilter, function ($q, $speciesId) {
                 $q->where('id_jenis_hewan', $speciesId);

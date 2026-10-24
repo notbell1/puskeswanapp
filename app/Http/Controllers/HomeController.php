@@ -8,6 +8,7 @@ use App\Models\Owner;
 use App\Models\Staff;
 use App\Models\User;
 use App\Models\Visit;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -23,7 +24,7 @@ class HomeController extends Controller
             ->orderByRaw('CASE WHEN urutan IS NULL THEN 999999 ELSE urutan END ASC')
             ->orderBy('id', 'asc')
             ->get(['id', 'nama_staf', 'jabatan', 'nip_strv', 'urutan', 'tampil_publik', 'foto']);
-        $allUsers = User::with('staf')->get(['id', 'id_staf', 'name', 'foto']);
+        $allUsers = User::get(['id', 'id_staf', 'name', 'foto']);
 
         $staffMembers = $allStaff->map(function (Staff $staff) use ($allUsers) {
             $matchedUser = $allUsers->first(
@@ -39,7 +40,7 @@ class HomeController extends Controller
             ];
         });
 
-        $articles = Article::with(['kategori', 'staf', 'penulis.staf'])
+        $articles = Article::with(['kategori', 'staf', 'penulis'])
             ->where('status', 'Published')
             ->latest('tgl_terbit')
             ->orderBy('id', 'desc')
@@ -56,35 +57,78 @@ class HomeController extends Controller
         ]);
     }
 
-    public function showArticle(Request $request, string $slug): Response
+    // OPTIMASI QUERY
+    public function showArticle(string $slug): Response
     {
         $normalizedSlug = Str::slug($slug);
 
-        $allStaff = Staff::all(['id', 'nama_staf', 'jabatan', 'nip_strv', 'foto']);
-        $allUsers = User::with('staf')->get(['id', 'id_staf', 'name', 'foto']);
+        $allStaff = Staff::all([
+            'id',
+            'nama_staf',
+            'jabatan',
+            'nip_strv',
+            'foto',
+        ]);
 
-        $allPublished = Article::with(['kategori', 'staf', 'penulis.staf'])
-            ->where('status', 'Published')
-            ->latest('tgl_terbit')
-            ->get();
+        $allUsers = User::get([
+            'id',
+            'id_staf',
+            'name',
+            'foto',
+        ]);
 
-        $matchedArticle = $allPublished->first(function (Article $art) use ($slug, $normalizedSlug) {
-            return $art->slug === $slug
-                || $art->slug === $normalizedSlug
-                || Str::slug($art->judul) === $normalizedSlug;
-        });
+        $articleQuery = Article::with([
+            'kategori',
+            'staf',
+            'penulis',
+        ])->where('status', 'Published');
+
+        // Cari berdasarkan slug terlebih dahulu.
+        $matchedArticle = (clone $articleQuery)
+            ->where('slug', $slug)
+            ->first();
+
+        // Pertahankan fallback slug yang dinormalisasi.
+        if (! $matchedArticle && $normalizedSlug !== $slug) {
+            $matchedArticle = (clone $articleQuery)
+                ->where('slug', $normalizedSlug)
+                ->first();
+        }
+
+        // Pertahankan fallback berdasarkan judul untuk kompatibilitas URL lama.
+        if (! $matchedArticle) {
+            $matchedArticle = (clone $articleQuery)
+                ->get()
+                ->first(
+                    fn (Article $art) => Str::slug($art->judul) === $normalizedSlug
+                );
+        }
 
         if (! $matchedArticle) {
             abort(404, 'Berita atau artikel edukasi yang Anda cari tidak ditemukan.');
         }
 
-        $articleData = $this->formatArticleForPublic($matchedArticle, $allStaff, $allUsers);
+        $articleData = $this->formatArticleForPublic(
+            $matchedArticle,
+            $allStaff,
+            $allUsers
+        );
 
-        $relatedArticles = $allPublished
-            ->filter(fn (Article $art) => $art->id !== $matchedArticle->id)
-            ->take(4)
-            ->values()
-            ->map(fn (Article $art) => $this->formatArticleForPublic($art, $allStaff, $allUsers));
+        // Ambil empat artikel published terbaru selain artikel yang sedang dibuka.
+        $relatedArticles = (clone $articleQuery)
+            ->where('id', '!=', $matchedArticle->id)
+            ->latest('tgl_terbit')
+            ->orderBy('id', 'desc')
+            ->limit(4)
+            ->get()
+            ->map(
+                fn (Article $art) => $this->formatArticleForPublic(
+                    $art,
+                    $allStaff,
+                    $allUsers
+                )
+            )
+            ->values();
 
         return Inertia::render('berita/show', [
             'article' => $articleData,
@@ -92,45 +136,100 @@ class HomeController extends Controller
         ]);
     }
 
-    public function articlesByAuthor(Request $request, string $author): Response
+    // OPTIMASI QUERY
+    public function articlesByAuthor(string $author): Response
     {
         $decodedAuthor = trim(urldecode($author));
         $normalizedAuthor = Str::slug($decodedAuthor);
 
-        $allStaff = Staff::all(['id', 'nama_staf', 'jabatan', 'nip_strv', 'foto']);
-        $allUsers = User::with('staf')->get(['id', 'id_staf', 'name', 'foto']);
+        $allStaff = Staff::all([
+            'id',
+            'nama_staf',
+            'jabatan',
+            'nip_strv',
+            'foto',
+        ]);
 
-        $allPublished = Article::with(['kategori', 'staf', 'penulis.staf'])
-            ->where('status', 'Published')
+        $allUsers = User::get([
+            'id',
+            'id_staf',
+            'name',
+            'foto',
+        ]);
+
+        $matchedStaff = $allStaff->first(function (Staff $staff) use ($decodedAuthor, $normalizedAuthor) {
+            return Str::slug($staff->nama_staf) === $normalizedAuthor
+                || strcasecmp(trim($staff->nama_staf), $decodedAuthor) === 0;
+        });
+
+        $matchedUser = $allUsers->first(function (User $user) use ($decodedAuthor, $normalizedAuthor, $matchedStaff) {
+            return ($matchedStaff && $user->id_staf === $matchedStaff->id)
+                || Str::slug($user->name) === $normalizedAuthor
+                || strcasecmp(trim($user->name), $decodedAuthor) === 0;
+        });
+
+        $articleQuery = Article::with([
+            'kategori',
+            'staf',
+            'penulis',
+        ])->where('status', 'Published');
+
+        $articleQuery->where(function ($query) use ($decodedAuthor, $matchedStaff, $matchedUser) {
+            $query->where('author_name', $decodedAuthor);
+
+            if ($matchedStaff) {
+                $query->orWhere('id_staf', $matchedStaff->id);
+            }
+
+            if ($matchedUser) {
+                $query->orWhere('id_penulis', $matchedUser->id);
+            }
+        });
+
+        $filteredArticles = $articleQuery
             ->latest('tgl_terbit')
             ->get()
-            ->map(fn (Article $art) => $this->formatArticleForPublic($art, $allStaff, $allUsers));
+            ->map(fn (Article $article) => $this->formatArticleForPublic($article, $allStaff, $allUsers))
+            ->filter(function (array $item) use ($decodedAuthor, $normalizedAuthor) {
+                return $item['author_slug'] === $normalizedAuthor
+                    || Str::slug($item['author_name']) === $normalizedAuthor
+                    || strcasecmp($item['author_name'], $decodedAuthor) === 0;
+            })
+            ->values();
 
-        $filteredArticles = $allPublished->filter(function (array $item) use ($decodedAuthor, $normalizedAuthor) {
-            return $item['author_slug'] === $normalizedAuthor
-                || Str::slug($item['author_name']) === $normalizedAuthor
-                || strcasecmp($item['author_name'], $decodedAuthor) === 0;
-        })->values();
+        if ($filteredArticles->isEmpty() && ! $matchedStaff && ! $matchedUser) {
+            $filteredArticles = Article::with([
+                'kategori',
+                'staf',
+                'penulis',
+            ])
+                ->where('status', 'Published')
+                ->latest('tgl_terbit')
+                ->get()
+                ->map(fn (Article $article) => $this->formatArticleForPublic(
+                    $article,
+                    $allStaff,
+                    $allUsers
+                ))
+                ->filter(function (array $item) use ($decodedAuthor, $normalizedAuthor) {
+                    return $item['author_slug'] === $normalizedAuthor
+                        || Str::slug($item['author_name']) === $normalizedAuthor
+                        || strcasecmp($item['author_name'], $decodedAuthor) === 0;
+                })
+                ->values();
+        }
 
-        $matchedStaff = $allStaff->first(function (Staff $s) use ($decodedAuthor, $normalizedAuthor) {
-            return Str::slug($s->nama_staf) === $normalizedAuthor
-                || strcasecmp(trim($s->nama_staf), $decodedAuthor) === 0;
-        });
+        $isDefaultAdminAuthor = $normalizedAuthor === 'admin'
+            || strcasecmp($decodedAuthor, 'admin') === 0;
 
-        $matchedUser = $allUsers->first(function (User $u) use ($decodedAuthor, $normalizedAuthor, $matchedStaff) {
-            return ($matchedStaff && $u->id_staf === $matchedStaff->id)
-                || Str::slug($u->name) === $normalizedAuthor
-                || strcasecmp(trim($u->name), $decodedAuthor) === 0;
-        });
-
-        $isDefaultAdminAuthor = $normalizedAuthor === 'admin' || strcasecmp($decodedAuthor, 'admin') === 0;
         if (! $matchedStaff && ! $matchedUser && $filteredArticles->isEmpty() && ! $isDefaultAdminAuthor) {
             abort(404, 'Penulis atau tim medis yang Anda cari tidak ditemukan.');
         }
 
         $firstArticle = $filteredArticles->first();
+
         $displayName = $matchedStaff?->nama_staf
-            ?? $firstArticle['author_name']
+            ?? ($firstArticle['author_name'] ?? null)
             ?? $matchedUser?->name
             ?? ucwords(str_replace('-', ' ', $decodedAuthor));
 
@@ -140,13 +239,14 @@ class HomeController extends Controller
         $authorJabatan = $matchedStaff?->jabatan
             ?? ($firstArticle['author_jabatan'] ?? 'Tim Medis & Edukasi Puskeswan');
 
-        $authorNip = $matchedStaff?->nip_strv ?? ($firstArticle['author_nip'] ?? null);
+        $authorNip = $matchedStaff?->nip_strv
+            ?? ($firstArticle['author_nip'] ?? null);
 
         $categories = Category::orderBy('nama_kategori')
             ->get(['id', 'nama_kategori', 'slug'])
-            ->map(fn (Category $cat) => [
-                'name' => $cat->nama_kategori,
-                'slug' => Str::slug($cat->nama_kategori),
+            ->map(fn (Category $category) => [
+                'name' => $category->nama_kategori,
+                'slug' => Str::slug($category->nama_kategori),
             ]);
 
         return Inertia::render('berita/archive', [
@@ -165,50 +265,92 @@ class HomeController extends Controller
         ]);
     }
 
-    public function articlesByCategory(Request $request, string $kategori): Response
+    public function articlesByCategory(string $kategori): Response
     {
         $decodedCategory = trim(urldecode($kategori));
         $normalizedCategory = Str::slug($decodedCategory);
 
-        $allStaff = Staff::all(['id', 'nama_staf', 'jabatan', 'nip_strv', 'foto']);
-        $allUsers = User::with('staf')->get(['id', 'id_staf', 'name', 'foto']);
+        $allStaff = Staff::all([
+            'id',
+            'nama_staf',
+            'jabatan',
+            'nip_strv',
+            'foto',
+        ]);
 
-        $allPublished = Article::with(['kategori', 'staf', 'penulis.staf'])
+        $allUsers = User::get([
+            'id',
+            'id_staf',
+            'name',
+            'foto',
+        ]);
+
+        $allCategories = Category::all();
+
+        $matchesCategory = function (Category $category) use ($decodedCategory, $normalizedCategory) {
+            return $category->slug === $normalizedCategory
+                || Str::slug($category->nama_kategori) === $normalizedCategory
+                || strcasecmp(trim($category->nama_kategori), $decodedCategory) === 0;
+        };
+
+        $matchedCategoryModel = $allCategories->first($matchesCategory);
+
+        $matchingCategoryIds = $allCategories
+            ->filter($matchesCategory)
+            ->pluck('id');
+
+        $articles = Article::with([
+            'kategori',
+            'staf',
+            'penulis',
+        ])
             ->where('status', 'Published')
+            ->where(function ($query) use ($matchingCategoryIds) {
+                $query->whereIn('id_kategori', $matchingCategoryIds)
+                    ->orWhereNull('id_kategori');
+            })
             ->latest('tgl_terbit')
             ->get()
-            ->map(fn (Article $art) => $this->formatArticleForPublic($art, $allStaff, $allUsers));
+            ->map(fn (Article $article) => $this->formatArticleForPublic(
+                $article,
+                $allStaff,
+                $allUsers
+            ));
 
-        $matchedCategoryModel = Category::all()->first(function (Category $cat) use ($decodedCategory, $normalizedCategory) {
-            return $cat->slug === $normalizedCategory
-                || Str::slug($cat->nama_kategori) === $normalizedCategory
-                || strcasecmp(trim($cat->nama_kategori), $decodedCategory) === 0;
-        });
+        $filteredArticles = $articles
+            ->filter(function (array $item) use (
+                $decodedCategory,
+                $normalizedCategory,
+                $matchedCategoryModel
+            ) {
+                if (
+                    $matchedCategoryModel
+                    && strcasecmp($item['category'], $matchedCategoryModel->nama_kategori) === 0
+                ) {
+                    return true;
+                }
 
-        $filteredArticles = $allPublished->filter(function (array $item) use ($decodedCategory, $normalizedCategory, $matchedCategoryModel) {
-            if ($matchedCategoryModel && strcasecmp($item['category'], $matchedCategoryModel->nama_kategori) === 0) {
-                return true;
-            }
-
-            return $item['category_slug'] === $normalizedCategory
-                || Str::slug($item['category']) === $normalizedCategory
-                || strcasecmp($item['category'], $decodedCategory) === 0;
-        })->values();
+                return $item['category_slug'] === $normalizedCategory
+                    || Str::slug($item['category']) === $normalizedCategory
+                    || strcasecmp($item['category'], $decodedCategory) === 0;
+            })
+            ->values();
 
         if (! $matchedCategoryModel && $filteredArticles->isEmpty()) {
             abort(404, 'Kategori berita atau edukasi yang Anda cari tidak ditemukan.');
         }
 
         $firstArticle = $filteredArticles->first();
+
         $displayCategory = $matchedCategoryModel?->nama_kategori
-            ?? $firstArticle['category']
+            ?? ($firstArticle['category'] ?? null)
             ?? ucwords(str_replace('-', ' ', $decodedCategory));
 
         $categories = Category::orderBy('nama_kategori')
             ->get(['id', 'nama_kategori', 'slug'])
-            ->map(fn (Category $cat) => [
-                'name' => $cat->nama_kategori,
-                'slug' => Str::slug($cat->nama_kategori),
+            ->map(fn (Category $category) => [
+                'name' => $category->nama_kategori,
+                'slug' => Str::slug($category->nama_kategori),
             ]);
 
         return Inertia::render('berita/archive', [
@@ -226,44 +368,68 @@ class HomeController extends Controller
      * @param  Collection<int, User>  $allUsers
      * @return array<string, mixed>
      */
-    private function formatArticleForPublic(Article $art, Collection $allStaff, Collection $allUsers): array
-    {
-        $authorName = $art->author_name ?? $art->staf?->nama_staf ?? $art->penulis?->name ?? 'Tim Medis Puskeswan';
+    private function formatArticleForPublic(
+        Article $art,
+        Collection $allStaff,
+        Collection $allUsers,
 
-        $matchedStaff = $art->staf ?: $allStaff->first(function (Staff $s) use ($authorName) {
-            return strcasecmp(trim($s->nama_staf), trim($authorName)) === 0
-                || Str::slug($s->nama_staf) === Str::slug($authorName);
-        });
+    ): array {
+        $authorName = $art->author_name
+            ?? $art->staf?->nama_staf
+            ?? $art->penulis?->name
+            ?? 'Tim Medis Puskeswan';
 
-        $matchedUser = $allUsers->first(function (User $u) use ($authorName, $matchedStaff) {
-            return ($matchedStaff && $u->id_staf === $matchedStaff->id)
-                || strcasecmp(trim($u->name), trim($authorName)) === 0
-                || Str::slug($u->name) === Str::slug($authorName);
-        });
+        $normalizedAuthor = Str::slug($authorName);
+
+        $matchedStaff = $art->staf ?: $allStaff->first(
+            function (Staff $staff) use ($authorName, $normalizedAuthor) {
+                return strcasecmp(
+                    trim($staff->nama_staf),
+                    trim($authorName)
+                ) === 0
+                    || Str::slug($staff->nama_staf) === $normalizedAuthor;
+            }
+        );
+
+        $matchedUser = $allUsers->first(
+            function (User $user) use ($authorName, $normalizedAuthor, $matchedStaff) {
+                return ($matchedStaff && $user->id_staf === $matchedStaff->id)
+                    || strcasecmp(trim($user->name), trim($authorName)) === 0
+                    || Str::slug($user->name) === $normalizedAuthor;
+            }
+        );
 
         $rawFoto = $matchedStaff?->foto
             ?: $matchedUser?->foto
-            ?: $art->penulis?->foto
-            ?: $art->penulis?->staf?->foto;
+            ?: $art->penulis?->foto;
 
-        $categoryName = $art->kategori?->nama_kategori ?? 'Edukasi Kesehatan Hewan';
+        $categoryName = $art->kategori?->nama_kategori
+            ?? 'Edukasi Kesehatan Hewan';
 
         return [
             'id' => $art->id,
             'judul' => $art->judul,
             'slug' => Str::slug($art->judul) ?: $art->slug,
             'author_name' => $authorName,
-            'author_slug' => Str::slug($authorName),
+            'author_slug' => $normalizedAuthor,
             'author_foto' => User::resolvePhotoUrl($rawFoto),
-            'author_jabatan' => $matchedStaff?->jabatan ?? 'Tenaga Medis Puskeswan',
+            'author_jabatan' => $matchedStaff?->jabatan
+                ?? 'Tenaga Medis Puskeswan',
             'author_nip' => $matchedStaff?->nip_strv ?? null,
             'category' => $categoryName,
             'category_slug' => Str::slug($categoryName),
             'ringkasan' => $art->ringkasan,
             'isi_berita' => $art->isi_berita,
             'gambar' => $art->gambar,
-            'date' => $art->tgl_terbit ? $art->tgl_terbit->format('d M Y') : 'Terbaru',
-            'readTime' => max(2, (int) ceil(str_word_count(strip_tags((string) $art->isi_berita)) / 150)).' menit baca',
+            'date' => $art->tgl_terbit
+                ? Carbon::parse($art->tgl_terbit)->format('d M Y')
+                : 'Terbaru',
+            'readTime' => max(
+                2,
+                (int) ceil(
+                    str_word_count(strip_tags((string) $art->isi_berita)) / 150
+                )
+            ).' menit baca',
         ];
     }
 
@@ -337,15 +503,22 @@ class HomeController extends Controller
         }
 
         $visits = Visit::with([
-            'animal.pemilik',
-            'animal.jenisHewan',
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
+            'animal.pemilik:id,nama_lengkap,nik,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
             'animal.visits' => function ($q) {
                 $q->where('status_antrean', 'Selesai')
-                    ->with(['examination.dokter.staf'])
+                    ->with([
+                        'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+                        'examination.dokter:id,name,foto,id_staf',
+                        'examination.dokter.staf:id,nama_staf,foto',
+                    ])
                     ->orderBy('tgl_kunjungan', 'desc');
             },
-            'examination.dokter.staf',
-            'admin',
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan,waktu_selesai',
+            'examination.dokter:id,name,foto,email,id_staf',
+            'examination.dokter.staf:id,nama_staf,nip_strv,jabatan,foto',
+            'admin:id,name',
         ])
             ->whereHas('animal', function ($q) use ($owner) {
                 $q->where('id_pemilik', $owner->id);

@@ -25,12 +25,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): Response|RedirectResponse
     {
-        $ip = $request->ip() ?? '127.0.0.1';
-
-        if ($this->securityService->isIpBlocked($ip)) {
-            return redirect()->route('ip.blocked');
-        }
-
         if (Auth::check()) {
             /** @var User $user */
             $user = Auth::user();
@@ -38,6 +32,7 @@ class AuthenticatedSessionController extends Controller
             return $this->redirectBasedOnRole($user);
         }
 
+        $ip = $request->ip() ?? '127.0.0.1';
         $lockoutSeconds = $this->securityService->getLockoutRemainingSeconds($ip);
 
         return Inertia::render('login', [

@@ -70,7 +70,7 @@ const SERVICE_HIGHLIGHTS: ServiceHighlight[] = [
         badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
         title: "Kawin Suntik Straw Unggul & Pemeriksaan Kebuntingan",
         description:
-            "Peningkatan mutu genetik sapi dan kerbau peternak menggunakan semen beku Simmental & Limousin bersertifikat dengan rantai dingin -196°C.",
+            "Peningkatan mutu genetik peternak menggunakan semen beku Simmental & Limousin bersertifikat dengan rantai dingin -196°C.",
         requirements: [
             "Segera lapor petugas saat sapi menunjukkan tanda birahi (3A)",
             "Waktu optimal IB: 8 – 10 jam sejak awal munculnya birahi",
@@ -88,28 +88,26 @@ const HERO_SLIDES = [
     {
         src: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1000&q=85",
         alt: "Pemeriksaan kesehatan hewan kesayangan",
-        tag: "Poliklinik Veteriner",
+
         label: "Kesehatan Hewan Kesayangan",
         desc: "Pemeriksaan klinis, terapi pengobatan, & vaksinasi berkala",
     },
     {
         src: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1000&q=85",
         alt: "Perawatan medis kucing",
-        tag: "Vaksinasi & Sterilisasi",
         label: "Proteksi Penyakit Menular",
         desc: "Pencegahan Rabies, Panleukopenia, & parasit kulit",
     },
     {
         src: "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&w=1000&q=85",
         alt: "Sapi ternak unggul program IB",
-        tag: "Inseminasi Buatan (IB)",
+
         label: "Ketahanan Ternak Rakyat",
         desc: "Peningkatan genetik sapi potong & pemeriksaan kebuntingan",
     },
     {
         src: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1000&q=85",
         alt: "Surveilans kesehatan hewan",
-        tag: "Rekam Medis Digital",
         label: "Transparansi Riwayat Medis",
         desc: "Cek dan cetak mandiri hasil pemeriksaan dokter secara online",
     },
@@ -158,7 +156,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-purple-100/90 text-purple-800 border border-purple-200">
                                 <img
-                                    src="/images/logo-pariaman.png"
+                                    src="/images/logo-pariaman.webp"
                                     alt="Kota Pariaman"
                                     className="w-3.5 h-3.5 object-contain"
                                 />
@@ -308,26 +306,6 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                                     <span>📍 Lokasi Puskeswan</span>
                                 </button>
                             </div>
-
-                            <div className="flex items-center gap-4 border-t sm:border-t-0 pt-2.5 sm:pt-0 border-gray-100 shrink-0">
-                                <div>
-                                    <span className="block text-sm font-black text-purple-700 leading-none">
-                                        100% Digital
-                                    </span>
-                                    <span className="text-[10px] text-gray-500 font-semibold">
-                                        E-Rekam Medis
-                                    </span>
-                                </div>
-                                <div className="h-6 w-px bg-gray-200" />
-                                <div>
-                                    <span className="block text-sm font-black text-emerald-700 leading-none">
-                                        Gratis Vaksin
-                                    </span>
-                                    <span className="text-[10px] text-gray-500 font-semibold">
-                                        Program Rabies
-                                    </span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -354,12 +332,6 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                                 ))}
 
                                 <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-gray-950/85 via-gray-950/25 to-black/15" />
-
-                                <div className="absolute left-3.5 top-3.5 z-30">
-                                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-md border border-white/25 text-[10px] font-bold text-white uppercase tracking-wider">
-                                        {HERO_SLIDES[activeSlide].tag}
-                                    </span>
-                                </div>
 
                                 <div className="absolute right-3.5 top-3.5 z-30 flex items-center gap-1.5 bg-black/30 backdrop-blur-xs px-2.5 py-1.5 rounded-full">
                                     {HERO_SLIDES.map((slide, index) => (
@@ -446,56 +418,6 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <div
-                                onClick={(e) =>
-                                    onNavigate(
-                                        "/cek-rekam-medis",
-                                        "cek-rekam-medis",
-                                        e,
-                                    )
-                                }
-                                className="p-3 rounded-2xl bg-purple-50/70 hover:bg-purple-100/70 border border-purple-200/70 transition-colors cursor-pointer group"
-                            >
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700">
-                                        Portal Mandiri
-                                    </span>
-                                    <span className="text-xs font-bold text-purple-700 group-hover:translate-x-0.5 transition-transform">
-                                        &rarr;
-                                    </span>
-                                </div>
-                                <p className="text-xs font-extrabold text-gray-900">
-                                    Cari &amp; Cetak Rekam Medis
-                                </p>
-                                <p className="text-[10.5px] text-gray-500 mt-0.5 line-clamp-1">
-                                    Gunakan NIK &amp; Nama Pemilik
-                                </p>
-                            </div>
-
-                            <div
-                                onClick={(e) =>
-                                    onNavigate("/berita", "berita", e)
-                                }
-                                className="p-3 rounded-2xl bg-rose-50/70 hover:bg-rose-100/70 border border-rose-200/70 transition-colors cursor-pointer group"
-                            >
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700">
-                                        Siaga Zoonosis
-                                    </span>
-                                    <span className="text-xs font-bold text-rose-700 group-hover:translate-x-0.5 transition-transform">
-                                        &rarr;
-                                    </span>
-                                </div>
-                                <p className="text-xs font-extrabold text-gray-900">
-                                    Protokol Kasus Gigitan
-                                </p>
-                                <p className="text-[10.5px] text-gray-500 mt-0.5 line-clamp-1">
-                                    Observasi 14 Hari &amp; Vaksinasi
-                                </p>
                             </div>
                         </div>
                     </div>

@@ -25,7 +25,7 @@ class StaffController extends Controller
         $search = trim((string) $request->input('search', ''));
         $jabatanFilter = $request->input('jabatan');
 
-        $staff = Staff::with(['users.role'])
+        $staff = Staff::with(['users:id,id_staf,foto,id_role', 'users.role:id,nama_role'])
             ->withCount('users')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -134,7 +134,7 @@ class StaffController extends Controller
             'nama_staf' => ['required', 'string', 'max:255'],
             'jabatan' => ['required', 'string', 'max:255'],
             'nip_strv' => ['nullable', 'string', 'max:255'],
-            'tampil_publik' => ['required', 'boolean'],
+            'tampil_publik' => ['nullable', 'boolean'],
             'urutan' => ['nullable', 'integer', 'min:1', 'max:9999'],
             'foto' => [
                 'nullable',
@@ -160,7 +160,7 @@ class StaffController extends Controller
             StaffPosition::firstOrCreate(['nama_jabatan' => $cleanJabatan]);
         }
 
-        $tampilPublik = (bool) $validated['tampil_publik'];
+        $tampilPublik = (bool) ($validated['tampil_publik'] ?? true);
         $urutan = $tampilPublik
             ? (int) ($validated['urutan'] ?? (((int) Staff::where('tampil_publik', true)->max('urutan')) + 1))
             : null;
@@ -185,7 +185,7 @@ class StaffController extends Controller
             'nama_staf' => ['required', 'string', 'max:255'],
             'jabatan' => ['required', 'string', 'max:255'],
             'nip_strv' => ['nullable', 'string', 'max:255'],
-            'tampil_publik' => ['required', 'boolean'],
+            'tampil_publik' => ['nullable', 'boolean'],
             'urutan' => ['nullable', 'integer', 'min:1', 'max:9999'],
             'foto' => [
                 'nullable',
@@ -214,7 +214,7 @@ class StaffController extends Controller
             StaffPosition::firstOrCreate(['nama_jabatan' => $cleanJabatan]);
         }
 
-        $tampilPublik = (bool) $validated['tampil_publik'];
+        $tampilPublik = (bool) ($validated['tampil_publik'] ?? true);
         $urutan = $tampilPublik
             ? (int) ($validated['urutan'] ?? ($staff->urutan ?: (((int) Staff::where('tampil_publik', true)->max('urutan')) + 1)))
             : null;

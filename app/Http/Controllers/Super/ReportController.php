@@ -14,7 +14,7 @@ use Inertia\Response;
 class ReportController extends Controller
 {
     /**
-     * Rute Utama / Kompatibilitas Pusat Laporan.
+     * Rute utama / kompatibilitas pusat laporan.
      */
     public function index(Request $request): Response
     {
@@ -32,40 +32,86 @@ class ReportController extends Controller
     }
 
     /**
-     * Modul Laporan Rekam Medis Pasien Puskeswan.
+     * Modul laporan rekam medis pasien Puskeswan.
      */
     public function rekamMedis(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
-        $startDate = $request->input('tgl_mulai', now()->startOfMonth()->toDateString());
-        $endDate = $request->input('tgl_selesai', now()->endOfMonth()->toDateString());
+        $startDate = $request->input(
+            'tgl_mulai',
+            now()->startOfMonth()->toDateString()
+        );
+        $endDate = $request->input(
+            'tgl_selesai',
+            now()->endOfMonth()->toDateString()
+        );
         $statusFilter = $request->input('status');
         $jenisFilter = $request->input('jenis_hewan');
 
-        $query = Visit::with(['animal.pemilik', 'animal.jenisHewan', 'examination.dokter', 'admin'])
-            ->whereBetween('tgl_kunjungan', ["{$startDate} 00:00:00", "{$endDate} 23:59:59"])
+        $query = Visit::with([
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur',
+            'animal.pemilik:id,nama_lengkap,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+            'examination.dokter:id,name',
+            'admin:id,name',
+        ])
+            ->whereBetween('tgl_kunjungan', [
+                "{$startDate} 00:00:00",
+                "{$endDate} 23:59:59",
+            ])
             ->when($search, function ($q, $search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('anamnesa', 'like', "%{$search}%")
                         ->orWhereHas('animal', function ($qa) use ($search) {
                             $qa->where('no_rm', 'like', "%{$search}%")
-                                ->orWhere('nama_hewan', 'like', "%{$search}%");
+                                ->orWhere(
+                                    'nama_hewan',
+                                    'like',
+                                    "%{$search}%"
+                                );
                         })
-                        ->orWhereHas('animal.pemilik', function ($qp) use ($search) {
-                            $qp->where('nama_lengkap', 'like', "%{$search}%")
-                                ->orWhere('no_hp_wa', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('examination', function ($qe) use ($search) {
-                            $qe->where('diagnosa', 'like', "%{$search}%")
-                                ->orWhere('terapi_pengobatan', 'like', "%{$search}%");
-                        });
+                        ->orWhereHas(
+                            'animal.pemilik',
+                            function ($qp) use ($search) {
+                                $qp->where(
+                                    'nama_lengkap',
+                                    'like',
+                                    "%{$search}%"
+                                )->orWhere(
+                                    'no_hp_wa',
+                                    'like',
+                                    "%{$search}%"
+                                );
+                            }
+                        )
+                        ->orWhereHas(
+                            'examination',
+                            function ($qe) use ($search) {
+                                $qe->where(
+                                    'diagnosa',
+                                    'like',
+                                    "%{$search}%"
+                                )->orWhere(
+                                    'terapi_pengobatan',
+                                    'like',
+                                    "%{$search}%"
+                                );
+                            }
+                        );
                 });
             })
             ->when($statusFilter, function ($q, $statusFilter) {
                 $q->where('status_antrean', $statusFilter);
             })
             ->when($jenisFilter, function ($q, $jenisFilter) {
-                $q->whereHas('animal', fn ($qa) => $qa->where('id_jenis_hewan', $jenisFilter));
+                $q->whereHas(
+                    'animal',
+                    fn ($qa) => $qa->where(
+                        'id_jenis_hewan',
+                        $jenisFilter
+                    )
+                );
             })
             ->orderBy('tgl_kunjungan', 'desc');
 
@@ -73,8 +119,12 @@ class ReportController extends Controller
             ->withQueryString()
             ->through(fn ($v) => [
                 'id' => $v->id,
-                'tgl' => $v->tgl_kunjungan ? $v->tgl_kunjungan->format('d/m/Y H:i') : '-',
-                'raw_tgl' => $v->tgl_kunjungan ? $v->tgl_kunjungan->toDateString() : '',
+                'tgl' => $v->tgl_kunjungan
+                    ? $v->tgl_kunjungan->format('d/m/Y H:i')
+                    : '-',
+                'raw_tgl' => $v->tgl_kunjungan
+                    ? $v->tgl_kunjungan->toDateString()
+                    : '',
                 'no_rm' => $v->animal?->no_rm ?? '-',
                 'nama_hewan' => $v->animal?->nama_hewan ?? '-',
                 'jenis_hewan' => $v->animal?->jenisHewan?->nama_jenis ?? '-',
@@ -87,18 +137,48 @@ class ReportController extends Controller
                 'berat_badan' => $v->berat_badan ?? 0,
                 'suhu_tubuh' => $v->suhu_tubuh ?? 0,
                 'anamnesa' => $v->anamnesa ?? '-',
-                'diagnosa' => $v->examination?->diagnosa ?? 'Menunggu Pemeriksaan',
+                'diagnosa' => $v->examination?->diagnosa
+                    ?? 'Menunggu Pemeriksaan',
                 'terapi' => $v->examination?->terapi_pengobatan ?? '-',
                 'catatan_dokter' => $v->examination?->catatan ?? '-',
-                'dokter' => $v->examination?->dokter?->name ?? 'Belum Ditugaskan',
+                'dokter' => $v->examination?->dokter?->name
+                    ?? 'Belum Ditugaskan',
                 'admin_loket' => $v->admin?->name ?? 'Petugas Loket',
                 'status' => $v->status_antrean ?? 'Selesai',
             ]);
 
-        $basePeriodQuery = Visit::whereBetween('tgl_kunjungan', ["{$startDate} 00:00:00", "{$endDate} 23:59:59"]);
-        $totalPeriod = (clone $basePeriodQuery)->count();
-        $totalSelesai = (clone $basePeriodQuery)->where('status_antrean', 'Selesai')->count();
-        $totalAntre = (clone $basePeriodQuery)->where('status_antrean', '!=', 'Selesai')->count();
+        // Satu query untuk seluruh statistik periode.
+        $summary = Visit::query()
+            ->whereBetween('tgl_kunjungan', [
+                "{$startDate} 00:00:00",
+                "{$endDate} 23:59:59",
+            ])
+            ->selectRaw('
+                COUNT(*) AS total_records,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN status_antrean = ? THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS total_selesai,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN status_antrean != ? THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS total_antri
+            ', ['Selesai', 'Selesai'])
+            ->first();
+
+        $totalPeriod = (int) $summary->total_records;
+        $totalSelesai = (int) $summary->total_selesai;
+        $totalAntre = (int) $summary->total_antri;
 
         $animalTypes = AnimalType::all(['id', 'nama_jenis']);
 
@@ -111,7 +191,9 @@ class ReportController extends Controller
                 'total_records' => $totalPeriod,
                 'total_selesai' => $totalSelesai,
                 'total_antri' => $totalAntre,
-                'completion_rate' => $totalPeriod > 0 ? round(($totalSelesai / $totalPeriod) * 100) : 100,
+                'completion_rate' => $totalPeriod > 0
+                    ? round(($totalSelesai / $totalPeriod) * 100)
+                    : 100,
             ],
             'filters' => [
                 'search' => $search,
@@ -124,17 +206,26 @@ class ReportController extends Controller
     }
 
     /**
-     * Modul Laporan Surveilans Kasus Gigitan Rabies (GHPR).
+     * Modul laporan surveilans kasus gigitan rabies.
      */
     public function rabies(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
-        $startDate = $request->input('tgl_mulai', now()->startOfMonth()->toDateString());
-        $endDate = $request->input('tgl_selesai', now()->endOfMonth()->toDateString());
+        $startDate = $request->input(
+            'tgl_mulai',
+            now()->startOfMonth()->toDateString()
+        );
+        $endDate = $request->input(
+            'tgl_selesai',
+            now()->endOfMonth()->toDateString()
+        );
         $statusVarFilter = $request->input('status_var');
         $statusHewanFilter = $request->input('status_hewan');
 
-        $query = RabiesCase::with(['jenisHewan', 'admin'])
+        $query = RabiesCase::with([
+            'jenisHewan:id,nama_jenis',
+            'admin:id,name',
+        ])
             ->whereBetween('tgl_kejadian', [$startDate, $endDate])
             ->when($search, function ($q, $search) {
                 $q->where(function ($sub) use ($search) {
@@ -172,23 +263,69 @@ class ReportController extends Controller
                 'jenis_hewan' => $r->jenisHewan?->nama_jenis ?? 'Anjing',
                 'ras_hewan' => $r->ras_hewan ?? '-',
                 'status_hewan' => $r->status_hewan,
-                'nama_pemilik_hewan' => $r->nama_pemilik_hewan ?? 'Liar / Tidak Diketahui',
-                'tgl_kejadian' => $r->tgl_kejadian ? $r->tgl_kejadian->format('d/m/Y') : '-',
-                'raw_tgl_kejadian' => $r->tgl_kejadian ? $r->tgl_kejadian->toDateString() : '',
+                'nama_pemilik_hewan' => $r->nama_pemilik_hewan
+                    ?? 'Liar / Tidak Diketahui',
+                'tgl_kejadian' => $r->tgl_kejadian
+                    ? $r->tgl_kejadian->format('d/m/Y')
+                    : '-',
+                'raw_tgl_kejadian' => $r->tgl_kejadian
+                    ? $r->tgl_kejadian->toDateString()
+                    : '',
                 'alamat_kejadian' => $r->alamat_kejadian,
                 'kronologi' => $r->kronologi,
                 'petugas' => $r->admin?->name ?? 'Petugas Surveilans',
             ]);
 
-        $basePeriodQuery = RabiesCase::whereBetween('tgl_kejadian', [$startDate, $endDate]);
-        $totalKasus = (clone $basePeriodQuery)->count();
-        $totalVar = (clone $basePeriodQuery)->where(function ($q) {
-            $q->where('status_var', 'like', '%diberikan%')
-                ->orWhere('status_var', 'like', '%lengkap%')
-                ->orWhere('status_var', 'like', '%sudah%');
-        })->count();
-        $totalObservasi = (clone $basePeriodQuery)->where('status_hewan', 'like', '%Observasi%')->count();
-        $totalMati = (clone $basePeriodQuery)->where('status_hewan', 'like', '%Mati%')->count();
+        // Satu query untuk seluruh statistik periode.
+        $summary = RabiesCase::query()
+            ->whereBetween('tgl_kejadian', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(*) AS total_kasus,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN status_var LIKE ?
+                              OR status_var LIKE ?
+                              OR status_var LIKE ?
+                            THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS total_var,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN status_hewan LIKE ?
+                            THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS total_observasi,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN status_hewan LIKE ?
+                            THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS total_mati
+            ', [
+                '%diberikan%',
+                '%lengkap%',
+                '%sudah%',
+                '%Observasi%',
+                '%Mati%',
+            ])
+            ->first();
+
+        $totalKasus = (int) $summary->total_kasus;
+        $totalVar = (int) $summary->total_var;
+        $totalObservasi = (int) $summary->total_observasi;
+        $totalMati = (int) $summary->total_mati;
 
         return Inertia::render('super/laporan/rabies', [
             'cases' => $cases,
@@ -199,7 +336,9 @@ class ReportController extends Controller
                 'total_var' => $totalVar,
                 'total_observasi' => $totalObservasi,
                 'total_mati' => $totalMati,
-                'var_coverage_rate' => $totalKasus > 0 ? round(($totalVar / $totalKasus) * 100) : 100,
+                'var_coverage_rate' => $totalKasus > 0
+                    ? round(($totalVar / $totalKasus) * 100)
+                    : 100,
             ],
             'filters' => [
                 'search' => $search,
@@ -212,7 +351,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Kompatibilitas Laporan Logistik Obat (Bila Diakses via tipe=obat).
+     * Kompatibilitas laporan logistik obat.
      */
     protected function obat(Request $request): Response
     {
@@ -224,19 +363,33 @@ class ReportController extends Controller
                 'nama_obat' => $m->nama_obat,
                 'stok' => $m->stok,
                 'satuan' => $m->satuan,
-                'status' => $m->stok <= 10 ? 'Kritis' : ($m->stok <= 30 ? 'Menipis' : 'Aman'),
+                'status' => $m->stok <= 10
+                    ? 'Kritis'
+                    : ($m->stok <= 30 ? 'Menipis' : 'Aman'),
             ]);
+
+        $now = now();
 
         return Inertia::render('super/laporan/index', [
             'reportType' => 'obat',
-            'startDate' => now()->startOfMonth()->toDateString(),
-            'endDate' => now()->endOfMonth()->toDateString(),
+            'startDate' => $now->copy()->startOfMonth()->toDateString(),
+            'endDate' => $now->copy()->endOfMonth()->toDateString(),
             'reportData' => $reportData,
             'summary' => [
-                'total_records' => count($reportData),
-                'total_kunjungan_bulan_ini' => Visit::whereBetween('tgl_kunjungan', [now()->startOfMonth(), now()->endOfMonth()])->count(),
-                'total_rabies_tahun_ini' => RabiesCase::whereYear('tgl_kejadian', now()->year)->count(),
-                'total_obat_kritis' => Medicine::where('stok', '<=', 10)->count(),
+                'total_records' => $reportData->count(),
+                'total_kunjungan_bulan_ini' => Visit::whereBetween(
+                    'tgl_kunjungan',
+                    [
+                        $now->copy()->startOfMonth(),
+                        $now->copy()->endOfMonth(),
+                    ]
+                )->count(),
+                'total_rabies_tahun_ini' => RabiesCase::whereYear(
+                    'tgl_kejadian',
+                    $now->year
+                )->count(),
+                'total_obat_kritis' => Medicine::where('stok', '<=', 10)
+                    ->count(),
             ],
         ]);
     }

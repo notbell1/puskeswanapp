@@ -12,7 +12,7 @@ use Inertia\Response;
 class MedicineController extends Controller
 {
     /**
-     * Tampilkan data stok obat dan vaksin dengan pagination dan indikator stok menipis.
+     * Tampilkan data stok obat dan vaksin .
      */
     public function index(Request $request): Response
     {

@@ -13,9 +13,6 @@ interface InteractiveMascotProps {
     isSubmitting: boolean;
 }
 
-/**
- * Maskot Dokter Hewan Interaktif (Disesuaikan untuk Buat Sandi Baru)
- */
 function InteractiveMascot({
     focusField,
     showPassword,
@@ -32,49 +29,31 @@ function InteractiveMascot({
     const mouthPath = "M 55 74 Q 60 78 60 72 Q 60 78 65 74";
 
     return (
-        <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto -mb-4 sm:-mb-6 select-none pointer-events-none z-10 drop-shadow-xl transition-transform duration-500 hover:scale-105">
-            <div className="absolute inset-0 rounded-full blur-xl animate-pulse transition-colors duration-500 bg-purple-300/40" />
+        <div className="relative z-10 mx-auto -mb-4 h-24 w-24 select-none drop-shadow-xl transition-transform duration-500 sm:-mb-6 sm:h-28 sm:w-28">
+            <div className="absolute inset-0 animate-pulse rounded-full bg-purple-300/40 blur-xl" />
 
             <svg
                 viewBox="0 0 120 120"
-                className={`relative w-full h-full transform transition-all duration-300 ${isSubmitting ? "animate-bounce" : ""}`}
+                className={`relative h-full w-full transform transition-all duration-300 ${
+                    isSubmitting ? "animate-bounce" : ""
+                }`}
             >
                 <path
                     d="M 28 42 L 18 16 L 46 28 Z"
                     fill="#7e22ce"
-                    className="transition-all duration-300 origin-bottom-left"
+                    className="origin-bottom-left transition-all duration-300"
                 />
-                <path
-                    d="M 27 38 L 22 22 L 40 30 Z"
-                    fill="#f3e8ff"
-                    className="transition-colors duration-300"
-                />
+                <path d="M 27 38 L 22 22 L 40 30 Z" fill="#f3e8ff" />
 
                 <path
                     d="M 92 42 L 102 16 L 74 28 Z"
                     fill="#7e22ce"
-                    className="transition-all duration-300 origin-bottom-right"
+                    className="origin-bottom-right transition-all duration-300"
                 />
-                <path
-                    d="M 93 38 L 98 22 L 80 30 Z"
-                    fill="#f3e8ff"
-                    className="transition-colors duration-300"
-                />
+                <path d="M 93 38 L 98 22 L 80 30 Z" fill="#f3e8ff" />
 
-                <circle
-                    cx="60"
-                    cy="62"
-                    r="38"
-                    fill="#9333ea"
-                    className="transition-colors duration-500"
-                />
-                <circle
-                    cx="60"
-                    cy="64"
-                    r="34"
-                    fill="#a855f7"
-                    className="transition-colors duration-500"
-                />
+                <circle cx="60" cy="62" r="38" fill="#9333ea" />
+                <circle cx="60" cy="64" r="34" fill="#a855f7" />
 
                 <path
                     d="M 42 30 Q 60 22 78 30 L 76 22 Q 60 16 44 22 Z"
@@ -222,22 +201,25 @@ function ResetPasswordFormContent({ token, email }: Props) {
     const { success, error } = useToast();
 
     const [data, setData] = useState({
-        token: token,
-        email: email,
+        token,
+        email,
         password: "",
         password_confirmation: "",
     });
-    const [showPassword, setShowPassword] = useState<boolean>(false);
+
+    const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] =
-        useState<boolean>(false);
+        useState(false);
     const [focusField, setFocusField] = useState<"idle" | "password">("idle");
     const [activePasswordField, setActivePasswordField] = useState<
         "password" | "confirmation" | null
     >(null);
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
 
-    const [isMounted, setIsMounted] = useState<boolean>(false);
-    useEffect(() => setIsMounted(true), []);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const isCurrentPasswordVisible =
         activePasswordField === "confirmation"
@@ -247,35 +229,83 @@ function ResetPasswordFormContent({ token, email }: Props) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (!data.password.trim()) {
+            error("Kata sandi baru wajib diisi.");
+            return;
+        }
+
         if (data.password !== data.password_confirmation) {
             error("Konfirmasi kata sandi tidak cocok!");
             return;
         }
 
         setIsSubmitting(true);
+
         router.post("/reset-password", data, {
             onSuccess: () => {
                 success("Kata sandi berhasil diubah! Silakan login.");
             },
-            onError: (errs: any) => {
+            onError: (errs) => {
                 const rawMsg =
                     errs.email || errs.password || Object.values(errs)[0];
+
                 error(String(rawMsg || "Gagal mengubah kata sandi."));
-                setIsSubmitting(false);
             },
             onFinish: () => setIsSubmitting(false),
         });
     };
 
+    const passwordInputClass =
+        "h-11 w-full rounded-xl border border-gray-200 bg-gray-50/50 pl-10 pr-11 text-sm font-medium transition-all placeholder:text-gray-400 focus:border-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-600 disabled:cursor-not-allowed disabled:bg-gray-100/50 disabled:text-gray-400";
+
+    const renderEyeIcon = (visible: boolean) =>
+        visible ? (
+            <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
+                />
+            </svg>
+        ) : (
+            <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+            </svg>
+        );
+
     return (
-        <div className="flex h-[100dvh] w-full bg-gray-50 overflow-hidden font-sans relative flex-col lg:flex-row">
-            <div className="fixed top-5 left-5 sm:top-8 sm:left-8 lg:hidden z-50">
+        <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-gray-50 font-sans lg:flex-row">
+            {/* Tombol kembali mobile */}
+            <div className="fixed left-5 top-5 z-50 sm:left-8 sm:top-8 lg:hidden">
                 <Link
                     href="/login"
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white/80 backdrop-blur-md shadow-md border border-purple-100 text-gray-600 hover:text-purple-700 hover:bg-white active:scale-90 transition-all duration-200"
+                    aria-label="Kembali ke halaman login"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-100 bg-white/80 text-gray-600 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white hover:text-purple-700 active:scale-90"
                 >
                     <svg
-                        className="w-5 h-5 pr-0.5"
+                        className="h-5 w-5 pr-0.5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -290,39 +320,81 @@ function ResetPasswordFormContent({ token, email }: Props) {
                 </Link>
             </div>
 
-            <div className="hidden lg:flex relative w-1/2 bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 items-center justify-center overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full opacity-30">
-                    <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500 rounded-full blur-[100px]"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-500 rounded-full blur-[100px]"></div>
+            {/* Panel kiri */}
+            <div className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 lg:flex">
+                <div className="absolute inset-0 opacity-30">
+                    <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-purple-500 blur-[100px]" />
+                    <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-pink-500 blur-[100px]" />
                 </div>
 
+                {/* Pattern tapak kaki */}
+                <svg
+                    className="absolute inset-0 w-full h-full opacity-10"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <pattern
+                        id="pattern-paws"
+                        x="0"
+                        y="0"
+                        width="100"
+                        height="100"
+                        patternUnits="userSpaceOnUse"
+                    >
+                        <path
+                            d="M40 30 A 10 10 0 1 0 60 30 A 10 10 0 1 0 40 30 Z M20 50 A 10 10 0 1 0 40 50 A 10 10 0 1 0 20 50 Z M60 50 A 10 10 0 1 0 80 50 A 10 10 0 1 0 60 50 Z M35 70 Q 50 90 65 70 Q 60 60 50 60 Q 40 60 35 70 Z"
+                            fill="currentColor"
+                        />
+                    </pattern>
+
+                    <rect
+                        x="0"
+                        y="0"
+                        width="100%"
+                        height="100%"
+                        fill="url(#pattern-paws)"
+                    />
+                </svg>
+
                 <div
-                    className={`relative z-10 p-12 max-w-lg flex flex-col items-center text-center text-white transition-all duration-1000 transform ${isMounted ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}`}
+                    className={`relative z-10 flex max-w-lg flex-col items-center p-12 text-center text-white transition-all duration-1000 ${
+                        isMounted
+                            ? "translate-x-0 opacity-100"
+                            : "-translate-x-12 opacity-0"
+                    }`}
                 >
                     <img
-                        src="/images/logo_puskeswan.png"
+                        src="/images/logo_puskeswan.webp"
                         alt="Logo Puskeswan Pariaman"
-                        className="w-32 sm:w-40 h-auto mb-8 drop-shadow-xl"
+                        className="mb-8 h-auto w-32 drop-shadow-xl sm:w-40"
                     />
 
-                    <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight mb-4 drop-shadow-lg">
-                        Pembaruan <br />
+                    <h1 className="mb-4 text-4xl font-extrabold leading-tight drop-shadow-lg sm:text-5xl">
+                        Pembaruan
+                        <br />
                         <span className="text-purple-300">Kata Sandi</span>
                     </h1>
-                    <p className="text-purple-100 text-lg leading-relaxed mb-10">
+
+                    <p className="text-lg leading-relaxed text-purple-100">
                         Keamanan data medis adalah prioritas kami. Buat kata
-                        sandi baru yang kuat dan mudah Anda ingat untuk kembali
-                        mengakses sistem Puskeswan.
+                        sandi baru yang kuat untuk kembali mengakses sistem
+                        Puskeswan dengan aman.
                     </p>
                 </div>
             </div>
 
-            <div className="relative flex-1 flex flex-col justify-center items-center w-full lg:w-1/2 p-4 sm:p-8 overflow-y-auto">
-                <div className="absolute inset-0 lg:hidden bg-gradient-to-br from-purple-50/90 via-white to-purple-100/80 -z-10" />
-                <div className="absolute -top-24 -left-24 w-72 h-72 bg-purple-300/30 rounded-full blur-3xl lg:hidden -z-10 animate-pulse" />
+            {/* Panel kanan */}
+            <div className="relative flex w-full flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-2 sm:p-8 lg:w-1/2">
+                <div className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-50/90 via-white to-purple-100/80 lg:hidden" />
+
+                <div className="absolute -left-24 -top-24 -z-10 h-72 w-72 animate-pulse rounded-full bg-purple-300/30 blur-3xl lg:hidden" />
 
                 <div
-                    className={`w-full max-w-sm transition-all duration-700 delay-150 transform ${isMounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
+                    className={`w-full max-w-sm transform transition-all delay-150 duration-700 ${
+                        isMounted
+                            ? "translate-y-0 opacity-100"
+                            : "translate-y-8 opacity-0"
+                    }`}
                 >
                     <InteractiveMascot
                         focusField={focusField}
@@ -330,31 +402,42 @@ function ResetPasswordFormContent({ token, email }: Props) {
                         isSubmitting={isSubmitting}
                     />
 
-                    <div className="backdrop-blur-xl border border-white/50 lg:border-gray-100 shadow-2xl shadow-purple-900/5 rounded-3xl p-6 sm:p-8 z-20 relative bg-white/80 lg:bg-white transition-all duration-500">
-                        <div className="text-center mb-5">
+                    {/* Card form */}
+                    <div className="relative z-20 rounded-3xl border border-white/50 bg-white/80 p-4 shadow-2xl shadow-purple-900/5 backdrop-blur-xl transition-all duration-500 sm:p-8 lg:border-gray-100 lg:bg-white">
+                        <div className="mb-3 text-center sm:mb-5">
                             <img
-                                src="/images/logo_puskeswan.png"
+                                src="/images/logo_puskeswan.webp"
                                 alt="Logo Puskeswan Pariaman"
-                                className="w-16 sm:w-20 h-auto mx-auto mb-3 lg:hidden drop-shadow-sm"
+                                className="mx-auto mb-2 h-auto w-12 drop-shadow-sm sm:mb-3 sm:w-20 lg:hidden"
                             />
+
                             <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
                                 Buat Sandi Baru
                             </h2>
-                            <p className="text-sm mt-1.5 text-gray-500 leading-relaxed">
+
+                            <p className="mt-1.5 text-sm leading-relaxed text-gray-500">
                                 Masukkan dan konfirmasi kata sandi baru untuk
                                 akun petugas Anda.
                             </p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-3.5">
-                            <div className="space-y-1.5">
-                                <label className="block text-xs font-bold text-gray-700">
+                        <form
+                            onSubmit={handleSubmit}
+                            className="space-y-2.5 sm:space-y-3.5"
+                        >
+                            {/* Email */}
+                            <div className="space-y-1">
+                                <label
+                                    htmlFor="reset-email"
+                                    className="block text-xs font-bold text-gray-700"
+                                >
                                     Email Petugas Terdaftar
                                 </label>
-                                <div className="relative group">
-                                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
                                         <svg
-                                            className="w-4 h-4"
+                                            className="h-4 w-4"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -367,23 +450,31 @@ function ResetPasswordFormContent({ token, email }: Props) {
                                             />
                                         </svg>
                                     </span>
+
                                     <input
+                                        id="reset-email"
                                         type="email"
+                                        autoComplete="email"
                                         value={data.email}
                                         disabled
-                                        className="w-full h-11 pl-10 pr-4 text-sm rounded-xl border border-gray-200 bg-gray-100/80 text-gray-500 font-medium cursor-not-allowed"
+                                        className="h-11 w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-100/80 pl-10 pr-4 text-sm font-medium text-gray-500"
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="block text-xs font-bold text-gray-700">
+                            {/* Kata sandi baru */}
+                            <div className="space-y-1">
+                                <label
+                                    htmlFor="reset-password"
+                                    className="block text-xs font-bold text-gray-700"
+                                >
                                     Kata Sandi Baru
                                 </label>
-                                <div className="relative group">
-                                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-600 transition-colors duration-300">
+
+                                <div className="group relative">
+                                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-purple-600">
                                         <svg
-                                            className="w-4 h-4"
+                                            className="h-4 w-4"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -396,10 +487,14 @@ function ResetPasswordFormContent({ token, email }: Props) {
                                             />
                                         </svg>
                                     </span>
+
                                     <input
+                                        id="reset-password"
+                                        name="password"
                                         type={
                                             showPassword ? "text" : "password"
                                         }
+                                        autoComplete="new-password"
                                         required
                                         value={data.password}
                                         disabled={isSubmitting}
@@ -418,63 +513,41 @@ function ResetPasswordFormContent({ token, email }: Props) {
                                             })
                                         }
                                         placeholder="••••••••"
-                                        className="w-full h-11 pl-10 pr-11 text-sm rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all placeholder:text-gray-400 font-medium disabled:bg-gray-100/50 disabled:text-gray-400 disabled:cursor-not-allowed"
+                                        className={passwordInputClass}
                                     />
+
                                     <button
                                         type="button"
+                                        aria-label={
+                                            showPassword
+                                                ? "Sembunyikan kata sandi"
+                                                : "Tampilkan kata sandi"
+                                        }
+                                        aria-pressed={showPassword}
                                         disabled={isSubmitting}
                                         onClick={() =>
-                                            setShowPassword(!showPassword)
+                                            setShowPassword((value) => !value)
                                         }
-                                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center focus:outline-none text-gray-400 hover:text-purple-600 disabled:text-gray-300 transition-colors"
+                                        className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 transition-colors hover:text-purple-600 focus:outline-none disabled:text-gray-300"
                                     >
-                                        {showPassword ? (
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
-                                                />
-                                            </svg>
-                                        ) : (
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                />
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                                />
-                                            </svg>
-                                        )}
+                                        {renderEyeIcon(showPassword)}
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="block text-xs font-bold text-gray-700">
+                            {/* Konfirmasi kata sandi */}
+                            <div className="space-y-1">
+                                <label
+                                    htmlFor="reset-password-confirmation"
+                                    className="block text-xs font-bold text-gray-700"
+                                >
                                     Konfirmasi Sandi Baru
                                 </label>
-                                <div className="relative group">
-                                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-600 transition-colors duration-300">
+
+                                <div className="group relative">
+                                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-purple-600">
                                         <svg
-                                            className="w-4 h-4"
+                                            className="h-4 w-4"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -487,12 +560,16 @@ function ResetPasswordFormContent({ token, email }: Props) {
                                             />
                                         </svg>
                                     </span>
+
                                     <input
+                                        id="reset-password-confirmation"
+                                        name="password_confirmation"
                                         type={
                                             showPasswordConfirmation
                                                 ? "text"
                                                 : "password"
                                         }
+                                        autoComplete="new-password"
                                         required
                                         value={data.password_confirmation}
                                         disabled={isSubmitting}
@@ -514,52 +591,27 @@ function ResetPasswordFormContent({ token, email }: Props) {
                                             })
                                         }
                                         placeholder="••••••••"
-                                        className="w-full h-11 pl-10 pr-11 text-sm rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all placeholder:text-gray-400 font-medium disabled:bg-gray-100/50 disabled:text-gray-400 disabled:cursor-not-allowed"
+                                        className={passwordInputClass}
                                     />
+
                                     <button
                                         type="button"
+                                        aria-label={
+                                            showPasswordConfirmation
+                                                ? "Sembunyikan konfirmasi kata sandi"
+                                                : "Tampilkan konfirmasi kata sandi"
+                                        }
+                                        aria-pressed={showPasswordConfirmation}
                                         disabled={isSubmitting}
                                         onClick={() =>
                                             setShowPasswordConfirmation(
-                                                !showPasswordConfirmation,
+                                                (value) => !value,
                                             )
                                         }
-                                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center focus:outline-none text-gray-400 hover:text-purple-600 disabled:text-gray-300 transition-colors"
+                                        className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 transition-colors hover:text-purple-600 focus:outline-none disabled:text-gray-300"
                                     >
-                                        {showPasswordConfirmation ? (
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
-                                                />
-                                            </svg>
-                                        ) : (
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                />
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth="2"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                                />
-                                            </svg>
+                                        {renderEyeIcon(
+                                            showPasswordConfirmation,
                                         )}
                                     </button>
                                 </div>
@@ -571,26 +623,24 @@ function ResetPasswordFormContent({ token, email }: Props) {
                                 variant="primary"
                                 disabled={isSubmitting}
                                 isLoading={isSubmitting}
-                                className="w-full h-11 text-sm font-bold transition-all mt-3 bg-purple-700 hover:bg-purple-800 shadow-lg shadow-purple-600/30 active:scale-[0.98]"
+                                className="mt-2 h-10 w-full bg-purple-700 text-sm font-bold shadow-lg shadow-purple-600/30 transition-all hover:bg-purple-800 active:scale-[0.98] sm:mt-3 sm:h-11"
                             >
                                 Simpan Kata Sandi
                             </Button>
                         </form>
 
-                        <div className="mt-5 text-center">
+                        <div className="mt-3 text-center text-xs font-semibold text-gray-500 sm:mt-5">
+                            Batal mengatur ulang?{" "}
                             <Link
                                 href="/login"
-                                className="text-[12px] font-semibold text-gray-500 hover:text-purple-600 transition-colors"
+                                className="text-purple-700 transition-colors hover:text-purple-600"
                             >
-                                Batal mengatur ulang?{" "}
-                                <span className="text-purple-700">
-                                    Kembali ke Login
-                                </span>
+                                Kembali ke Login
                             </Link>
                         </div>
                     </div>
 
-                    <p className="text-center text-xs mt-5 lg:mt-4 font-medium mb-4 text-gray-400">
+                    <p className="mb-1 mt-3 text-center text-[10px] font-medium text-gray-400 sm:mb-4 sm:mt-6 sm:text-xs lg:mt-4">
                         © {new Date().getFullYear()} Puskeswan. Hak Cipta
                         Dilindungi.
                     </p>

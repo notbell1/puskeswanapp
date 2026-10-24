@@ -39,6 +39,8 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
 
+        $normalizedRole = null;
+
         if ($user) {
             $user->loadMissing(['role', 'staf']);
             $rawRole = strtoupper((string) ($user->role?->nama_role ?? ''));
@@ -87,23 +89,36 @@ class HandleInertiaRequests extends Middleware
                 ->where('status_antrean', 'Antri')
                 ->count();
 
-            $waitingList = Visit::with(['animal.pemilik', 'animal.jenisHewan'])
-                ->whereDate('tgl_kunjungan', $today)
-                ->where('status_antrean', 'Antri')
-                ->orderBy('tgl_kunjungan', 'asc')
-                ->take(6)
-                ->get()
-                ->map(fn ($v) => [
-                    'id' => $v->id,
-                    'no_rm' => $v->animal?->no_rm ?? '-',
-                    'nama_hewan' => $v->animal?->nama_hewan ?? 'Hewan Pasien',
-                    'jenis_hewan' => $v->animal?->jenisHewan?->nama_jenis ?? 'Hewan',
-                    'pemilik' => $v->animal?->pemilik?->nama_lengkap ?? 'Umum',
-                    'anamnesa' => $v->anamnesa ?? '-',
-                    'jam_kunjungan' => $v->tgl_kunjungan ? $v->tgl_kunjungan->format('H:i').' WIB' : '-',
-                    'waktu_relatif' => $v->tgl_kunjungan ? $v->tgl_kunjungan->diffForHumans() : '-',
+            $waitingList = [];
+            if ($queueCount > 0) {
+                $waitingList = Visit::with([
+                    'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan',
+                    'animal.pemilik:id,nama_lengkap',
+                    'animal.jenisHewan:id,nama_jenis',
                 ])
-                ->all();
+                    ->whereDate('tgl_kunjungan', $today)
+                    ->where('status_antrean', 'Antri')
+                    ->orderBy('tgl_kunjungan', 'asc')
+                    ->take(6)
+                    ->get([
+                        'id',
+                        'id_hewan',
+                        'tgl_kunjungan',
+                        'anamnesa',
+                        'status_antrean',
+                    ])
+                    ->map(fn ($v) => [
+                        'id' => $v->id,
+                        'no_rm' => $v->animal?->no_rm ?? '-',
+                        'nama_hewan' => $v->animal?->nama_hewan ?? 'Hewan Pasien',
+                        'jenis_hewan' => $v->animal?->jenisHewan?->nama_jenis ?? 'Hewan',
+                        'pemilik' => $v->animal?->pemilik?->nama_lengkap ?? 'Umum',
+                        'anamnesa' => $v->anamnesa ?? '-',
+                        'jam_kunjungan' => $v->tgl_kunjungan ? $v->tgl_kunjungan->format('H:i').' WIB' : '-',
+                        'waktu_relatif' => $v->tgl_kunjungan ? $v->tgl_kunjungan->diffForHumans() : '-',
+                    ])
+                    ->all();
+            }
 
             $queueSummary = [
                 'count' => $queueCount,

@@ -43,7 +43,7 @@ class RoleMiddleware
         $allowedRoles = array_map('strtoupper', $roles);
 
         if (! in_array($userRole, $allowedRoles, true)) {
-            Log::warning('PERINGATAN KEAMANAN: Percobaan Akses Lintas Peran Ditolak (Anti-IDOR)', [
+            Log::warning('PERINGATAN KEAMANAN: Percobaan Akses Lintas Peran Ditolak', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'user_role' => $userRole,
@@ -53,7 +53,7 @@ class RoleMiddleware
                 'user_agent' => $request->userAgent(),
             ]);
 
-            abort(403, 'Anda tidak memiliki wewenang atau hak akses untuk membuka halaman ini.');
+            abort(403, 'Anda tidak memiliki izin untuk mengakses halaman ini, silakan hubungi Administrator');
         }
 
         return $next($request);

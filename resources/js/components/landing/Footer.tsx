@@ -34,7 +34,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                             className="flex items-center gap-2.5 group focus:outline-none focus:ring-0 [-webkit-tap-highlight-color:transparent]"
                         >
                             <img
-                                src="/images/logo_puskeswan.png"
+                                src="/images/logo_puskeswan.webp"
                                 alt="Logo Puskeswan"
                                 className="h-8 sm:h-9 w-auto object-contain bg-white rounded-lg p-0.5 transition-transform duration-200 group-hover:scale-105"
                             />

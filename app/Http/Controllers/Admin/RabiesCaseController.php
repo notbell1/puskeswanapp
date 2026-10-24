@@ -21,7 +21,10 @@ class RabiesCaseController extends Controller
         $statusVar = $request->input('status_var');
         $statusHewan = $request->input('status_hewan');
 
-        $query = RabiesCase::with(['jenisHewan', 'admin'])
+        $query = RabiesCase::with([
+            'jenisHewan:id,nama_jenis',
+            'admin:id,name',
+        ])
             ->when($statusVar, function ($q, $status) {
                 $q->where('status_var', $status);
             })
@@ -74,14 +77,19 @@ class RabiesCaseController extends Controller
 
         $animalTypes = AnimalType::all(['id', 'nama_jenis']);
 
-        $totalKasus = RabiesCase::count();
-        $totalVar = RabiesCase::where('status_var', 'like', '%Sudah%')
-            ->orWhere('status_var', 'like', '%Diberikan%')
-            ->count();
-        $totalObservasi = RabiesCase::where('status_hewan', 'like', '%Observasi%')->count();
-        $totalMati = RabiesCase::where('status_hewan', 'like', '%Mati%')
-            ->orWhere('status_hewan', 'like', '%Positif%')
-            ->count();
+        $summary = RabiesCase::query()
+            ->selectRaw('
+                COUNT(*) as total_kasus,
+                SUM(CASE WHEN status_var LIKE ? OR status_var LIKE ? THEN 1 ELSE 0 END) as total_var,
+                SUM(CASE WHEN status_hewan LIKE ? THEN 1 ELSE 0 END) as total_observasi,
+                SUM(CASE WHEN status_hewan LIKE ? OR status_hewan LIKE ? THEN 1 ELSE 0 END) as total_mati
+            ', ['%Sudah%', '%Diberikan%', '%Observasi%', '%Mati%', '%Positif%'])
+            ->first();
+
+        $totalKasus = (int) ($summary->total_kasus ?? 0);
+        $totalVar = (int) ($summary->total_var ?? 0);
+        $totalObservasi = (int) ($summary->total_observasi ?? 0);
+        $totalMati = (int) ($summary->total_mati ?? 0);
 
         $suggestedNoSurat = RabiesCase::generateNextNoSurat();
 

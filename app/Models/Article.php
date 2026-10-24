@@ -50,6 +50,8 @@ class Article extends Model
 
     /**
      * Get the user author of this article.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function penulis(): BelongsTo
     {
@@ -58,6 +60,8 @@ class Article extends Model
 
     /**
      * Get the category of this article.
+     *
+     * @return BelongsTo<Category, $this>
      */
     public function kategori(): BelongsTo
     {
@@ -66,6 +70,8 @@ class Article extends Model
 
     /**
      * Get the staff member credited in this article.
+     *
+     * @return BelongsTo<Staff, $this>
      */
     public function staf(): BelongsTo
     {

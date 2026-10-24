@@ -12,13 +12,15 @@ export default function AboutSection() {
                         Profil Instansi &amp; Pelayanan Publik
                     </span>
                     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight">
-                        UPT Puskeswan &amp; Inseminasi Buatan{" "}
+                        UPT Puskeswan &amp; Inseminasi Buatan <br></br>
                         <span className="text-purple-700">Kota Pariaman</span>
                     </h2>
                     <p className="mt-2.5 text-xs sm:text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                        Unit Pelaksana Teknis Daerah (UPTD) di bawah naungan Dinas Pertanian Pangan dan
-                        Perikanan Kota Pariaman yang berkomitmen menyelenggarakan pelayanan medik veteriner,
-                        pengendalian penyakit hewan menular, dan optimalisasi reproduksi ternak masyarakat.
+                        Unit Pelaksana Teknis Daerah (UPTD) di bawah naungan
+                        Dinas Pertanian Pangan dan Perikanan Kota Pariaman yang
+                        berkomitmen menyelenggarakan pelayanan medik veteriner,
+                        pengendalian penyakit hewan menular, dan optimalisasi
+                        reproduksi ternak masyarakat.
                     </p>
                 </div>
 
@@ -27,26 +29,32 @@ export default function AboutSection() {
                         <div className="space-y-3">
                             <div className="flex items-center gap-3">
                                 <img
-                                    src="/images/logo-pariaman.png"
+                                    src="/images/logo-pariaman.webp"
                                     alt="Logo Pemerintah Kota Pariaman"
                                     className="h-10 sm:h-11 w-auto object-contain shrink-0"
                                 />
                                 <div>
                                     <h3 className="text-sm sm:text-base font-extrabold text-gray-900 leading-snug">
-                                        Garda Terdepan Kesehatan Hewan &amp; Ketahanan Pangan Daerah
+                                        Garda Terdepan Kesehatan Hewan &amp;
+                                        Ketahanan Pangan Daerah
                                     </h3>
                                     <p className="text-[11px] sm:text-xs font-semibold text-purple-700">
-                                        Pemerintah Kota Pariaman &bull; Sumatera Barat
+                                        Pemerintah Kota Pariaman &bull; Sumatera
+                                        Barat
                                     </p>
                                 </div>
                             </div>
 
                             <p className="text-xs text-gray-600 leading-relaxed">
-                                UPT Puskeswan dan IB Kota Pariaman hadir memberikan layanan kesehatan hewan yang
-                                profesional, responsif, dan terintegrasi secara digital. Kami melayani pemeriksaan klinis
-                                hewan kesayangan (kucing, anjing) maupun hewan ternak produktif (sapi, kerbau, kambing,
-                                domba, dan unggas) baik secara pasif di klinik maupun aktif melalui kunjungan lapangan
-                                ke sentra kelompok tani ternak.
+                                UPT Puskeswan dan IB Kota Pariaman hadir
+                                memberikan layanan kesehatan hewan yang
+                                profesional, responsif, dan terintegrasi secara
+                                digital. Kami melayani pemeriksaan klinis hewan
+                                kesayangan (kucing, anjing) maupun hewan ternak
+                                produktif (sapi, kerbau, kambing, domba, dan
+                                unggas) baik secara pasif di klinik maupun aktif
+                                melalui kunjungan lapangan ke sentra kelompok
+                                tani ternak.
                             </p>
                         </div>
 
@@ -57,8 +65,10 @@ export default function AboutSection() {
                                     Fokus Kesehatan Masyarakat Veteriner
                                 </span>
                                 <p className="text-[11px] text-gray-600 leading-relaxed">
-                                    Mempertahankan status wilayah bebas penyakit zoonosis strategis melalui vaksinasi
-                                    Rabies rutin, surveilans GHPR, serta pengendalian PMK dan LSD.
+                                    Mempertahankan status wilayah bebas penyakit
+                                    zoonosis strategis melalui vaksinasi Rabies
+                                    rutin, surveilans GHPR, serta pengendalian
+                                    PMK dan LSD.
                                 </p>
                             </div>
 
@@ -68,8 +78,10 @@ export default function AboutSection() {
                                     Akselerasi Populasi &amp; Genetik Ternak
                                 </span>
                                 <p className="text-[11px] text-gray-600 leading-relaxed">
-                                    Meningkatkan produktivitas peternak lokal melalui layanan Inseminasi Buatan (IB)
-                                    bersertifikat, pemeriksaan kebuntingan (PKB), dan penanganan gangguan reproduksi.
+                                    Meningkatkan produktivitas peternak lokal
+                                    melalui layanan Inseminasi Buatan (IB)
+                                    bersertifikat, pemeriksaan kebuntingan
+                                    (PKB), dan penanganan gangguan reproduksi.
                                 </p>
                             </div>
                         </div>
@@ -84,32 +96,41 @@ export default function AboutSection() {
                                 Standar Layanan Medik Veteriner Resmi
                             </h3>
                             <p className="text-xs text-purple-100/90 leading-relaxed">
-                                Seluruh prosedur medis ditangani langsung oleh Dokter Hewan ber-STRV/SIP resmi dan
-                                Paramedis Veteriner terlatih.
+                                Seluruh prosedur medis ditangani langsung oleh
+                                Dokter Hewan ber-STRV/SIP resmi dan Paramedis
+                                Veteriner terlatih.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2.5">
                             <div className="p-3 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15">
-                                <span className="block text-lg sm:text-xl font-black text-white">100%</span>
+                                <span className="block text-lg sm:text-xl font-black text-white">
+                                    100%
+                                </span>
                                 <span className="text-[11px] text-purple-100 font-medium leading-tight block mt-0.5">
                                     Rekam Medis Terintegrasi Digital
                                 </span>
                             </div>
                             <div className="p-3 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15">
-                                <span className="block text-lg sm:text-xl font-black text-emerald-300">Gratis</span>
+                                <span className="block text-lg sm:text-xl font-black text-emerald-300">
+                                    Gratis
+                                </span>
                                 <span className="text-[11px] text-purple-100 font-medium leading-tight block mt-0.5">
                                     Program Vaksinasi Rabies Terjadwal
                                 </span>
                             </div>
                             <div className="p-3 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15">
-                                <span className="block text-lg sm:text-xl font-black text-amber-300">14 Hari</span>
+                                <span className="block text-lg sm:text-xl font-black text-amber-300">
+                                    14 Hari
+                                </span>
                                 <span className="text-[11px] text-purple-100 font-medium leading-tight block mt-0.5">
                                     Protokol Observasi Suspek GHPR
                                 </span>
                             </div>
                             <div className="p-3 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15">
-                                <span className="block text-lg sm:text-xl font-black text-cyan-300">-196°C</span>
+                                <span className="block text-lg sm:text-xl font-black text-cyan-300">
+                                    -196°C
+                                </span>
                                 <span className="text-[11px] text-purple-100 font-medium leading-tight block mt-0.5">
                                     Standar Rantai Dingin Straw Semen IB
                                 </span>
@@ -117,8 +138,13 @@ export default function AboutSection() {
                         </div>
 
                         <div className="pt-2 border-t border-white/15 flex items-center justify-between text-[11px] text-purple-100">
-                            <span>📍 Jl. Sentot Ali Basa, Jati Mudik, Pariaman Tengah</span>
-                            <span className="font-bold text-white shrink-0 ml-2">Senin – Jumat</span>
+                            <span>
+                                📍 Jl. Sentot Ali Basa, Jati Mudik, Pariaman
+                                Tengah
+                            </span>
+                            <span className="font-bold text-white shrink-0 ml-2">
+                                Senin – Jumat
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -146,8 +172,10 @@ export default function AboutSection() {
                                     Pemeriksaan &amp; Pengobatan Klinis
                                 </h3>
                                 <p className="mt-1 text-xs text-gray-500 leading-relaxed">
-                                    Diagnosa medis, terapi injeksi, bedah minor (sterilisasi/penanganan luka), serta
-                                    konsultasi nutrisi hewan kesayangan dan ternak.
+                                    Diagnosa medis, terapi injeksi, bedah minor
+                                    (sterilisasi/penanganan luka), serta
+                                    konsultasi nutrisi hewan kesayangan dan
+                                    ternak.
                                 </p>
                             </div>
                         </div>
@@ -179,8 +207,10 @@ export default function AboutSection() {
                                     Vaksinasi &amp; Surveilans Zoonosis
                                 </h3>
                                 <p className="mt-1 text-xs text-gray-500 leading-relaxed">
-                                    Vaksinasi Rabies bagi HPR (anjing, kucing, kera), vaksinasi PMK/SE pada sapi dan
-                                    kerbau, serta penerbitan surat keterangan observasi gigitan.
+                                    Vaksinasi Rabies bagi HPR (anjing, kucing,
+                                    kera), vaksinasi PMK/SE pada sapi dan
+                                    kerbau, serta penerbitan surat keterangan
+                                    observasi gigitan.
                                 </p>
                             </div>
                         </div>
@@ -212,8 +242,10 @@ export default function AboutSection() {
                                     Inseminasi Buatan (IB) &amp; PKB
                                 </h3>
                                 <p className="mt-1 text-xs text-gray-500 leading-relaxed">
-                                    Pelayanan kawin suntik ternak sapi dan kerbau menggunakan straw semen beku
-                                    Simmental &amp; Limousin disertai Pemeriksaan Kebuntingan (PKB).
+                                    Pelayanan kawin suntik ternak sapi dan
+                                    kerbau menggunakan straw semen beku
+                                    Simmental &amp; Limousin disertai
+                                    Pemeriksaan Kebuntingan (PKB).
                                 </p>
                             </div>
                         </div>
@@ -245,8 +277,10 @@ export default function AboutSection() {
                                     Rekam Medis Elektronik Mandiri
                                 </h3>
                                 <p className="mt-1 text-xs text-gray-500 leading-relaxed">
-                                    Pencatatan riwayat triase, anamnesa, diagnosa dokter, hingga terapi obat secara
-                                    transparan yang dapat dicek dan dicetak mandiri oleh pemilik.
+                                    Pencatatan riwayat triase, anamnesa,
+                                    diagnosa dokter, hingga terapi obat secara
+                                    transparan yang dapat dicek dan dicetak
+                                    mandiri oleh pemilik.
                                 </p>
                             </div>
                         </div>

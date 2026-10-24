@@ -13,14 +13,14 @@ use Inertia\Response;
 class InventoryController extends Controller
 {
     /**
-     * Tampilkan daftar inventaris dan peralatan Puskeswan.
+     * Tampilkan daftar inventaris dan peralatan.
      */
     public function index(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
         $conditionFilter = $request->input('kondisi');
 
-        $inventories = Inventory::with('pengelola')
+        $inventories = Inventory::with('pengelola:id,name')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('kode_barang', 'like', "%{$search}%")

@@ -5,9 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <link rel="icon" type="image/png" href="/images/logo_puskeswan.png">
-        <link rel="shortcut icon" type="image/png" href="/images/logo_puskeswan.png">
-        <link rel="apple-touch-icon" href="/images/logo_puskeswan.png">
+        <link rel="icon" type="image/png" href="/images/logo_puskeswan.webp">
+        <link rel="shortcut icon" type="image/png" href="/images/logo_puskeswan.webp">
+        <link rel="apple-touch-icon" href="/images/logo_puskeswan.webp">
 
         <!-- Google Fonts: Plus Jakarta Sans (300, 400, 500, 700) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

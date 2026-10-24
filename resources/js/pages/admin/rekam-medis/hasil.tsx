@@ -488,7 +488,7 @@ export default function RekamMedisHasil({
                                 <div className="flex items-center justify-between gap-3 pb-1">
                                     <div className="w-[80px] shrink-0 flex items-center justify-center">
                                         <img
-                                            src="/images/logo-pariaman.png"
+                                            src="/images/logo-pariaman.webp"
                                             alt="Logo Kota Pariaman"
                                             style={{
                                                 height: "64px",
@@ -1288,7 +1288,7 @@ export default function RekamMedisHasil({
                                                 {selectedRecord.jenis_kelamin})
                                             </span>
                                         </div>
-                                         <div className="min-w-0">
+                                        <div className="min-w-0">
                                             <span className="text-gray-400 text-[10px] block leading-tight">
                                                 Umur & Warna:
                                             </span>

@@ -7,9 +7,6 @@ interface InteractiveMascotProps {
     isSubmitting: boolean;
 }
 
-/**
- * Maskot Dokter Hewan Interaktif (Disesuaikan untuk Lupa Sandi)
- */
 function InteractiveMascot({
     focusField,
     isSubmitting,
@@ -18,17 +15,19 @@ function InteractiveMascot({
 
     const leftEarTransform = isEmail ? "rotate(-6deg)" : "none";
     const rightEarTransform = isEmail ? "rotate(6deg)" : "none";
-    const eyeRy = "8"; // Mata selalu terbuka di form ini
+    const eyeRy = "8";
     const eyeFill = "#ffffff";
     const mouthPath = "M 55 74 Q 60 78 60 72 Q 60 78 65 74";
 
     return (
-        <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto -mb-4 sm:-mb-6 select-none pointer-events-none z-10 drop-shadow-xl transition-transform duration-500 hover:scale-105">
+        <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto -mb-4 sm:-mb-6 select-none pointer-events-none z-10 drop-shadow-xl transition-transform duration-500">
             <div className="absolute inset-0 rounded-full blur-xl animate-pulse transition-colors duration-500 bg-purple-300/40" />
 
             <svg
                 viewBox="0 0 120 120"
-                className={`relative w-full h-full transform transition-all duration-300 ${isSubmitting ? "animate-bounce" : ""}`}
+                className={`relative w-full h-full transform transition-all duration-300 ${
+                    isSubmitting ? "animate-bounce" : ""
+                }`}
             >
                 <path
                     d="M 28 42 L 18 16 L 46 28 Z"
@@ -36,11 +35,7 @@ function InteractiveMascot({
                     className="transition-all duration-300 origin-bottom-left"
                     style={{ transform: leftEarTransform }}
                 />
-                <path
-                    d="M 27 38 L 22 22 L 40 30 Z"
-                    fill="#f3e8ff"
-                    className="transition-colors duration-300"
-                />
+                <path d="M 27 38 L 22 22 L 40 30 Z" fill="#f3e8ff" />
 
                 <path
                     d="M 92 42 L 102 16 L 74 28 Z"
@@ -48,26 +43,10 @@ function InteractiveMascot({
                     className="transition-all duration-300 origin-bottom-right"
                     style={{ transform: rightEarTransform }}
                 />
-                <path
-                    d="M 93 38 L 98 22 L 80 30 Z"
-                    fill="#f3e8ff"
-                    className="transition-colors duration-300"
-                />
+                <path d="M 93 38 L 98 22 L 80 30 Z" fill="#f3e8ff" />
 
-                <circle
-                    cx="60"
-                    cy="62"
-                    r="38"
-                    fill="#9333ea"
-                    className="transition-colors duration-500"
-                />
-                <circle
-                    cx="60"
-                    cy="64"
-                    r="34"
-                    fill="#a855f7"
-                    className="transition-colors duration-500"
-                />
+                <circle cx="60" cy="62" r="38" fill="#9333ea" />
+                <circle cx="60" cy="64" r="34" fill="#a855f7" />
 
                 <path
                     d="M 42 30 Q 60 22 78 30 L 76 22 Q 60 16 44 22 Z"
@@ -97,7 +76,6 @@ function InteractiveMascot({
                         rx="7"
                         ry={eyeRy}
                         fill={eyeFill}
-                        className="transition-all duration-300"
                     />
                     <circle
                         cx={isEmail ? "45" : "48"}
@@ -121,7 +99,6 @@ function InteractiveMascot({
                         rx="7"
                         ry={eyeRy}
                         fill={eyeFill}
-                        className="transition-all duration-300"
                     />
                     <circle
                         cx={isEmail ? "75" : "72"}
@@ -166,10 +143,7 @@ function InteractiveMascot({
                     strokeWidth="1.5"
                 />
 
-                <g
-                    className="transition-all duration-300 ease-in-out"
-                    style={{ transformOrigin: "40px 88px" }}
-                >
+                <g style={{ transformOrigin: "40px 88px" }}>
                     <ellipse
                         cx="40"
                         cy="88"
@@ -184,10 +158,7 @@ function InteractiveMascot({
                     <circle cx="43" cy="87" r="1.5" fill="#d8b4fe" />
                 </g>
 
-                <g
-                    className="transition-all duration-300 ease-in-out"
-                    style={{ transformOrigin: "80px 88px" }}
-                >
+                <g style={{ transformOrigin: "80px 88px" }}>
                     <ellipse
                         cx="80"
                         cy="88"
@@ -209,13 +180,15 @@ function InteractiveMascot({
 function ForgotPasswordFormContent() {
     const { success, error } = useToast();
 
-    const [email, setEmail] = useState<string>("");
+    const [email, setEmail] = useState("");
     const [focusField, setFocusField] = useState<"idle" | "email">("idle");
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const [isSuccess, setIsSuccess] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
 
-    const [isMounted, setIsMounted] = useState<boolean>(false);
-    useEffect(() => setIsMounted(true), []);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -226,18 +199,18 @@ function ForgotPasswordFormContent() {
         }
 
         setIsSubmitting(true);
+
         router.post(
             "/forgot-password",
-            { email },
+            { email: email.trim() },
             {
                 onSuccess: () => {
                     setIsSuccess(true);
                     success(
-                        "Tautan pemulihan sandi telah dikirim ke email Anda.",
+                        "Jika email terdaftar, instruksi pemulihan akan dikirim ke email Anda.",
                     );
                 },
-                onError: (errs: any) => {
-                    setIsSubmitting(false);
+                onError: (errs) => {
                     const rawMsg = errs.email || Object.values(errs)[0];
                     error(String(rawMsg || "Gagal memproses permintaan."));
                 },
@@ -247,14 +220,16 @@ function ForgotPasswordFormContent() {
     };
 
     return (
-        <div className="flex h-[100dvh] w-full bg-gray-50 overflow-hidden font-sans relative flex-col lg:flex-row">
-            <div className="fixed top-5 left-5 sm:top-8 sm:left-8 lg:hidden z-50">
+        <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-gray-50 font-sans lg:flex-row">
+            {/* Tombol kembali untuk mobile */}
+            <div className="fixed left-5 top-5 z-50 sm:left-8 sm:top-8 lg:hidden">
                 <Link
                     href="/login"
-                    className="flex items-center justify-center w-10 h-10 rounded-full bg-white/80 backdrop-blur-md shadow-md border border-purple-100 text-gray-600 hover:text-purple-700 hover:bg-white active:scale-90 transition-all duration-200"
+                    aria-label="Kembali ke halaman login"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-100 bg-white/80 text-gray-600 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white hover:text-purple-700 active:scale-90"
                 >
                     <svg
-                        className="w-5 h-5 pr-0.5"
+                        className="h-5 w-5 pr-0.5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -269,72 +244,122 @@ function ForgotPasswordFormContent() {
                 </Link>
             </div>
 
-            <div className="hidden lg:flex relative w-1/2 bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 items-center justify-center overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full opacity-30">
-                    <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500 rounded-full blur-[100px]"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-500 rounded-full blur-[100px]"></div>
+            {/* Panel kiri */}
+            <div className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 lg:flex">
+                <div className="absolute inset-0 opacity-30">
+                    <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-purple-500 blur-[100px]" />
+                    <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-pink-500 blur-[100px]" />
                 </div>
 
+                {/* Pattern tapak kaki */}
+                <svg
+                    className="absolute inset-0 w-full h-full opacity-10"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <pattern
+                        id="pattern-paws"
+                        x="0"
+                        y="0"
+                        width="100"
+                        height="100"
+                        patternUnits="userSpaceOnUse"
+                    >
+                        <path
+                            d="M40 30 A 10 10 0 1 0 60 30 A 10 10 0 1 0 40 30 Z M20 50 A 10 10 0 1 0 40 50 A 10 10 0 1 0 20 50 Z M60 50 A 10 10 0 1 0 80 50 A 10 10 0 1 0 60 50 Z M35 70 Q 50 90 65 70 Q 60 60 50 60 Q 40 60 35 70 Z"
+                            fill="currentColor"
+                        />
+                    </pattern>
+
+                    <rect
+                        x="0"
+                        y="0"
+                        width="100%"
+                        height="100%"
+                        fill="url(#pattern-paws)"
+                    />
+                </svg>
+
                 <div
-                    className={`relative z-10 p-12 max-w-lg flex flex-col items-center text-center text-white transition-all duration-1000 transform ${isMounted ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}`}
+                    className={`relative z-10 flex max-w-lg flex-col items-center p-12 text-center text-white transition-all duration-1000 ${
+                        isMounted
+                            ? "translate-x-0 opacity-100"
+                            : "-translate-x-12 opacity-0"
+                    }`}
                 >
                     <img
-                        src="/images/logo_puskeswan.png"
+                        src="/images/logo_puskeswan.webp"
                         alt="Logo Puskeswan Pariaman"
-                        className="w-32 sm:w-40 h-auto mb-8 drop-shadow-xl"
+                        className="mb-8 h-auto w-32 drop-shadow-xl sm:w-40"
                     />
 
-                    <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight mb-4 drop-shadow-lg">
-                        Pemulihan <br />
+                    <h1 className="mb-4 text-4xl font-extrabold leading-tight drop-shadow-lg sm:text-5xl">
+                        Pemulihan
+                        <br />
                         <span className="text-purple-300">Akses Akun</span>
                     </h1>
-                    <p className="text-purple-100 text-lg leading-relaxed mb-10">
-                        Keamanan data medis adalah prioritas kami. Gunakan email
-                        resmi yang terdaftar pada sistem untuk mereset kata
-                        sandi Anda.
+
+                    <p className="text-lg leading-relaxed text-purple-100">
+                        Pulihkan akses akun Anda dengan aman menggunakan email
+                        resmi yang terdaftar pada sistem Puskeswan Pariaman.
                     </p>
                 </div>
             </div>
 
-            <div className="relative flex-1 flex flex-col justify-center items-center w-full lg:w-1/2 p-4 sm:p-8 overflow-y-auto">
-                <div className="absolute inset-0 lg:hidden bg-gradient-to-br from-purple-50/90 via-white to-purple-100/80 -z-10" />
-                <div className="absolute -top-24 -left-24 w-72 h-72 bg-purple-300/30 rounded-full blur-3xl lg:hidden -z-10 animate-pulse" />
+            {/* Panel kanan */}
+            <div className="relative flex w-full flex-1 flex-col items-center justify-center overflow-y-auto p-4 sm:p-8 lg:w-1/2">
+                <div className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-50/90 via-white to-purple-100/80 lg:hidden" />
+
+                <div className="absolute -left-24 -top-24 -z-10 h-72 w-72 animate-pulse rounded-full bg-purple-300/30 blur-3xl lg:hidden" />
 
                 <div
-                    className={`w-full max-w-sm transition-all duration-700 delay-150 transform ${isMounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
+                    className={`w-full max-w-sm transform transition-all delay-150 duration-700 ${
+                        isMounted
+                            ? "translate-y-0 opacity-100"
+                            : "translate-y-8 opacity-0"
+                    }`}
                 >
                     <InteractiveMascot
                         focusField={focusField}
                         isSubmitting={isSubmitting}
                     />
 
-                    <div className="backdrop-blur-xl border border-white/50 lg:border-gray-100 shadow-2xl shadow-purple-900/5 rounded-3xl p-6 sm:p-8 z-20 relative bg-white/80 lg:bg-white transition-all duration-500">
-                        <div className="text-center mb-6">
+                    {/* Card form */}
+                    <div className="relative z-20 rounded-3xl border border-white/50 bg-white/80 p-6 shadow-2xl shadow-purple-900/5 backdrop-blur-xl transition-all duration-500 sm:p-8 lg:border-gray-100 lg:bg-white">
+                        <div className="mb-6 text-center">
                             <img
-                                src="/images/logo_puskeswan.png"
+                                src="/images/logo_puskeswan.webp"
                                 alt="Logo Puskeswan Pariaman"
-                                className="w-16 sm:w-20 h-auto mx-auto mb-4 lg:hidden drop-shadow-sm"
+                                className="mx-auto mb-4 h-auto w-16 drop-shadow-sm sm:w-20 lg:hidden"
                             />
+
                             <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
-                                Lupa Kata Sandi?
-                            </h2>
-                            <p className="text-sm mt-2 text-gray-500 leading-relaxed">
                                 {isSuccess
-                                    ? "Tautan pemulihan telah dikirim. Silakan periksa kotak masuk email Anda."
-                                    : "Masukkan email yang terdaftar. Kami akan mengirimkan instruksi pemulihan ke email Anda."}
+                                    ? "Periksa Email Anda"
+                                    : "Lupa Kata Sandi?"}
+                            </h2>
+
+                            <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                                {isSuccess
+                                    ? "Jika email tersebut terdaftar, instruksi pemulihan akan dikirim. Silakan periksa kotak masuk atau folder spam."
+                                    : "Masukkan email petugas yang terdaftar. Kami akan mengirimkan instruksi untuk memulihkan akses akun Anda."}
                             </p>
                         </div>
 
                         {!isSuccess ? (
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-1.5">
-                                    <label className="block text-xs font-bold text-gray-700">
+                                    <label
+                                        htmlFor="email"
+                                        className="block text-xs font-bold text-gray-700"
+                                    >
                                         Email Petugas Terdaftar
                                     </label>
-                                    <div className="relative group">
-                                        <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-purple-600 transition-colors duration-300">
+
+                                    <div className="group relative">
+                                        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 transition-colors duration-300 group-focus-within:text-purple-600">
                                             <svg
-                                                className="w-4 h-4"
+                                                className="h-4 w-4"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -347,8 +372,12 @@ function ForgotPasswordFormContent() {
                                                 />
                                             </svg>
                                         </span>
+
                                         <input
+                                            id="email"
+                                            name="email"
                                             type="email"
+                                            autoComplete="email"
                                             required
                                             value={email}
                                             disabled={isSubmitting}
@@ -360,7 +389,7 @@ function ForgotPasswordFormContent() {
                                                 setEmail(e.target.value)
                                             }
                                             placeholder="nama@puskeswan.go.id"
-                                            className="w-full h-11 pl-10 pr-4 text-sm rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all placeholder:text-gray-400 font-medium disabled:bg-gray-100/50 disabled:text-gray-400 disabled:cursor-not-allowed"
+                                            className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50/50 pl-10 pr-4 text-sm font-medium transition-all placeholder:text-gray-400 focus:border-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-600 disabled:cursor-not-allowed disabled:bg-gray-100/50 disabled:text-gray-400"
                                         />
                                     </div>
                                 </div>
@@ -371,7 +400,7 @@ function ForgotPasswordFormContent() {
                                     variant="primary"
                                     disabled={isSubmitting}
                                     isLoading={isSubmitting}
-                                    className="w-full h-11 text-sm font-bold transition-all mt-4 bg-purple-700 hover:bg-purple-800 shadow-lg shadow-purple-600/30 active:scale-[0.98]"
+                                    className="mt-4 h-11 w-full text-sm font-bold shadow-lg shadow-purple-600/30 transition-all hover:bg-purple-800 active:scale-[0.98]"
                                 >
                                     Kirim Tautan Pemulihan
                                 </Button>
@@ -380,7 +409,7 @@ function ForgotPasswordFormContent() {
                             <div className="mt-6 flex flex-col gap-3">
                                 <Link
                                     href="/login"
-                                    className="flex items-center justify-center w-full h-11 rounded-xl bg-purple-50 text-purple-700 font-bold text-sm hover:bg-purple-100 transition-colors"
+                                    className="flex h-11 w-full items-center justify-center rounded-xl bg-purple-50 text-sm font-bold text-purple-700 transition-colors hover:bg-purple-100"
                                 >
                                     Kembali ke Halaman Login
                                 </Link>
@@ -388,21 +417,19 @@ function ForgotPasswordFormContent() {
                         )}
 
                         {!isSuccess && (
-                            <div className="mt-6 text-center">
+                            <div className="mt-6 text-center text-xs font-semibold text-gray-500">
+                                Ingat kata sandi Anda?{" "}
                                 <Link
                                     href="/login"
-                                    className="text-[12px] font-semibold text-gray-500 hover:text-purple-600 transition-colors"
+                                    className="text-purple-700 transition-colors hover:text-purple-600"
                                 >
-                                    Ingat kata sandi Anda?{" "}
-                                    <span className="text-purple-700">
-                                        Masuk di sini
-                                    </span>
+                                    Masuk di sini
                                 </Link>
                             </div>
                         )}
                     </div>
 
-                    <p className="text-center text-xs mt-6 lg:mt-4 font-medium mb-4 text-gray-400">
+                    <p className="mb-4 mt-6 text-center text-xs font-medium text-gray-400 lg:mt-4">
                         © {new Date().getFullYear()} Puskeswan. Hak Cipta
                         Dilindungi.
                     </p>

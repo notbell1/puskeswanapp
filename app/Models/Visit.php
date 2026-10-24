@@ -49,6 +49,8 @@ class Visit extends Model
 
     /**
      * Get the animal registered for this visit.
+     *
+     * @return BelongsTo<Animal, $this>
      */
     public function hewan(): BelongsTo
     {
@@ -57,6 +59,8 @@ class Visit extends Model
 
     /**
      * Alias for hewan() relationship to support Eloquent with('animal').
+     *
+     * @return BelongsTo<Animal, $this>
      */
     public function animal(): BelongsTo
     {
@@ -65,6 +69,8 @@ class Visit extends Model
 
     /**
      * Get the admin user who created this registration/visit.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function admin(): BelongsTo
     {
@@ -73,6 +79,8 @@ class Visit extends Model
 
     /**
      * Get the medical examination resulting from this visit (1:1).
+     *
+     * @return HasOne<Examination, $this>
      */
     public function examination(): HasOne
     {

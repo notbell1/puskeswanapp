@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Animal extends Model
 {
@@ -35,6 +36,8 @@ class Animal extends Model
 
     /**
      * Get the owner of this animal.
+     *
+     * @return BelongsTo<Owner, $this>
      */
     public function pemilik(): BelongsTo
     {
@@ -43,6 +46,8 @@ class Animal extends Model
 
     /**
      * Alias for pemilik() relationship.
+     *
+     * @return BelongsTo<Owner, $this>
      */
     public function owner(): BelongsTo
     {
@@ -51,6 +56,8 @@ class Animal extends Model
 
     /**
      * Get the animal type / species.
+     *
+     * @return BelongsTo<AnimalType, $this>
      */
     public function jenisHewan(): BelongsTo
     {
@@ -59,6 +66,8 @@ class Animal extends Model
 
     /**
      * Alias for jenisHewan() relationship.
+     *
+     * @return BelongsTo<AnimalType, $this>
      */
     public function animalType(): BelongsTo
     {
@@ -67,10 +76,22 @@ class Animal extends Model
 
     /**
      * Get all visits/queues for this animal.
+     *
+     * @return HasMany<Visit, $this>
      */
     public function visits(): HasMany
     {
         return $this->hasMany(Visit::class, 'id_hewan');
+    }
+
+    /**
+     * Get the latest visit for this animal.
+     *
+     * @return HasOne<Visit, $this>
+     */
+    public function latestVisit(): HasOne
+    {
+        return $this->hasOne(Visit::class, 'id_hewan')->latestOfMany('tgl_kunjungan');
     }
 
     /**

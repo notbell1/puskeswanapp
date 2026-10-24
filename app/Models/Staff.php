@@ -51,6 +51,14 @@ class Staff extends Model
 
     public static function syncUsersToStaff(): void
     {
+        $hasMissingStaff = User::whereNull('id_staf')
+            ->orWhereDoesntHave('staf')
+            ->exists();
+
+        if (! $hasMissingStaff) {
+            return;
+        }
+
         $usersWithoutStaff = User::with('role')
             ->where(function ($q) {
                 $q->whereNull('id_staf')

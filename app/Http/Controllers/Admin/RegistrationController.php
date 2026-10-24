@@ -26,7 +26,15 @@ class RegistrationController extends Controller
         $statusFilter = $request->input('status');
         $dateFilter = $request->input('tanggal', now()->toDateString());
 
-        $query = Visit::with(['animal.pemilik', 'animal.jenisHewan', 'examination.dokter.staf', 'admin'])
+        $query = Visit::with([
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
+            'animal.pemilik:id,nama_lengkap,nik,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan',
+            'examination.dokter:id,name,foto,id_staf',
+            'examination.dokter.staf:id,nama_staf,nip_strv,jabatan,foto',
+            'admin:id,name',
+        ])
             ->when($dateFilter, function ($q, $date) {
                 $q->whereDate('tgl_kunjungan', $date);
             })
@@ -93,11 +101,21 @@ class RegistrationController extends Controller
         $nextNoRm = Animal::generateNextNoRm();
 
         $today = now()->toDateString();
+        $summaryData = Visit::query()
+            ->whereDate('tgl_kunjungan', $today)
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as antri,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as periksa,
+                SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as selesai
+            ', ['Antri', 'Pemeriksaan', 'Selesai'])
+            ->first();
+
         $summary = [
-            'total_today' => Visit::whereDate('tgl_kunjungan', $today)->count(),
-            'antri_today' => Visit::whereDate('tgl_kunjungan', $today)->where('status_antrean', 'Antri')->count(),
-            'periksa_today' => Visit::whereDate('tgl_kunjungan', $today)->where('status_antrean', 'Pemeriksaan')->count(),
-            'selesai_today' => Visit::whereDate('tgl_kunjungan', $today)->where('status_antrean', 'Selesai')->count(),
+            'total_today' => (int) ($summaryData->total ?? 0),
+            'antri_today' => (int) ($summaryData->antri ?? 0),
+            'periksa_today' => (int) ($summaryData->periksa ?? 0),
+            'selesai_today' => (int) ($summaryData->selesai ?? 0),
         ];
 
         return Inertia::render('admin/rekam-medis/antrian', [
@@ -140,7 +158,10 @@ class RegistrationController extends Controller
             return response()->json(['found' => false, 'message' => 'NIK tidak boleh kosong.'], 400);
         }
 
-        $owner = Owner::with(['animals.jenisHewan'])
+        $owner = Owner::with([
+            'animals.jenisHewan:id,nama_jenis',
+            'animals.latestVisit',
+        ])
             ->where('nik', $nik)
             ->first();
 
@@ -153,7 +174,7 @@ class RegistrationController extends Controller
         }
 
         $animals = $owner->animals->map(function ($animal) {
-            $lastVisit = $animal->visits()->latest('tgl_kunjungan')->first();
+            $lastVisit = $animal->latestVisit;
 
             return [
                 'id' => $animal->id,

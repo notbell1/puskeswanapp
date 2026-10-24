@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\AuthSecurityService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->singleton(AuthSecurityService::class);
+    }
 
     /**
      * Bootstrap any application services.

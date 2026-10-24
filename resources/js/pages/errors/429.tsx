@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Head, router } from "@inertiajs/react";
 import { Button } from "@/components/ui";
 
@@ -19,6 +19,12 @@ export default function Error429({
         Math.max(0, remaining_seconds),
     );
 
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     useEffect(() => {
         setSecondsLeft(Math.max(0, remaining_seconds));
     }, [remaining_seconds]);
@@ -36,6 +42,7 @@ export default function Error429({
                     router.visit("/");
                     return 0;
                 }
+
                 return prev - 1;
             });
         }, 1000);
@@ -53,144 +60,240 @@ export default function Error429({
         if (hrs > 0) {
             return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
         }
+
         return `${pad(mins)}:${pad(secs)}`;
     };
 
     return (
-        <div className="min-h-screen relative flex items-center justify-center p-4 sm:p-6 font-sans overflow-hidden bg-gradient-to-br from-gray-900 via-purple-950 to-black text-white">
-            <Head title={`${status} Terlalu Banyak Permintaan`} />
+        <>
+            <Head title={`${status} - Terlalu Banyak Permintaan`} />
 
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-[100px] pointer-events-none animate-pulse" />
-            <div
-                className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none animate-pulse"
-                style={{ animationDelay: "2s" }}
-            />
-
-            <div className="relative w-full max-w-lg bg-gray-900/80 backdrop-blur-2xl rounded-[2.5rem] p-6 sm:p-10 border border-red-500/30 shadow-2xl shadow-red-950/50 text-center overflow-hidden z-10">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.04] z-0">
-                    <span className="text-[9rem] sm:text-[14rem] font-black text-white leading-none">
-                        429
-                    </span>
-                </div>
-
-                <div className="relative z-10">
-                    <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-6">
-                        <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping opacity-75 duration-1000" />
-                        <div className="relative flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-red-600 to-rose-700 rounded-2xl shadow-xl shadow-red-600/40 border border-red-400/30 text-white transform hover:scale-105 transition-transform duration-300">
-                            <svg
-                                className="w-8 h-8 sm:w-10 sm:h-10 text-white"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="1.8"
-                                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-                                />
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2.2"
-                                    d="M12 8v5m0 3h.01"
-                                />
-                            </svg>
-                            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                                <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-gray-900" />
-                            </span>
-                        </div>
+            <div className="flex min-h-screen flex-col bg-gray-50 font-sans lg:h-screen lg:flex-row">
+                {/* Panel kiri */}
+                <section className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 lg:flex">
+                    {/* Background accents */}
+                    <div className="absolute inset-0 opacity-30">
+                        <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-purple-500 blur-[100px]" />
+                        <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-pink-500 blur-[100px]" />
                     </div>
 
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[11px] font-black tracking-widest uppercase mb-3">
-                        <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                        SISTEM PERTAHANAN AKTIF • TIER 2
-                    </div>
+                    {/* Pattern tapak kaki */}
+                    <svg
+                        className="absolute inset-0 w-full h-full opacity-10"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                    >
+                        <pattern
+                            id="pattern-paws"
+                            x="0"
+                            y="0"
+                            width="100"
+                            height="100"
+                            patternUnits="userSpaceOnUse"
+                        >
+                            <path
+                                d="M40 30 A 10 10 0 1 0 60 30 A 10 10 0 1 0 40 30 Z M20 50 A 10 10 0 1 0 40 50 A 10 10 0 1 0 20 50 Z M60 50 A 10 10 0 1 0 80 50 A 10 10 0 1 0 60 50 Z M35 70 Q 50 90 65 70 Q 60 60 50 60 Q 40 60 35 70 Z"
+                                fill="currentColor"
+                            />
+                        </pattern>
 
-                    <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
-                        429 Too Many Requests
-                    </h1>
-                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-sm mx-auto mb-6">
-                        {message ||
-                            "Aktivitas mencurigakan terdeteksi berulang kali (3x Cooldown). Akses dari perangkat dan jaringan Anda diblokir sementara demi keamanan sistem."}
-                    </p>
+                        <rect
+                            x="0"
+                            y="0"
+                            width="100%"
+                            height="100%"
+                            fill="url(#pattern-paws)"
+                        />
+                    </svg>
 
-                    <div className="mb-6 p-4 rounded-2xl bg-black/40 border border-gray-800 text-left flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0">
+                    {/* Konten panel kiri */}
+                    <div
+                        className={`relative z-10 flex max-w-lg flex-col items-center p-10 text-center text-white transition-all duration-700 xl:p-12 ${
+                            isMounted
+                                ? "translate-x-0 opacity-100"
+                                : "-translate-x-8 opacity-0"
+                        }`}
+                    >
+                        <img
+                            src="/images/logo_puskeswan.png"
+                            alt="Logo Puskeswan Pariaman"
+                            className="mb-8 h-auto w-32 drop-shadow-xl xl:w-40"
+                        />
+
+                        <h1 className="mb-4 text-4xl font-extrabold leading-tight drop-shadow-lg xl:text-5xl">
+                            Terlalu Banyak
+                            <br />
+                            <span className="text-purple-300">Permintaan</span>
+                        </h1>
+
+                        <p className="max-w-md text-base leading-relaxed text-purple-100 xl:text-lg">
+                            Sistem mendeteksi terlalu banyak permintaan dalam
+                            waktu singkat. Akses dibatasi sementara untuk
+                            menjaga keamanan layanan Puskeswan.
+                        </p>
+
+                        <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-left backdrop-blur-sm">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-400/15 text-red-200">
                                 <svg
-                                    className="w-4 h-4"
-                                    fill="none"
+                                    className="h-5 w-5"
                                     viewBox="0 0 24 24"
+                                    fill="none"
                                     stroke="currentColor"
+                                    strokeWidth="1.8"
+                                    aria-hidden="true"
                                 >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                                        d="M12 8v4m0 4h.01M4.93 4.93l14.14 14.14M12 3a9 9 0 100 18 9 9 0 000-18z"
                                     />
                                 </svg>
                             </div>
+
                             <div>
-                                <span className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-                                    Alamat IP Terblokir
-                                </span>
-                                <span className="block font-mono text-xs sm:text-sm font-bold text-red-300">
-                                    {ip}
-                                </span>
+                                <p className="text-sm font-semibold">
+                                    Pembatasan Sementara
+                                </p>
+                                <p className="mt-1 text-xs leading-5 text-purple-100">
+                                    Tunggu hingga penghitung waktu selesai
+                                    sebelum mencoba kembali.
+                                </p>
                             </div>
                         </div>
-
-                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-red-500/20 border border-red-500/30 text-red-300 uppercase tracking-wider">
-                            BLOCKED
-                        </span>
                     </div>
+                </section>
 
-                    <div className="mb-6 p-5 rounded-2xl bg-gradient-to-b from-gray-800/60 to-gray-900/90 border border-purple-500/20 text-center relative overflow-hidden">
-                        <span className="block text-[11px] font-bold text-purple-300/80 uppercase tracking-widest mb-1.5">
-                            Sisa Waktu Pemblokiran
-                        </span>
-                        <div className="font-mono text-3xl sm:text-4xl font-extrabold tracking-wider text-red-400 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]">
-                            {formatTime(secondsLeft)}
+                {/* Panel kanan */}
+                <main className="relative flex min-h-screen w-full flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-purple-50 via-white to-purple-100/80 px-4 py-8 sm:px-6 lg:h-full lg:min-h-0 lg:w-1/2 lg:overflow-y-auto lg:px-8 lg:py-10">
+                    {/* Background accents mobile */}
+                    <div
+                        className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-purple-200/40 blur-3xl lg:hidden"
+                        aria-hidden="true"
+                    />
+
+                    <div
+                        className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-rose-200/30 blur-3xl lg:hidden"
+                        aria-hidden="true"
+                    />
+
+                    <div
+                        className={`relative z-10 w-full max-w-md transition-all duration-700 ${
+                            isMounted
+                                ? "translate-y-0 opacity-100"
+                                : "translate-y-5 opacity-0"
+                        }`}
+                    >
+                        {/* Card error */}
+                        <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-6 text-center shadow-xl shadow-purple-900/5 sm:p-8 lg:p-10">
+                            {/* Accent atas */}
+                            <div className="absolute left-0 right-0 top-0 h-1.5 bg-red-600" />
+
+                            {/* Ikon */}
+                            <div className="my-4 flex justify-center sm:my-5">
+                                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-red-100 bg-red-50 text-red-600 shadow-sm sm:h-[72px] sm:w-[72px]">
+                                    <svg
+                                        className="h-8 w-8 sm:h-9 sm:w-9"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.75"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* Judul dan pesan */}
+                            <h2 className="mb-2 mt-2 text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
+                                Terlalu Banyak Permintaan
+                            </h2>
+
+                            <p className="mb-6 text-sm font-normal leading-relaxed text-gray-500">
+                                {message ||
+                                    "Aktivitas terdeteksi terlalu sering. Akses dari jaringan Anda dibatasi sementara demi keamanan sistem."}
+                            </p>
+
+                            {/* Informasi IP */}
+                            <div className="mb-4 flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-3 text-left">
+                                <div className="flex min-w-0 items-center gap-2.5">
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-100 text-xs font-bold text-red-600">
+                                        IP
+                                    </div>
+
+                                    <div className="min-w-0">
+                                        <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                            Alamat IP Terdeteksi
+                                        </span>
+
+                                        <span className="block break-all font-mono text-xs font-bold text-gray-800">
+                                            {ip}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <span className="ml-2 shrink-0 rounded border border-red-200 bg-red-50 px-2 py-1 text-[10px] font-bold uppercase text-red-600">
+                                    Dibatasi
+                                </span>
+                            </div>
+
+                            {/* Countdown */}
+                            <div className="mb-6 rounded-xl border border-gray-100 bg-gray-50 p-4 text-center">
+                                <span className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                    Sisa Waktu Pembatasan
+                                </span>
+
+                                <div
+                                    role="timer"
+                                    aria-live="off"
+                                    className="font-mono text-2xl font-extrabold tracking-wider text-red-600 sm:text-3xl"
+                                >
+                                    {formatTime(secondsLeft)}
+                                </div>
+                            </div>
+
+                            {/* Tombol aksi */}
+                            <div className="flex flex-col gap-2.5">
+                                <Button
+                                    variant="primary"
+                                    onClick={() => router.reload()}
+                                    className="h-11 w-full rounded-xl bg-red-600 text-sm font-semibold text-white shadow-md shadow-red-600/10 transition-all hover:bg-red-700"
+                                >
+                                    <span className="inline-flex items-center justify-center gap-2">
+                                        <svg
+                                            className="h-4 w-4"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M4 4v5h5M20 20v-5h-5M5.64 9A7 7 0 0118 6l2 3M18.36 15A7 7 0 016 18l-2-3"
+                                            />
+                                        </svg>
+                                        Perbarui Waktu
+                                    </span>
+                                </Button>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="mt-7 border-t border-gray-100 pt-4 text-center">
+                                <p className="text-[11px] font-medium text-gray-400">
+                                    Sistem Informasi Puskeswan &copy;{" "}
+                                    {new Date().getFullYear()}
+                                </p>
+                            </div>
                         </div>
-                        <p className="text-[11px] text-gray-400 mt-2 font-medium">
-                            Setelah timer habis, halaman akan otomatis diarahkan kembali ke halaman utama.
-                        </p>
                     </div>
-
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                        <Button
-                            variant="secondary"
-                            onClick={() => router.reload()}
-                            className="w-full sm:w-auto h-11 px-6 text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/10 text-white rounded-xl transition-all"
-                        >
-                            <svg
-                                className="w-4 h-4 mr-1.5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                />
-                            </svg>
-                            Periksa Status Sekarang
-                        </Button>
-                    </div>
-                </div>
+                </main>
             </div>
-
-            <div className="absolute bottom-4 sm:bottom-6 text-center w-full z-10 px-4">
-                <p className="text-[10px] sm:text-xs text-gray-500 font-semibold tracking-wide">
-                    Sistem Keamanan Siber & Pertahanan Puskeswan &copy; {new Date().getFullYear()}
-                </p>
-            </div>
-        </div>
+        </>
     );
 }
-

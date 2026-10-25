@@ -815,7 +815,7 @@ export default function ArticlesIndex({
                                                             <img
                                                                 src={item.gambar}
                                                                 alt={item.judul}
-                                                                className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                                                                className="h-full w-full object-cover object-center transition-transform duration-300 hover:scale-105"
                                                                 onError={(e) => {
                                                                     (e.target as HTMLElement).style.display = 'none';
                                                                 }}
@@ -1044,7 +1044,7 @@ export default function ArticlesIndex({
                                             <img
                                                 src={imagePreview}
                                                 alt="Preview"
-                                                className="h-12 w-16 rounded-lg object-cover border border-purple-200"
+                                                className="h-12 w-16 rounded-lg object-cover object-center border border-purple-200"
                                             />
                                             <span className="text-[10.5px] text-purple-700 font-semibold">
                                                 {imageFile ? 'Gambar baru akan diunggah' : 'Gambar sampul terpasang'}
@@ -1218,7 +1218,7 @@ export default function ArticlesIndex({
                                                 <img
                                                     src={imagePreview}
                                                     alt="Pratinjau Sampul"
-                                                    className="h-full w-full object-cover"
+                                                    className="h-full w-full object-cover object-center"
                                                 />
                                             ) : (
                                                 <div className="flex h-full w-full flex-col items-center justify-center text-gray-400">

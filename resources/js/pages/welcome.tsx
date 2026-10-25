@@ -11,6 +11,7 @@ import {
     StaffSection,
     ContactSection,
     Footer,
+    LandingPreloader,
     NAV_ITEMS,
     NewsItem,
     MedicalRecord,
@@ -178,6 +179,8 @@ function LandingPageContent({
 
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-purple-100 selection:text-purple-900">
+            <LandingPreloader />
+
             <Navbar
                 activeSection={activeSection}
                 onNavigate={navigateToSection}

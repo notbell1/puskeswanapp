@@ -154,7 +154,7 @@ export default function Error404({ status = 404, message }: Error404Props) {
                                                 ""
                                             }
                                             alt="Foto profil"
-                                            className="h-10 w-10 rounded-full border border-purple-100 object-cover"
+                                            className="h-10 w-10 rounded-full border border-purple-100 object-cover object-center"
                                         />
                                     ) : (
                                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-200 font-bold text-purple-800">

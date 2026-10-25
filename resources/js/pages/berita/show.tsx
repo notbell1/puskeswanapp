@@ -179,14 +179,18 @@ function BeritaShowContent({ article, relatedArticles = [] }: BeritaShowProps) {
                                     <div className="flex items-center gap-4">
                                         <Link
                                             href={`/berita/author/${authorSlug}`}
-                                            className="shrink-0 group focus:outline-none"
+                                            className="shrink-0 group focus:outline-none select-none"
                                             title={`Lihat semua berita oleh ${article.author_name}`}
+                                            onContextMenu={(e) => e.preventDefault()}
+                                            style={{ WebkitTouchCallout: "none" }}
                                         >
                                             {article.author_foto ? (
                                                 <img
                                                     src={article.author_foto}
                                                     alt={article.author_name}
-                                                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover object-top bg-purple-50 border-2 border-purple-100 shadow-sm group-hover:border-purple-400 group-hover:scale-105 transition-all duration-200"
+                                                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover object-center bg-purple-50 border-2 border-purple-100 shadow-sm group-hover:border-purple-400 group-hover:scale-105 transition-all duration-200 protected-photo pointer-events-none select-none"
+                                                    draggable={false}
+                                                    onContextMenu={(e) => e.preventDefault()}
                                                 />
                                             ) : (
                                                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-purple-700 text-white font-extrabold text-lg sm:text-xl flex items-center justify-center shadow-sm shadow-purple-600/20 group-hover:bg-purple-600 group-hover:scale-105 transition-all duration-200">

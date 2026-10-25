@@ -767,7 +767,7 @@ export default function StaffIndex({
                                                                     alt={
                                                                         item.nama_staf
                                                                     }
-                                                                    className="h-8.5 w-8.5 rounded-xl object-cover shrink-0 ring-1 ring-purple-100 shadow-2xs"
+                                                                    className="h-8.5 w-8.5 rounded-xl object-cover object-center shrink-0 ring-1 ring-purple-100 shadow-2xs"
                                                                 />
                                                             ) : (
                                                                 <div className="h-8.5 w-8.5 rounded-xl bg-purple-100 text-purple-700 font-extrabold text-[11px] flex items-center justify-center shrink-0 border border-dashed border-purple-250">
@@ -1123,7 +1123,7 @@ export default function StaffIndex({
                                         <img
                                             src={photoPreview}
                                             alt="Foto Profil"
-                                            className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl object-cover ring-2 ring-purple-100 shadow-2xs"
+                                            className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl object-cover object-center ring-2 ring-purple-100 shadow-2xs"
                                         />
                                     ) : (
                                         <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-purple-100 text-purple-700 font-extrabold text-xs sm:text-sm flex items-center justify-center border border-dashed border-purple-250">

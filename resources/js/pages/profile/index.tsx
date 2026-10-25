@@ -232,7 +232,7 @@ export default function ProfileIndex({ userProfile }: ProfilePageProps) {
                                 <img
                                     src={photoPreview}
                                     alt={name}
-                                    className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover border-2 border-purple-200 shadow-sm"
+                                    className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover object-center border-2 border-purple-200 shadow-sm"
                                 />
                             ) : (
                                 <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl bg-gradient-to-br from-purple-700 to-purple-900 text-white font-bold text-2xl flex items-center justify-center shadow-sm">
@@ -354,7 +354,7 @@ export default function ProfileIndex({ userProfile }: ProfilePageProps) {
                                             <img
                                                 src={photoPreview}
                                                 alt="Preview"
-                                                className="h-20 w-20 rounded-2xl object-cover border border-purple-200 shadow-xs"
+                                                className="h-20 w-20 rounded-2xl object-cover object-center border border-purple-200 shadow-xs"
                                             />
                                         ) : (
                                             <div className="h-20 w-20 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center font-bold text-lg border border-gray-200">

@@ -141,10 +141,10 @@ export default function StaffSection({ staffMembers }: StaffSectionProps) {
     return (
         <section
             id="staff"
-            className="relative isolate flex min-h-[calc(100svh-4rem)] lg:min-h-[calc(100vh-4rem)] items-center overflow-hidden bg-white border-t border-gray-100 py-6 sm:py-8"
+            className="relative isolate flex min-h-[calc(100svh-4rem)] lg:min-h-[calc(100vh-4rem)] items-center bg-white border-t border-gray-100 py-3 sm:py-5"
         >
             <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 sm:mb-5 gap-3">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 sm:mb-4 gap-3">
                     <div>
                         <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
                             Tim Dokter &amp; <span className="text-purple-700">Tenaga Medis Puskeswan</span>
@@ -195,14 +195,19 @@ export default function StaffSection({ staffMembers }: StaffSectionProps) {
                                 >
                                     <a
                                         href={authorUrl}
-                                        className={`w-full aspect-4/3 bg-gradient-to-tr ${staff.theme.gradient} relative overflow-hidden block shrink-0`}
+                                        className={`w-full aspect-4/3 bg-gradient-to-tr ${staff.theme.gradient} relative overflow-hidden block shrink-0 select-none`}
                                         title={`Lihat publikasi oleh ${staff.name}`}
+                                        onContextMenu={(e) => e.preventDefault()}
+                                        style={{ WebkitTouchCallout: "none" }}
                                     >
                                         {photoSrc ? (
                                             <img
                                                 src={photoSrc}
                                                 alt={staff.name}
-                                                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300 protected-photo pointer-events-none select-none"
+                                                loading="lazy"
+                                                draggable={false}
+                                                onContextMenu={(e) => e.preventDefault()}
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center relative">
@@ -268,7 +273,7 @@ export default function StaffSection({ staffMembers }: StaffSectionProps) {
                 )}
 
                 {displayList.length > 0 && (
-                    <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-3 border-t border-gray-200/70">
+                    <div className="mt-2.5 sm:mt-3 flex flex-col sm:flex-row items-center justify-between gap-2 pt-2.5 border-t border-gray-200/70">
                         <p className="text-xs text-gray-500 font-medium">
                             Halaman <span className="font-bold text-gray-900">{safePage}</span> dari{" "}
                             <span className="font-bold text-gray-900">{totalPages}</span>

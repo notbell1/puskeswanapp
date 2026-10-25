@@ -690,7 +690,7 @@ export default function UsersIndex({
                                                             <img
                                                                 src={user.foto}
                                                                 alt={user.name}
-                                                                className="h-8.5 w-8.5 shrink-0 rounded-lg object-cover ring-1 ring-purple-100 shadow-2xs"
+                                                                className="h-8.5 w-8.5 shrink-0 rounded-lg object-cover object-center ring-1 ring-purple-100 shadow-2xs"
                                                             />
                                                         ) : (
                                                             <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-lg bg-purple-50 text-[10.5px] font-bold text-purple-700 ring-1 ring-purple-100">
@@ -1051,7 +1051,7 @@ export default function UsersIndex({
                                         <img
                                             src={photoPreview}
                                             alt="Foto Profil"
-                                            className="h-9 w-9 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl object-cover ring-2 ring-purple-100 shadow-2xs"
+                                            className="h-9 w-9 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl object-cover object-center ring-2 ring-purple-100 shadow-2xs"
                                         />
                                     ) : (
                                         <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl bg-purple-100 text-purple-700 font-extrabold text-xs sm:text-sm flex items-center justify-center border border-dashed border-purple-250">

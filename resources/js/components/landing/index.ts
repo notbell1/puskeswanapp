@@ -7,6 +7,7 @@ export { default as NewsDetailModal } from "./NewsDetailModal";
 export { default as StaffSection } from "./StaffSection";
 export { default as ContactSection } from "./ContactSection";
 export { default as Footer } from "./Footer";
+export { default as LandingPreloader } from "./LandingPreloader";
 export * from "./types";
 export * from "./data";
 

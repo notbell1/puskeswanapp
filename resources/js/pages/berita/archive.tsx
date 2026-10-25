@@ -192,12 +192,18 @@ function BeritaArchiveContent({
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
                                 {filterType === "author" ? (
-                                    <div className="shrink-0">
+                                    <div
+                                        className="shrink-0 select-none"
+                                        onContextMenu={(e) => e.preventDefault()}
+                                        style={{ WebkitTouchCallout: "none" }}
+                                    >
                                         {authorProfile?.foto ? (
                                             <img
                                                 src={authorProfile.foto}
                                                 alt={authorProfile.name}
-                                                className="w-10 h-10 sm:w-11 sm:h-11 aspect-square rounded-xl object-cover object-top bg-purple-50 border border-purple-200 shadow-2xs"
+                                                className="w-10 h-10 sm:w-11 sm:h-11 aspect-square rounded-xl object-cover object-center bg-purple-50 border border-purple-200 shadow-2xs protected-photo pointer-events-none select-none"
+                                                draggable={false}
+                                                onContextMenu={(e) => e.preventDefault()}
                                             />
                                         ) : (
                                             <div className="w-10 h-10 sm:w-11 sm:h-11 aspect-square rounded-xl bg-purple-700 text-white font-extrabold text-sm sm:text-base flex items-center justify-center shadow-2xs">
@@ -367,13 +373,17 @@ function BeritaArchiveContent({
                                                 <div className="pt-1.5 border-t border-gray-100 space-y-1">
                                                     <Link
                                                         href={`/berita/author/${item.author_slug}`}
-                                                        className="flex items-center gap-2 group/author min-w-0"
+                                                        className="flex items-center gap-2 group/author min-w-0 select-none"
+                                                        onContextMenu={(e) => e.preventDefault()}
+                                                        style={{ WebkitTouchCallout: "none" }}
                                                     >
                                                         {item.author_foto ? (
                                                             <img
                                                                 src={item.author_foto}
                                                                 alt={item.author_name}
-                                                                className="w-6 h-6 aspect-square rounded-md object-cover object-top bg-purple-50 border border-purple-200 shrink-0 shadow-2xs"
+                                                                className="w-6 h-6 aspect-square rounded-md object-cover object-center bg-purple-50 border border-purple-200 shrink-0 shadow-2xs protected-photo pointer-events-none select-none"
+                                                                draggable={false}
+                                                                onContextMenu={(e) => e.preventDefault()}
                                                             />
                                                         ) : (
                                                             <div className="w-6 h-6 aspect-square rounded-md bg-purple-700 text-white font-bold text-[9.5px] flex items-center justify-center shrink-0 shadow-2xs">

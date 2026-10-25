@@ -386,7 +386,7 @@ export default function DokterPemeriksaanPage({
                                             <img
                                                 src={rec.dokter_foto}
                                                 alt={rec.dokter}
-                                                className="w-4 h-4 rounded-full object-cover shrink-0"
+                                                className="w-4 h-4 rounded-full object-cover object-center shrink-0"
                                             />
                                         ) : (
                                             <span>🩺</span>

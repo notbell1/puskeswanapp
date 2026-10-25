@@ -206,7 +206,7 @@ function PatientHistoryPagination({
                                     <img
                                         src={selectedRec.dokter_foto}
                                         alt={selectedRec.dokter}
-                                        className="w-6 h-6 rounded-full object-cover border border-emerald-300 shadow-xs shrink-0"
+                                        className="w-6 h-6 rounded-full object-cover object-center border border-emerald-300 shadow-xs shrink-0"
                                         onError={(e) => {
                                             (
                                                 e.currentTarget as HTMLElement
@@ -1076,7 +1076,7 @@ export default function RekamMedisHasil({
                                                                 item.dokter_foto
                                                             }
                                                             alt={item.dokter}
-                                                            className="w-5 h-5 rounded-full object-cover border border-emerald-300 shadow-2xs shrink-0"
+                                                            className="w-5 h-5 rounded-full object-cover object-center border border-emerald-300 shadow-2xs shrink-0"
                                                             onError={(e) => {
                                                                 (
                                                                     e.currentTarget as HTMLElement
@@ -1460,7 +1460,7 @@ export default function RekamMedisHasil({
                                                                 alt={
                                                                     selectedRecord.dokter
                                                                 }
-                                                                className="w-7 h-7 rounded-full object-cover border border-emerald-300 shadow-xs shrink-0"
+                                                                className="w-7 h-7 rounded-full object-cover object-center border border-emerald-300 shadow-xs shrink-0"
                                                                 onError={(
                                                                     e,
                                                                 ) => {

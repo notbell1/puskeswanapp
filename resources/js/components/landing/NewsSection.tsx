@@ -249,14 +249,18 @@ export default function NewsSection({ articles }: NewsSectionProps) {
                                         <div className="pt-2 border-t border-gray-100 space-y-1.5">
                                             <a
                                                 href={authorUrl}
-                                                className="flex items-center gap-2 group/author min-w-0"
+                                                className="flex items-center gap-2 group/author min-w-0 select-none"
                                                 title={`Lihat semua berita oleh ${item.author}`}
+                                                onContextMenu={(e) => e.preventDefault()}
+                                                style={{ WebkitTouchCallout: "none" }}
                                             >
                                                 {item.authorFoto ? (
                                                     <img
                                                         src={item.authorFoto}
                                                         alt={item.author}
-                                                        className="w-6 h-6 aspect-square rounded-md object-cover object-top bg-purple-50 border border-purple-200 shrink-0 shadow-2xs"
+                                                        className="w-6 h-6 aspect-square rounded-md object-cover object-center bg-purple-50 border border-purple-200 shrink-0 shadow-2xs protected-photo pointer-events-none select-none"
+                                                        draggable={false}
+                                                        onContextMenu={(e) => e.preventDefault()}
                                                     />
                                                 ) : (
                                                     <div className="w-6 h-6 aspect-square rounded-md bg-purple-700 text-white font-bold text-[9.5px] flex items-center justify-center shrink-0 shadow-2xs">

@@ -323,7 +323,7 @@ export default function HeroSection({ onNavigate }: HeroSectionProps) {
                                         alt={slide.alt}
                                         draggable={false}
                                         loading={index === 0 ? "eager" : "lazy"}
-                                        className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-in-out ${
+                                        className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-700 ease-in-out ${
                                             index === activeSlide
                                                 ? "z-10 opacity-100 scale-100"
                                                 : "z-0 opacity-0 scale-105"

@@ -164,7 +164,7 @@ export default function DashboardLayout({
                                             <img
                                                 src={user.foto}
                                                 alt={user.name}
-                                                className="h-9 w-9 rounded-xl object-cover border border-purple-100 shadow-xs"
+                                                className="h-9 w-9 rounded-xl object-cover object-center border border-purple-100 shadow-xs"
                                             />
                                         ) : (
                                             <div className="h-9 w-9 rounded-xl bg-purple-700 text-white font-bold text-xs flex items-center justify-center shadow-xs group-hover:bg-purple-600 transition-colors">

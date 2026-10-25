@@ -133,7 +133,9 @@ function PatientHistoryPagination({
                                     <img
                                         src={selectedRec.dokter_foto}
                                         alt={selectedRec.dokter}
-                                        className="w-6 h-6 rounded-full object-cover border border-purple-300 shadow-xs shrink-0"
+                                        className="w-6 h-6 rounded-full object-cover object-center border border-purple-300 shadow-xs shrink-0 protected-photo pointer-events-none select-none"
+                                        draggable={false}
+                                        onContextMenu={(e) => e.preventDefault()}
                                         onError={(e) => {
                                             (
                                                 e.currentTarget as HTMLElement
@@ -977,7 +979,9 @@ export default function MedicalRecordSection({
                                                                     alt={
                                                                         item.dokter
                                                                     }
-                                                                    className="w-6 h-6 rounded-full object-cover border border-purple-200 shrink-0"
+                                                                    className="w-6 h-6 rounded-full object-cover object-center border border-purple-200 shrink-0 protected-photo pointer-events-none select-none"
+                                                                    draggable={false}
+                                                                    onContextMenu={(e) => e.preventDefault()}
                                                                 />
                                                             ) : (
                                                                 <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-[10px] shrink-0 border border-purple-200">
@@ -1346,7 +1350,9 @@ export default function MedicalRecordSection({
                                                                             selectedRecord.dokter_nama ||
                                                                             selectedRecord.dokter
                                                                         }
-                                                                        className="w-7 h-7 rounded-full object-cover border border-purple-300 shadow-xs shrink-0"
+                                                                        className="w-7 h-7 rounded-full object-cover object-center border border-purple-300 shadow-xs shrink-0 protected-photo pointer-events-none select-none"
+                                                                        draggable={false}
+                                                                        onContextMenu={(e) => e.preventDefault()}
                                                                         onError={(
                                                                             e,
                                                                         ) => {

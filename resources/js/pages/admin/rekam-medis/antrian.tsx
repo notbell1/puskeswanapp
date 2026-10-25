@@ -636,7 +636,7 @@ export default function RekamMedisAntrian({
                                         <img
                                             src={selectedVisit.dokter_foto.startsWith('http') || selectedVisit.dokter_foto.startsWith('/') ? selectedVisit.dokter_foto : `/storage/${selectedVisit.dokter_foto}`}
                                             alt={selectedVisit.dokter}
-                                            className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-xs"
+                                            className="w-11 h-11 rounded-full object-cover object-center border-2 border-white shadow-xs"
                                         />
                                     ) : (
                                         <div className="w-11 h-11 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">

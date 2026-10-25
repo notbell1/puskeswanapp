@@ -2,7 +2,7 @@
   <img src="public/images/logo_puskeswan.webp" alt="Logo Puskeswan Kota Pariaman" width="110" />
 </p>
 
-<h1 align="center">PuskeswanApp V.2.0.0</h1>
+<h1 align="center">PuskeswanApp V.2.1.0</h1>
 
 <p align="center">
   <strong>Sistem Informasi Pelayanan Kesehatan Hewan, Rekam Medis Veteriner & Surveilans Zoonosis Terpadu</strong><br>
@@ -18,7 +18,7 @@
   <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/TypeScript-5.7.2-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5.7.2" /></a>
   <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Inertia.js-3.5.1-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js 3.5.1" /></a>
   <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Tailwind_CSS-4.0.0-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4.0.0" /></a>
-  <a href="#-verifikasi-kualitas-kode--pengujian-otomatis"><img src="https://img.shields.io/badge/Pest_Tests-60%2F60_Passed-22C55E?style=for-the-badge&logo=pest&logoColor=white" alt="Tests 60 Passed" /></a>
+  <a href="#-verifikasi-kualitas-kode--pengujian-otomatis"><img src="https://img.shields.io/badge/Pest_Tests-75%2F75_Passed-22C55E?style=for-the-badge&logo=pest&logoColor=white" alt="Tests 75 Passed" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge" alt="License MIT" /></a>
 </p>
 
@@ -278,7 +278,7 @@ Aplikasi dibangun menggunakan kombinasi pustaka dan kerangka kerja modern versi 
 | **Iconography**         | **Lucide Icons**              |      `v1.16.0`      | Pustaka ikon SVG modern yang ringan dan konsisten                             |
 | **Type-Safe Routing**   | **Laravel Wayfinder**         |      `v0.1.23`      | Generator otomatis fungsi rute TypeScript langsung dari controller Laravel    |
 | **Database Engine**     | **MySQL / MariaDB**           |  `v8.0+ / v10.5+`   | Basis data relasional dengan indeks komposit pada tabel frekuensi tinggi      |
-| **Automated Testing**   | **Pest PHP**                  |      `v5.3.3`       | Kerangka pengujian fitur otomatis (60 Feature Tests, 100% Passed)             |
+| **Automated Testing**   | **Pest PHP**                  |      `v5.3.3`       | Kerangka pengujian fitur otomatis (75 Feature & Security Tests, 100% Passed)   |
 | **Code Style Linter**   | **Laravel Pint**              |      `v1.32.1`      | Formatter kode otomatis berstandar PSR-12 dan panduan Laravel                 |
 | **Build Tooling**       | **Vite-Plus (VoidZero)**      |      `v1.4.0`       | Bundler modul berkas frontend super cepat untuk lingkungan produksi           |
 
@@ -335,7 +335,7 @@ Dokter Dashboard : 0 Kueri Duplikat (Reuse hasil kueri agregasi 30 hari)     -> 
 
 ## 📸 Dokumentasi Visual Antarmuka (Screenshots)
 
-Berikut adalah dokumentasi tampilan visual antarmuka sistem PuskeswanApp V.2.0.0:
+Berikut adalah dokumentasi tampilan visual antarmuka sistem PuskeswanApp V.2.1.0:
 
 ---
 
@@ -412,20 +412,19 @@ Berikut adalah dokumentasi tampilan visual antarmuka sistem PuskeswanApp V.2.0.0
 Aplikasi dilengkapi _automated regression testing_ menggunakan Pest PHP dan standardisasi gaya kode Laravel Pint:
 
 ```bash
-# Menjalankan seluruh pengujian otomatis fitur (60 Tests)
+# Menjalankan seluruh pengujian otomatis fitur & keamanan (75 Tests)
 php artisan test --compact
 
 # Hasil Pengujian:
-# PASS  Tests\Feature\Admin\AdminDashboardTest
-# PASS  Tests\Feature\Admin\RegistrationTest
-# PASS  Tests\Feature\Admin\RabiesCaseTest
-# PASS  Tests\Feature\Dokter\DokterDashboardTest
-# PASS  Tests\Feature\Dokter\DokterExaminationTest
+# PASS  Tests\Feature\AdminModulesTest
+# PASS  Tests\Feature\DokterModulesTest
+# PASS  Tests\Feature\SuperAdminModulesTest
 # PASS  Tests\Feature\PublicMedicalRecordSearchTest
+# PASS  Tests\Feature\SecurityPenetrationTest
 # PASS  Tests\Feature\AuthRateLimitingTest
-# ... (60 test suites)
-# Tests:    60 passed (447 assertions)
-# Duration: 4.24s (100% Passed)
+# PASS  Tests\Feature\UserPhotoManagementTest
+# Tests:    75 passed (572 assertions)
+# Duration: 4.96s (100% Passed)
 ```
 
 ```bash

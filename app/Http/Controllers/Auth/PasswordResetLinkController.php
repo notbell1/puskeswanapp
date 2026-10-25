@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,25 +20,21 @@ class PasswordResetLinkController extends Controller
 
     /**
      * Memvalidasi email dan mengirim link reset password.
+     * Mencegah User Enumeration dengan selalu memberikan respons status netral.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email', 'exists:users,email'],
+            'email' => ['required', 'email'],
         ], [
-            'email.exists' => 'Email ini tidak terdaftar di sistem kami.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
         ]);
 
-        $status = Password::broker()->sendResetLink(
+        Password::broker()->sendResetLink(
             $request->only('email')
         );
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
-        }
-
-        throw ValidationException::withMessages([
-            'email' => [__($status)],
-        ]);
+        return back()->with('status', 'Jika alamat email tersebut terdaftar di sistem kami, tautan pemulihan kata sandi telah dikirimkan ke kotak masuk email Anda.');
     }
 }

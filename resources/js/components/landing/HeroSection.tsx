@@ -109,7 +109,7 @@ const HERO_SLIDES = [
         src: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1000&q=85",
         alt: "Surveilans kesehatan hewan",
         label: "Transparansi Riwayat Medis",
-        desc: "Cek dan cetak mandiri hasil pemeriksaan dokter secara online",
+        desc: "Cek mandiri hasil riwayat pemeriksaan dokter hewan secara online",
     },
 ];
 

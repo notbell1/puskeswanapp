@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, useToast } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import {
-    printMedicalRecordCard,
     formatDateOnly,
     formatDoctorName,
 } from "@/lib/printMedicalRecord";
@@ -250,6 +249,8 @@ export default function MedicalRecordSection({
 
     const [nik, setNik] = useState<string>("");
     const [fullName, setFullName] = useState<string>("");
+    const [noHpLast4, setNoHpLast4] = useState<string>("");
+    const [websiteUrl, setWebsiteUrl] = useState<string>("");
     const [captcha, setCaptcha] = useState<string>("");
     const [captchaSvg, setCaptchaSvg] = useState<string>(initialCaptcha || "");
     const [isRefreshingCaptcha, setIsRefreshingCaptcha] =
@@ -311,35 +312,12 @@ export default function MedicalRecordSection({
         setRecords([]);
         setNik("");
         setFullName("");
+        setNoHpLast4("");
+        setWebsiteUrl("");
         setCaptcha("");
         setFeedbackMessage("");
         setMatchedOwner(null);
         refreshCaptcha();
-    };
-
-    const handlePrint = (item: MedicalRecord) => {
-        printMedicalRecordCard({
-            id: item.id,
-            no_rm: item.no_rm || "-",
-            nama_hewan: item.nama_hewan || "-",
-            jenis_hewan: item.jenis_hewan || "-",
-            jenis_kelamin: item.jenis_kelamin || "-",
-            umur: item.umur || "-",
-            warna_hewan: item.warna_hewan || "-",
-            pemilik: item.pemilik || "-",
-            nik_pemilik: item.nik_pemilik || matchedOwner?.nik || "-",
-            no_hp: item.no_hp || "-",
-            alamat_pemilik: item.alamat_pemilik || "-",
-            tgl_kunjungan: item.tgl_kunjungan || "-",
-            berat_badan: item.berat_badan || 0,
-            suhu_tubuh: item.suhu_tubuh || 0,
-            anamnesa: item.anamnesa || "-",
-            diagnosa: item.diagnosa || "-",
-            terapi_pengobatan: item.terapi_pengobatan || "-",
-            catatan: item.catatan || "-",
-            dokter: item.dokter || "drh. Tim Medis Puskeswan",
-            historical_records: item.historical_records || [],
-        });
     };
 
     const handleSearch = async (e: React.FormEvent) => {
@@ -347,6 +325,7 @@ export default function MedicalRecordSection({
 
         const cleanNik = nik.replace(/[^0-9]/g, "").trim();
         const cleanName = fullName.replace(/[^a-zA-Z\s]/g, "").trim();
+        const cleanPhoneLast4 = noHpLast4.replace(/[^0-9]/g, "").trim();
         const cleanCaptcha = captcha
             .replace(/[^a-zA-Z0-9]/g, "")
             .trim()
@@ -364,6 +343,14 @@ export default function MedicalRecordSection({
             warning(
                 "Nama Lengkap hanya boleh berupa huruf alfabet dan minimal 2 karakter!",
                 "Nama Tidak Valid",
+            );
+            return;
+        }
+
+        if (!cleanPhoneLast4 || cleanPhoneLast4.length !== 4) {
+            warning(
+                "Harap masukkan tepat 4 digit terakhir nomor WhatsApp/HP yang terdaftar!",
+                "4 Digit HP Wajib Diisi",
             );
             return;
         }
@@ -396,6 +383,8 @@ export default function MedicalRecordSection({
                 body: JSON.stringify({
                     nik: cleanNik,
                     nama_lengkap: cleanName,
+                    no_hp_last4: cleanPhoneLast4,
+                    website_url: websiteUrl,
                     captcha: cleanCaptcha,
                 }),
             });
@@ -488,17 +477,41 @@ export default function MedicalRecordSection({
                         Pasien
                     </h2>
                     <p className="mt-3 text-xs sm:text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                        Masukkan 16 Digit NIK dan Nama Lengkap Pemilik yang
-                        terdaftar untuk mengakses seluruh data rekam medis
-                        pemeriksaan veteriner yang telah selesai diperiksa
-                        secara transparan dan akurat.
+                        Masukkan 16 Digit NIK, Nama Lengkap, dan 4 Digit Terakhir
+                        Nomor WhatsApp/HP Pemilik yang terdaftar untuk mengakses
+                        seluruh data rekam medis pemeriksaan veteriner yang telah
+                        selesai secara transparan dan akurat.
                     </p>
                 </div>
 
                 <div className="max-w-4xl mx-auto mb-10">
                     <div className="bg-white rounded-2xl border border-purple-200/90 p-5 sm:p-7 shadow-lg shadow-purple-900/5">
                         <form onSubmit={handleSearch} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Honeypot Anti-Bot Field */}
+                            <div
+                                style={{
+                                    opacity: 0,
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    height: 0,
+                                    width: 0,
+                                    zIndex: -1,
+                                    pointerEvents: "none",
+                                }}
+                                aria-hidden="true"
+                            >
+                                <input
+                                    type="text"
+                                    name="website_url"
+                                    value={websiteUrl}
+                                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-gray-700 mb-1.5">
                                         Nomor Induk Kependudukan (NIK)
@@ -539,7 +552,7 @@ export default function MedicalRecordSection({
                                         </svg>
                                     </div>
                                     <span className="text-[10.5px] text-gray-400 mt-1 block">
-                                        {nik.length}/16 digit angka murni
+                                        {nik.length}/16 digit angka
                                     </span>
                                 </div>
 
@@ -581,7 +594,51 @@ export default function MedicalRecordSection({
                                         </svg>
                                     </div>
                                     <span className="text-[10.5px] text-gray-400 mt-1 block">
-                                        Hanya huruf alfabet dan spasi
+                                        Huruf alfabet & spasi
+                                    </span>
+                                </div>
+
+                                <div className="sm:col-span-2 lg:col-span-1">
+                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                                        4 Digit Terakhir No. HP
+                                        <span className="text-rose-500 ml-1">
+                                            *
+                                        </span>
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
+                                            maxLength={4}
+                                            value={noHpLast4}
+                                            onChange={(e) =>
+                                                setNoHpLast4(
+                                                    e.target.value
+                                                        .replace(/[^0-9]/g, "")
+                                                        .slice(0, 4),
+                                                )
+                                            }
+                                            placeholder="Contoh: 7890"
+                                            required
+                                            className="w-full h-11 sm:h-12 pl-10 pr-4 text-xs sm:text-sm rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent font-medium transition-all shadow-2xs"
+                                        />
+                                        <svg
+                                            className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5 sm:top-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <span className="text-[10.5px] text-gray-400 mt-1 block">
+                                        {noHpLast4.length}/4 digit nomor terdaftar
                                     </span>
                                 </div>
                             </div>
@@ -995,31 +1052,6 @@ export default function MedicalRecordSection({
                                                                     />
                                                                 </svg>
                                                             </button>
-
-                                                            <button
-                                                                type="button"
-                                                                onClick={() =>
-                                                                    handlePrint(
-                                                                        item,
-                                                                    )
-                                                                }
-                                                                className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-2xs transition-colors shrink-0 cursor-pointer"
-                                                                title="Cetak Salinan Kartu Rekam Medis (Format A4 Resmi)"
-                                                            >
-                                                                <svg
-                                                                    className="w-4 h-4"
-                                                                    fill="none"
-                                                                    viewBox="0 0 24 24"
-                                                                    stroke="currentColor"
-                                                                >
-                                                                    <path
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        strokeWidth="2"
-                                                                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                                                                    />
-                                                                </svg>
-                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -1380,17 +1412,6 @@ export default function MedicalRecordSection({
                                                 className="px-3 py-1.5 text-xs cursor-pointer"
                                             >
                                                 Tutup
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="primary"
-                                                size="sm"
-                                                onClick={() =>
-                                                    handlePrint(selectedRecord)
-                                                }
-                                                className="px-3 py-1.5 text-xs bg-purple-700 hover:bg-purple-800 font-bold text-white cursor-pointer"
-                                            >
-                                                🖨️ Cetak Dokumen
                                             </Button>
                                         </div>
                                     </div>

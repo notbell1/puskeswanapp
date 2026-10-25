@@ -446,14 +446,31 @@ class HomeController extends Controller
 
     public function searchMedicalRecords(Request $request): JsonResponse
     {
+        // 1. Honeypot Anti-Bot Trap: Jika field palsu ini terisi, langsung tolak sebagai bot.
+        if (! empty($request->input('website_url'))) {
+            return response()->json([
+                'status' => 'bot_detected',
+                'message' => 'Permintaan otomatis tidak diizinkan oleh sistem Puskeswan.',
+            ], 422);
+        }
+
+        // 2. Strict Whitelist Validation: Hanya izinkan karakter legal sesuai format.
         $request->validate([
             'nik' => ['required', 'string', 'size:16', 'regex:/^[0-9]{16}$/'],
             'nama_lengkap' => ['required', 'string', 'min:2', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
+            'no_hp_last4' => ['required', 'string', 'size:4', 'regex:/^[0-9]{4}$/'],
             'captcha' => ['required', 'string', 'size:5', 'regex:/^[a-zA-Z0-9]{5}$/'],
+            'website_url' => ['nullable', 'string', 'max:100'],
         ], [
-            'nik.regex' => 'Nomor NIK harus berupa 16 digit angka tanpa karakter lain.',
+            'nik.required' => 'Nomor NIK KTP wajib diisi.',
+            'nik.regex' => 'Nomor NIK harus berupa 16 digit angka murni tanpa karakter lain.',
             'nik.size' => 'Nomor NIK harus terdiri dari tepat 16 digit angka.',
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'nama_lengkap.regex' => 'Nama lengkap hanya boleh mengandung huruf alfabet dan spasi.',
+            'no_hp_last4.required' => '4 digit terakhir nomor HP terdaftar wajib diisi.',
+            'no_hp_last4.regex' => '4 digit nomor HP harus berupa tepat 4 digit angka.',
+            'no_hp_last4.size' => '4 digit nomor HP harus terdiri dari 4 digit angka.',
+            'captcha.required' => 'Kode captcha anti-bot wajib diisi.',
             'captcha.regex' => 'Format kode captcha anti-bot harus berupa 5 digit alfanumerik.',
             'captcha.size' => 'Kode captcha harus terdiri dari 5 karakter.',
         ]);
@@ -476,28 +493,26 @@ class HomeController extends Controller
 
         $nik = trim((string) $request->input('nik'));
         $namaLengkap = preg_replace('/\s+/', ' ', trim((string) $request->input('nama_lengkap')));
+        $inputLast4 = trim((string) $request->input('no_hp_last4'));
 
         $owner = Owner::where('nik', $nik)->first();
 
-        if (! $owner) {
+        // 3. Verifikasi 3 Lapis: NIK, Nama Lengkap, dan 4 Digit Terakhir No HP Terdaftar
+        $normalizedDbName = $owner ? preg_replace('/\s+/', ' ', trim((string) $owner->nama_lengkap)) : '';
+        $rawOwnerPhone = $owner ? preg_replace('/[^0-9]/', '', (string) $owner->no_hp_wa) : '';
+        $ownerLast4 = strlen($rawOwnerPhone) >= 4 ? substr($rawOwnerPhone, -4) : '';
+
+        $isMatch = $owner
+            && strcasecmp($normalizedDbName, $namaLengkap) === 0
+            && $ownerLast4 === $inputLast4;
+
+        if (! $isMatch) {
             $newCaptcha = $this->createCaptcha();
             $request->session()->put('medical_record_captcha', $newCaptcha['code']);
 
             return response()->json([
                 'status' => 'mismatch',
-                'message' => 'Kombinasi NIK dan Nama Lengkap tidak ditemukan dalam pangkalan data Puskeswan. Pastikan 16 digit NIK dan ejaan Nama Lengkap sudah sesuai dengan kartu identitas KTP Anda.',
-                'new_captcha' => $newCaptcha['svg'],
-            ]);
-        }
-
-        $normalizedDbName = preg_replace('/\s+/', ' ', trim((string) $owner->nama_lengkap));
-        if (strcasecmp($normalizedDbName, $namaLengkap) !== 0) {
-            $newCaptcha = $this->createCaptcha();
-            $request->session()->put('medical_record_captcha', $newCaptcha['code']);
-
-            return response()->json([
-                'status' => 'mismatch',
-                'message' => 'Kombinasi NIK dan Nama Lengkap tidak cocok. NIK terdaftar atas nama yang berbeda dengan yang Anda masukkan. Mohon periksa kembali ejaan nama Anda.',
+                'message' => 'Kombinasi data identitas (NIK, Nama Lengkap, atau 4 Digit Nomor HP) tidak cocok dengan pangkalan data Puskeswan. Pastikan data yang dimasukkan sesuai dengan yang didaftarkan saat kunjungan.',
                 'new_captcha' => $newCaptcha['svg'],
             ]);
         }

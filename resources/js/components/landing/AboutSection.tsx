@@ -279,8 +279,8 @@ export default function AboutSection() {
                                 <p className="mt-1 text-xs text-gray-500 leading-relaxed">
                                     Pencatatan riwayat triase, anamnesa,
                                     diagnosa dokter, hingga terapi obat secara
-                                    transparan yang dapat dicek dan dicetak
-                                    mandiri oleh pemilik.
+                                    transparan yang dapat dicek langsung
+                                    secara aman oleh pemilik terdaftar.
                                 </p>
                             </div>
                         </div>

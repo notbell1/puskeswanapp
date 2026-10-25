@@ -35,7 +35,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tentang', [HomeController::class, 'index'])->name('tentang');
 Route::get('/cek-rekam-medis', [HomeController::class, 'index'])->name('cek-rekam-medis');
-Route::post('/cek-rekam-medis/cari', [HomeController::class, 'searchMedicalRecords'])->name('cek-rekam-medis.cari');
+Route::post('/cek-rekam-medis/cari', [HomeController::class, 'searchMedicalRecords'])
+    ->middleware('throttle:10,1')
+    ->name('cek-rekam-medis.cari');
 Route::get('/captcha/generate', [HomeController::class, 'generateCaptcha'])->name('captcha.generate');
 Route::get('/berita', [HomeController::class, 'index'])->name('berita');
 Route::get('/berita/author/{author}', [HomeController::class, 'articlesByAuthor'])->name('berita.author');
@@ -52,11 +54,13 @@ Route::middleware('guest')->group(function () {
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:5,1')
         ->name('password.email');
 
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:5,1')
         ->name('password.store');
 });
 

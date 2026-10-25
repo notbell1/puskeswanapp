@@ -5,6 +5,9 @@
 
     RewriteEngine On
 
+    # Block access to sensitive files and hidden files (Server Hardening)
+    RewriteRule ^(\.git|\.env|composer\.(json|lock)|package\.json) - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

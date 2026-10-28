@@ -2,7 +2,7 @@
   <img src="public/images/logo_puskeswan.webp" alt="Logo Puskeswan Kota Pariaman" width="110" />
 </p>
 
-<h1 align="center">PuskeswanApp V.2.1.0</h1>
+<h1 align="center">PuskeswanApp V.2.3.0</h1>
 
 <p align="center">
   <strong>Sistem Informasi Pelayanan Kesehatan Hewan, Rekam Medis Veteriner & Surveilans Zoonosis Terpadu</strong><br>
@@ -18,7 +18,7 @@
   <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/TypeScript-5.7.2-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5.7.2" /></a>
   <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Inertia.js-3.5.1-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js 3.5.1" /></a>
   <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Tailwind_CSS-4.0.0-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4.0.0" /></a>
-  <a href="#-verifikasi-kualitas-kode--pengujian-otomatis"><img src="https://img.shields.io/badge/Pest_Tests-75%2F75_Passed-22C55E?style=for-the-badge&logo=pest&logoColor=white" alt="Tests 75 Passed" /></a>
+  <a href="AUDIT.md"><img src="https://img.shields.io/badge/OWASP_Top_10-Passed_100%25-10B981?style=for-the-badge&logo=shield&logoColor=white" alt="OWASP Top 10 Passed" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge" alt="License MIT" /></a>
 </p>
 
@@ -35,6 +35,7 @@
 - [⚡ Optimasi Kinerja Basis Data (Laravel Debugbar)](#-optimasi-kinerja-basis-data-laravel-debugbar)
 - [👥 Matriks Hak Akses Peran Pengguna](#-matriks-hak-akses-peran-pengguna)
 - [📸 Dokumentasi Visual Antarmuka (Screenshots)](#-dokumentasi-visual-antarmuka-screenshots)
+- [🛡️ Audit Keamanan Siber & Pen-Testing (OWASP Top 10)](#️-audit-keamanan-siber--pen-testing-owasp-top-10)
 - [🧪 Verifikasi Kualitas Kode & Pengujian Otomatis](#-verifikasi-kualitas-kode--pengujian-otomatis)
 - [📄 Lisensi & Riwayat Pembaruan](#-lisensi--riwayat-pembaruan)
 
@@ -404,6 +405,34 @@ Berikut adalah dokumentasi tampilan visual antarmuka sistem PuskeswanApp V.2.1.0
 |                                                            1. Format Cetak Lembar Rekam Medis Resmi                                                            |                                                          2. Format Cetak Laporan Surveilans Rabies (GHPR)                                                          |
 | :------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | <a href="screenshot/export/2_visit_export.png"><img src="screenshot/export/2_visit_export.png" width="380" alt="Format Cetak Lembar Rekam Medis Pasien" /></a> | <a href="screenshot/export/3_ghpr_export.png"><img src="screenshot/export/3_ghpr_export.png" width="380" alt="Format Cetak Laporan Surveilans Kasus Rabies" /></a> |
+
+---
+
+## 🛡️ Audit Keamanan Siber & Pen-Testing (OWASP Top 10)
+
+Sistem **PuskeswanApp** telah melalui pengujian penetrasi keamanan mendalam (*Full-Spectrum Penetration Testing*) berbasis standar internasional **OWASP Top 10:2021** dan pengujian integritas arsitektur/routing.
+
+### Ringkasan Hasil Audit Keamanan:
+- **Total Skenario Diuji:** 42 Skenario (Terbagi dalam 7 Batch Komprehensif)
+- **Status Pertahanan:** **42 Defended (100% Kebal / Lolos)**
+- **Kerentanan Berhasil Dieksploitasi:** **0 (Zero Vulnerability)**
+- **Peringkat Keamanan:** **Grade A+ (Hardened - Production Ready)**
+
+| Batch | Kategori OWASP Top 10 | Skenario | Status |
+| :---: | :--- | :---: | :---: |
+| **Batch 1** | **A01: Broken Access Control & IDOR** (Eskalasi Super Admin/Loket, IDOR Pasien, Path Traversal, CORS) | 7 Skenario | `[DEFENDED]` |
+| **Batch 2** | **A02: Cryptographic Failures** (Enforce HTTPS, Hash BCrypt Cost 12, Cookie HttpOnly/SameSite, Props Safe) | 4 Skenario | `[DEFENDED]` |
+| **Batch 3** | **A03: Injection Attacks** (SQLi Pencarian, Time-based Blind SQLi, Stored XSS, Reflected XSS, Host Poisoning) | 6 Skenario | `[DEFENDED]` |
+| **Batch 4** | **A04: Insecure Design & Anti-Bot** (Invisible Honeypot Trap, Verifikasi 3-Lapis Rekam Medis, Rate Limiting) | 3 Skenario | `[DEFENDED]` |
+| **Batch 5** | **A05: Security Misconfiguration** (Akses `.env`/`.git` Ditolak, -Indexes Disabled, Security Headers, Clean 404) | 4 Skenario | `[DEFENDED]` |
+| **Batch 6** | **A06 & A07: Authentication & Components** (Brute Force Cooldown, IP Quarantine 429, Session Zombie Revoke, PHP 8.4) | 8 Skenario | `[DEFENDED]` |
+| **Batch 7** | **A08, A09, A10 & Routing** (Mass Assignment Guard, CSRF Stripping, Anti-Webshell, No-Exec Storage, Fallback 404) | 10 Skenario | `[DEFENDED]` |
+
+> 📑 **Laporan Audit Forensik Lengkap:**  
+> Rincian lengkap metodologi, analisis vektor serangan, dan mekanisme pertahanan teknis didokumentasikan secara formal pada berkas [**`AUDIT.md`**](AUDIT.md).
+> 
+> 📷 **Bukti Visual Tangkapan Layar:**  
+> Seluruh checklist 42 skenario terangkum dalam [**`test/screenshot/MASTER_AUDIT_SUMMARY_REPORT.png`**](test/screenshot/MASTER_AUDIT_SUMMARY_REPORT.png) serta berkas individual di [**`test/screenshot/DEFENDED/`**](test/screenshot/DEFENDED/).
 
 ---
 

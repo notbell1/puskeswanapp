@@ -65,6 +65,9 @@ database/*
 /.phpunit.cache
 .phpunit.result.cache
 /.github/workflows/tests.yml
+/test/*
+!/test/screenshot/
+!/test/screenshot/**
 
 # Storage Uploads, Photos, Sessions & Framework Cache
 /public/storage
@@ -119,6 +122,7 @@ lerna-debug.log*
 /opencode.jsonc
 
 # IDE, OS & Temporary Files
+start-tunnel.bat
 /.fleet
 /.idea
 /.nova

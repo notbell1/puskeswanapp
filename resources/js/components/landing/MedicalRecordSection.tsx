@@ -398,6 +398,13 @@ export default function MedicalRecordSection({
                 setCaptcha("");
             }
 
+            if (result.status === "bot_detected") {
+                setSearchState("mismatch");
+                setFeedbackMessage(result.message);
+                error(result.message, "Aktivitas Bot Terdeteksi!");
+                return;
+            }
+
             if (result.status === "captcha_error") {
                 setSearchState("captcha_error");
                 setFeedbackMessage(result.message);

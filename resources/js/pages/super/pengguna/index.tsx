@@ -402,6 +402,13 @@ export default function UsersIndex({
     };
 
     const handleToggleStatus = (user: UserItem) => {
+        if (user.role_name === "SUPER_ADMIN") {
+            warning(
+                "Keamanan Sistem: Akun Super Admin dilindungi dan harus selalu aktif.",
+            );
+            return;
+        }
+
         router.patch(
             `/super/pengguna/${user.id}/toggle-status`,
             {},
@@ -415,6 +422,13 @@ export default function UsersIndex({
     };
 
     const confirmDelete = (user: UserItem) => {
+        if (user.role_name === "SUPER_ADMIN") {
+            warning(
+                "Keamanan Sistem: Akun Super Admin dilindungi dan tidak dapat dihapus!",
+            );
+            return;
+        }
+
         setFormModalOpen(false);
         setSaveConfirmModalOpen(false);
         setUserToDelete(user);
@@ -736,27 +750,51 @@ export default function UsersIndex({
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            handleToggleStatus(
-                                                                user,
-                                                            )
-                                                        }
-                                                        className={`inline-flex h-6.5 items-center gap-1 rounded-full px-2.5 text-[10.5px] font-bold transition-all focus:outline-none active:scale-95 ${
-                                                            user.status_aktif
-                                                                ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100"
-                                                                : "bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100"
-                                                        }`}
-                                                        title="Klik untuk ubah status aktif akun"
-                                                    >
+                                                    {user.role_name ===
+                                                    "SUPER_ADMIN" ? (
                                                         <span
-                                                            className={`h-1 w-1 rounded-full ${user.status_aktif ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}
-                                                        />
-                                                        {user.status_aktif
-                                                            ? "Aktif"
-                                                            : "Nonaktif"}
-                                                    </button>
+                                                            className="inline-flex h-6.5 items-center gap-1.5 rounded-full px-2.5 text-[10.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default select-none shadow-2xs"
+                                                            title="Akun Super Admin dilindungi dan harus selalu aktif demi keamanan sistem"
+                                                        >
+                                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                            <span>Aktif</span>
+                                                            <svg
+                                                                className="h-3 w-3 text-emerald-600 shrink-0"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth="2.5"
+                                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                                                />
+                                                            </svg>
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleToggleStatus(
+                                                                    user,
+                                                                )
+                                                            }
+                                                            className={`inline-flex h-6.5 items-center gap-1 rounded-full px-2.5 text-[10.5px] font-bold transition-all focus:outline-none active:scale-95 ${
+                                                                user.status_aktif
+                                                                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100"
+                                                                    : "bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100"
+                                                            }`}
+                                                            title="Klik untuk ubah status aktif akun"
+                                                        >
+                                                            <span
+                                                                className={`h-1 w-1 rounded-full ${user.status_aktif ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}
+                                                            />
+                                                            {user.status_aktif
+                                                                ? "Aktif"
+                                                                : "Nonaktif"}
+                                                        </button>
+                                                    )}
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200 whitespace-nowrap text-xs text-gray-600 font-medium">
@@ -789,30 +827,54 @@ export default function UsersIndex({
                                                                 />
                                                             </svg>
                                                         </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                confirmDelete(
-                                                                    user,
-                                                                )
-                                                            }
-                                                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 transition-all focus:outline-none"
-                                                            title="Hapus Akun"
-                                                        >
-                                                            <svg
-                                                                className="h-4 w-4"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
+                                                        {user.role_name ===
+                                                        "SUPER_ADMIN" ? (
+                                                            <button
+                                                                type="button"
+                                                                disabled
+                                                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-300 border border-gray-150 bg-gray-50/80 cursor-not-allowed transition-all"
+                                                                title="Akun Super Admin dilindungi dan tidak dapat dihapus"
                                                             >
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth="2"
-                                                                    d="M4 7h16M10 11v6m4-6v6M5.5 7l.8 13h11.4l.8-13M9 7V4h6v3"
-                                                                />
-                                                            </svg>
-                                                        </button>
+                                                                <svg
+                                                                    className="h-3.5 w-3.5 text-gray-400"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth="2"
+                                                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    confirmDelete(
+                                                                        user,
+                                                                    )
+                                                                }
+                                                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 transition-all focus:outline-none"
+                                                                title="Hapus Akun"
+                                                            >
+                                                                <svg
+                                                                    className="h-4 w-4"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth="2"
+                                                                        d="M4 7h16M10 11v6m4-6v6M5.5 7l.8 13h11.4l.8-13M9 7V4h6v3"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1110,35 +1172,66 @@ export default function UsersIndex({
                                 </div>
                             </div>
 
-                            <label className="flex items-center gap-2 cursor-pointer select-none bg-white py-1 px-2.5 sm:py-1.5 sm:px-3 rounded-lg border border-gray-200 hover:border-purple-300 transition-colors shrink-0 shadow-2xs">
-                                <div className="text-right">
-                                    <span className="block text-[10px] sm:text-[11px] font-bold text-gray-800 leading-tight">
-                                        Status
-                                    </span>
-                                    <span
-                                        className={`block text-[9.5px] sm:text-[10px] font-semibold leading-tight ${
-                                            data.status_aktif
-                                                ? "text-emerald-600"
-                                                : "text-gray-400"
-                                        }`}
-                                    >
-                                        {data.status_aktif
-                                            ? "Aktif"
-                                            : "Nonaktif"}
-                                    </span>
+                            {editingUser?.role_name === "SUPER_ADMIN" ? (
+                                <div
+                                    className="flex items-center gap-2 select-none bg-emerald-50/70 py-1 px-2.5 sm:py-1.5 sm:px-3 rounded-lg border border-emerald-200 shrink-0 shadow-2xs"
+                                    title="Status akun Super Admin dilindungi dan harus selalu aktif"
+                                >
+                                    <div className="text-right">
+                                        <span className="block text-[10px] sm:text-[11px] font-bold text-emerald-800 leading-tight">
+                                            Status
+                                        </span>
+                                        <span className="block text-[9.5px] sm:text-[10px] font-semibold leading-tight text-emerald-600">
+                                            Aktif (Terkunci)
+                                        </span>
+                                    </div>
+                                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                                        <svg
+                                            className="h-3 w-3"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2.5"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                            />
+                                        </svg>
+                                    </div>
                                 </div>
-                                <input
-                                    type="checkbox"
-                                    checked={data.status_aktif}
-                                    onChange={(e) =>
-                                        setData(
-                                            "status_aktif",
-                                            e.target.checked,
-                                        )
-                                    }
-                                    className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded border-gray-300 text-purple-650 focus:ring-purple-500 cursor-pointer"
-                                />
-                            </label>
+                            ) : (
+                                <label className="flex items-center gap-2 cursor-pointer select-none bg-white py-1 px-2.5 sm:py-1.5 sm:px-3 rounded-lg border border-gray-200 hover:border-purple-300 transition-colors shrink-0 shadow-2xs">
+                                    <div className="text-right">
+                                        <span className="block text-[10px] sm:text-[11px] font-bold text-gray-800 leading-tight">
+                                            Status
+                                        </span>
+                                        <span
+                                            className={`block text-[9.5px] sm:text-[10px] font-semibold leading-tight ${
+                                                data.status_aktif
+                                                    ? "text-emerald-600"
+                                                    : "text-gray-400"
+                                            }`}
+                                        >
+                                            {data.status_aktif
+                                                ? "Aktif"
+                                                : "Nonaktif"}
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        checked={data.status_aktif}
+                                        onChange={(e) =>
+                                            setData(
+                                                "status_aktif",
+                                                e.target.checked,
+                                            )
+                                        }
+                                        className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded border-gray-300 text-purple-650 focus:ring-purple-500 cursor-pointer"
+                                    />
+                                </label>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-2 sm:gap-4">
@@ -1231,26 +1324,54 @@ export default function UsersIndex({
                                         Hak Akses{" "}
                                         <span className="text-rose-500">*</span>
                                     </label>
-                                    <Select
-                                        size="md"
-                                        value={data.id_role}
-                                        onChange={(value) =>
-                                            setData(
-                                                "id_role",
-                                                value ? Number(value) : "",
-                                            )
-                                        }
-                                        error={!!errors.id_role}
-                                        placeholder="Pilih hak akses..."
-                                        showCheckmark={false}
-                                        options={roles.map((role) => ({
-                                            value: role.id,
-                                            label: role.nama_role.replace(
-                                                /_/g,
-                                                " ",
-                                            ),
-                                        }))}
-                                    />
+                                    {editingUser?.role_name === "SUPER_ADMIN" ? (
+                                        <div
+                                            className="flex h-9 sm:h-10 w-full items-center justify-between rounded-lg sm:rounded-xl border border-gray-200 bg-gray-50/90 px-3 text-[11px] sm:text-xs font-bold text-gray-700 cursor-not-allowed select-none"
+                                            title="Hak akses Super Admin dilindungi dan tidak dapat diubah"
+                                        >
+                                            <span className="flex items-center gap-1.5">
+                                                <span className="h-2 w-2 rounded-full bg-purple-600" />
+                                                SUPER ADMIN
+                                            </span>
+                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded-md border border-purple-200">
+                                                <svg
+                                                    className="h-3 w-3 text-purple-650"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2.5"
+                                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                                    />
+                                                </svg>
+                                                Terkunci
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <Select
+                                            size="md"
+                                            value={data.id_role}
+                                            onChange={(value) =>
+                                                setData(
+                                                    "id_role",
+                                                    value ? Number(value) : "",
+                                                )
+                                            }
+                                            error={!!errors.id_role}
+                                            placeholder="Pilih hak akses..."
+                                            showCheckmark={false}
+                                            options={roles.map((role) => ({
+                                                value: role.id,
+                                                label: role.nama_role.replace(
+                                                    /_/g,
+                                                    " ",
+                                                ),
+                                            }))}
+                                        />
+                                    )}
                                     {errors.id_role && (
                                         <p className="text-[10px] sm:text-[11px] font-medium text-rose-600 leading-tight">
                                             {errors.id_role}

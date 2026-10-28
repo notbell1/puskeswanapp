@@ -158,14 +158,15 @@ class UserController extends Controller
             'hapus_foto' => ['nullable', 'boolean'],
         ]);
 
+        $isSuperAdmin = $user->isSuperAdmin();
         $photoPath = $this->handleProfilePhotoUpload($request, $user->foto);
 
         $updateData = [
             'name' => strip_tags($validated['name']),
             'email' => strtolower(trim($validated['email'])),
-            'id_role' => $validated['id_role'],
+            'id_role' => $isSuperAdmin ? $user->id_role : $validated['id_role'],
             'id_staf' => $validated['id_staf'] ?? null,
-            'status_aktif' => $validated['status_aktif'] ?? true,
+            'status_aktif' => $isSuperAdmin ? true : ($validated['status_aktif'] ?? true),
             'foto' => $photoPath,
         ];
 
@@ -193,6 +194,10 @@ class UserController extends Controller
      */
     public function toggleStatus(User $user): RedirectResponse
     {
+        if ($user->isSuperAdmin()) {
+            return back()->with('error', 'Keamanan Sistem: Status akun Super Admin dilindungi dan tidak dapat dinonaktifkan demi integritas operasional!');
+        }
+
         if ($user->id === Auth::id()) {
             return back()->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri!');
         }
@@ -211,6 +216,10 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        if ($user->isSuperAdmin()) {
+            return back()->with('error', 'Keamanan Sistem: Akun Super Admin dilindungi dan tidak dapat dihapus dari sistem!');
+        }
+
         if ($user->id === Auth::id()) {
             return back()->with('error', 'Keamanan: Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif!');
         }

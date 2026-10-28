@@ -82,6 +82,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if the user is a Super Administrator.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return strtoupper((string) ($this->role?->nama_role ?? '')) === 'SUPER_ADMIN';
+    }
+
+    /**
      * Get the role associated with the user.
      */
     public function role(): BelongsTo

@@ -661,12 +661,12 @@ export default function SuperDashboard({
                                 <table className="w-full text-xs text-left border-collapse border border-gray-200">
                                     <thead>
                                         <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center w-10 shrink-0">No.</th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">No. RM</th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">Pasien Hewan</th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">Pemilik</th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">Waktu Kunjungan</th>
-                                            <th className="py-2.5 px-3 text-center w-28 shrink-0">Status</th>
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold w-10 shrink-0">No</th>
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">No. RM</th>
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">Pasien Hewan</th>
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">Pemilik</th>
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">Waktu Kunjungan</th>
+                                            <th className="py-2.5 px-3 text-center font-bold w-28 shrink-0">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white">

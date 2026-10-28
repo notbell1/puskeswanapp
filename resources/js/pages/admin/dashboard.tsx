@@ -990,22 +990,22 @@ export default function AdminDashboard({
                                 <table className="w-full text-left text-xs border-collapse border border-gray-200">
                                     <thead>
                                         <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center w-16">
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold w-16">
                                                 No. Antre
                                             </th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">
                                                 Pasien Hewan
                                             </th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">
                                                 No. RM
                                             </th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">
                                                 Pemilik
                                             </th>
-                                            <th className="py-2.5 px-3 border-r border-gray-200">
+                                            <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">
                                                 Triage
                                             </th>
-                                            <th className="py-2.5 px-3 text-center w-28">
+                                            <th className="py-2.5 px-3 text-center font-bold w-28">
                                                 Status
                                             </th>
                                         </tr>

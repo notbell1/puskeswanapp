@@ -296,13 +296,13 @@ export default function PatientsIndex({
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">No. Rekam Medis</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pasien Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pemilik &amp; NIK</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Ciri Fisik</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Kunjungan Terakhir</th>
-                                    <th className="py-3 px-3.5 text-center w-36 shrink-0">Aksi &amp; Riwayat</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No.</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. Rekam Medis</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pasien Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pemilik &amp; NIK</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Ciri Fisik</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kunjungan Terakhir</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-36 shrink-0">Aksi &amp; Riwayat</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -371,8 +371,8 @@ export default function PatientsIndex({
                                                         <span className="text-xs font-semibold text-gray-700">
                                                             {patient.last_visit_date}
                                                         </span>
-                                                        <span className="text-[10px] bg-purple-50 text-purple-700 font-bold px-1.5 py-0.2 rounded border border-purple-200">
-                                                            {patient.total_kunjungan}x
+                                                        <span className="text-xs text-purple-700 font-semibold">
+                                                            ({patient.total_kunjungan}x)
                                                         </span>
                                                     </div>
                                                 </td>

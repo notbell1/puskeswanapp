@@ -441,7 +441,7 @@ Sistem **PuskeswanApp** telah melalui pengujian penetrasi keamanan mendalam (*Fu
 Aplikasi dilengkapi _automated regression testing_ menggunakan Pest PHP dan standardisasi gaya kode Laravel Pint:
 
 ```bash
-# Menjalankan seluruh pengujian otomatis fitur & keamanan (75 Tests)
+# Menjalankan seluruh pengujian otomatis fitur & keamanan (84 Tests)
 php artisan test --compact
 
 # Hasil Pengujian:
@@ -452,8 +452,8 @@ php artisan test --compact
 # PASS  Tests\Feature\SecurityPenetrationTest
 # PASS  Tests\Feature\AuthRateLimitingTest
 # PASS  Tests\Feature\UserPhotoManagementTest
-# Tests:    75 passed (572 assertions)
-# Duration: 4.96s (100% Passed)
+# Tests:    84 passed (606 assertions)
+# Duration: 5.12s (100% Passed)
 ```
 
 ```bash

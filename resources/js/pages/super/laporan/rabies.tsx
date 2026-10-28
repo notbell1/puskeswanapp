@@ -68,6 +68,40 @@ const STATUS_HEWAN_OPTIONS: Record<string, string> = {
     Liar: 'Liar / Tidak Diketahui',
 };
 
+/**
+ * Format string tanggal ke format formal Indonesia (contoh: "29 Januari 2026")
+ */
+const formatIndonesianDate = (dateStr?: string): string => {
+    if (!dateStr || dateStr === "-") return "-";
+    const months = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+    ];
+    let d: Date;
+    if (dateStr.includes("/")) {
+        const parts = dateStr.split("/");
+        d = new Date(
+            parseInt(parts[2]),
+            parseInt(parts[1]) - 1,
+            parseInt(parts[0]),
+        );
+    } else {
+        d = new Date(dateStr);
+    }
+    if (isNaN(d.getTime())) return dateStr;
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+};
+
 export default function RabiesIndex({
     cases,
     startDate,
@@ -113,12 +147,28 @@ export default function RabiesIndex({
         );
     };
 
+    const [caseForLetterPrint, setCaseForLetterPrint] = useState<RabiesCaseItem | null>(null);
+
     const handleViewDetail = (item: RabiesCaseItem) => {
         setSelectedCase(item);
         setDetailModalOpen(true);
     };
 
+    const handlePrintCase = (item: RabiesCaseItem) => {
+        setCaseForLetterPrint(item);
+        const originalTitle = document.title;
+        document.title = "";
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+                document.title = originalTitle;
+                setCaseForLetterPrint(null);
+            }, 800);
+        }, 150);
+    };
+
     const handlePrint = () => {
+        setCaseForLetterPrint(null);
         window.print();
     };
 
@@ -128,51 +178,319 @@ export default function RabiesIndex({
 
             <style>{`
                 @media print {
-                    nav, header, aside, .no-print, button, form {
+                    @page {
+                        size: A4 portrait;
+                        margin: 0 !important;
+                    }
+                    nav, header, aside, .no-print, button, form, footer {
                         display: none !important;
                     }
-                    body {
-                        background: white !important;
-                        color: black !important;
-                        font-size: 9.5pt;
-                    }
-                    .print-only {
-                        display: block !important;
-                    }
-                    .print-card {
-                        box-shadow: none !important;
-                        border: none !important;
-                        padding: 0 !important;
-                    }
-                    table {
-                        width: 100% !important;
-                        border-collapse: collapse !important;
-                    }
-                    th, td {
-                        border: 1px solid #333 !important;
-                        padding: 5px 6px !important;
+                    ${
+                        caseForLetterPrint
+                            ? `
+                        html, body {
+                            width: 100% !important;
+                            height: 100% !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            background: transparent !important;
+                            background-color: #ffffff !important;
+                            color: #000000 !important;
+                            font-family: 'Times New Roman', Times, serif !important;
+                            overflow: hidden !important;
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                        .print-only, .space-y-4 {
+                            display: none !important;
+                        }
+                        .print-case-only {
+                            display: flex !important;
+                            flex-direction: column !important;
+                            justify-content: space-between !important;
+                            width: 210mm !important;
+                            max-width: 210mm !important;
+                            min-height: 297mm !important;
+                            max-height: 297mm !important;
+                            height: 297mm !important;
+                            padding: 12mm 18mm 10mm 18mm !important;
+                            margin: 0 auto !important;
+                            box-sizing: border-box !important;
+                            background: transparent !important;
+                            background-color: #ffffff !important;
+                            page-break-after: avoid !important;
+                            page-break-before: avoid !important;
+                            page-break-inside: avoid !important;
+                            overflow: hidden !important;
+                        }
+                    `
+                            : `
+                        body {
+                            background: white !important;
+                            color: black !important;
+                            font-size: 9.5pt;
+                            padding: 10mm !important;
+                        }
+                        .print-case-only {
+                            display: none !important;
+                        }
+                        .print-only {
+                            display: block !important;
+                        }
+                        .print-card {
+                            box-shadow: none !important;
+                            border: none !important;
+                            padding: 0 !important;
+                        }
+                        table {
+                            width: 100% !important;
+                            border-collapse: collapse !important;
+                        }
+                        th, td {
+                            border: 1px solid #333 !important;
+                            padding: 5px 6px !important;
+                        }
+                    `
                     }
                 }
-                .print-only {
+                .print-only, .print-case-only {
                     display: none;
                 }
             `}</style>
 
-            <div className="print-only mb-6 border-b-2 border-gray-900 pb-3 text-center">
-                <h3 className="text-base font-bold uppercase tracking-wider text-gray-900">
-                    Pemerintah Kabupaten / Kota
-                </h3>
-                <h2 className="text-lg font-black uppercase text-gray-900 tracking-wide">
-                    Pusat Kesehatan Hewan (PUSKESWAN) Inseminasi Buatan
-                </h2>
-                <p className="text-xs text-gray-600 mt-1">
-                    Jl. Raya Peternakan No. 12, Wilayah Pelayanan Terpadu Keswan &amp; Kesmavet | Telp: (021) 8899-7711
-                </p>
-                <div className="mt-4 pt-2 border-t border-gray-400">
-                    <h4 className="text-sm font-bold uppercase text-gray-800">
+            {caseForLetterPrint && (
+                <div className="print-case-only font-serif text-black leading-snug">
+                    <div>
+                        <div className="relative pb-1 mb-4">
+                            <div className="flex items-center">
+                                <img
+                                    src="/images/logo-pariaman.webp"
+                                    alt="Logo Kota Pariaman"
+                                    className="absolute left-0 top-0.5 h-[76px] w-auto object-contain"
+                                />
+                                <div className="text-center font-serif text-black leading-snug w-full pl-20 pr-4">
+                                    <div className="text-[12pt] tracking-wider uppercase font-normal">
+                                        PEMERINTAH KOTA PARIAMAN
+                                    </div>
+                                    <div className="text-[13pt] tracking-wide uppercase font-bold">
+                                        DINAS PERTANIAN PANGAN DAN PERIKANAN
+                                    </div>
+                                    <div className="text-[14.5pt] tracking-wider uppercase font-black">
+                                        UPT PUSKESWAN DAN IB
+                                    </div>
+                                    <div className="text-[10.5pt] font-semibold">
+                                        (Pusat Kesehatan Hewan dan Inseminasi Buatan)
+                                    </div>
+                                    <div className="text-[9.5pt]">
+                                        Jl. Sentot Ali Basa Jati Telp. (0751) 93898
+                                    </div>
+                                    <div className="text-[9pt] flex items-center justify-center gap-6">
+                                        <span>
+                                            E-Mail :{" "}
+                                            <span className="underline">
+                                                puskeswanpariaman1@gmail.com
+                                            </span>
+                                        </span>
+                                        <span>Kode Pos : 25516</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-2 border-b-[2.5px] border-black pb-[1.5px]">
+                                <div className="border-b border-black" />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-12 text-[10.5pt] leading-snug mb-3">
+                            <div className="col-span-6">
+                                <table className="w-full">
+                                    <tbody>
+                                        <tr>
+                                            <td className="w-14 py-0.5">No</td>
+                                            <td className="w-4 py-0.5 text-center">:</td>
+                                            <td className="py-0.5">
+                                                {caseForLetterPrint.no_surat || "524.3/026/Puskeswan-2026"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-0.5">Lamp</td>
+                                            <td className="w-4 py-0.5 text-center">:</td>
+                                            <td className="py-0.5">
+                                                {caseForLetterPrint.perihal || "-"}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-0.5 align-top">Hal</td>
+                                            <td className="w-4 py-0.5 align-top text-center">:</td>
+                                            <td className="py-0.5 align-top font-semibold underline">
+                                                Kasus Gigitan HPR
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="col-span-6 pl-10">
+                                <div>
+                                    Pariaman,{" "}
+                                    {formatIndonesianDate(
+                                        caseForLetterPrint.raw_tgl_kejadian || caseForLetterPrint.tgl_kejadian,
+                                    )}
+                                </div>
+                                <div className="mt-2.5">
+                                    <div>Kepada Yth.</div>
+                                    <div>Pimpinan Puskesmas Sikapak</div>
+                                    <div>di</div>
+                                    <div className="pl-6 underline">Tempat</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p className="text-[10.5pt] text-justify indent-10 mb-2 leading-relaxed">
+                            Bersama ini disampaikan bahwa terjadi kasus Gigitan oleh{" "}
+                            {(caseForLetterPrint.jenis_hewan || "hewan").toLowerCase()}{" "}
+                            terhadap korban sebagai berikut:
+                        </p>
+
+                        <div className="mb-3 text-[10.5pt]">
+                            <table className="w-full leading-snug">
+                                <tbody>
+                                    <tr>
+                                        <td className="w-36 py-0.5">Nama</td>
+                                        <td className="w-4 py-0.5 text-center">:</td>
+                                        <td className="py-0.5 font-bold uppercase">{caseForLetterPrint.nama_pasien}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-0.5">Umur</td>
+                                        <td className="w-4 py-0.5 text-center">:</td>
+                                        <td className="py-0.5">{caseForLetterPrint.umur_pasien}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-0.5">Jenis kelamin</td>
+                                        <td className="w-4 py-0.5 text-center">:</td>
+                                        <td className="py-0.5">{caseForLetterPrint.jenis_kelamin_pasien}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-0.5 align-top">Alamat</td>
+                                        <td className="w-4 py-0.5 align-top text-center">:</td>
+                                        <td className="py-0.5 align-top">{caseForLetterPrint.alamat_pasien}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-0.5">Tanggal digigit</td>
+                                        <td className="w-4 py-0.5 text-center">:</td>
+                                        <td className="py-0.5">
+                                            {formatIndonesianDate(
+                                                caseForLetterPrint.raw_tgl_kejadian || caseForLetterPrint.tgl_kejadian,
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-0.5">Lokasi Gigitan</td>
+                                        <td className="w-4 py-0.5 text-center">:</td>
+                                        <td className="py-0.5">{caseForLetterPrint.lokasi_gigitan}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="mb-3 text-[10.5pt]">
+                            <div className="font-semibold underline mb-1">Signalement</div>
+                            <div>
+                                <table className="w-full leading-snug">
+                                    <tbody>
+                                        <tr>
+                                            <td className="w-36 py-0.5">Jenis hewan</td>
+                                            <td className="w-4 py-0.5 text-center">:</td>
+                                            <td className="py-0.5">{caseForLetterPrint.jenis_hewan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-0.5">Ras</td>
+                                            <td className="w-4 py-0.5 text-center">:</td>
+                                            <td className="py-0.5">{caseForLetterPrint.ras_hewan || "-"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-0.5">Jenis kelamin</td>
+                                            <td className="w-4 py-0.5 text-center">:</td>
+                                            <td className="py-0.5">{caseForLetterPrint.jenis_kelamin_pasien || "-"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-0.5">Umur</td>
+                                            <td className="w-4 py-0.5 text-center">:</td>
+                                            <td className="py-0.5">{caseForLetterPrint.umur_pasien || "-"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-0.5">Nama Pemilik</td>
+                                            <td className="w-4 py-0.5 text-center">:</td>
+                                            <td className="py-0.5">{caseForLetterPrint.nama_pemilik_hewan || "-"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-0.5 align-top">Alamat Kejadian</td>
+                                            <td className="w-4 py-0.5 align-top text-center">:</td>
+                                            <td className="py-0.5 align-top">{caseForLetterPrint.alamat_kejadian}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className="mb-2 text-[10.5pt]">
+                            <div className="font-semibold underline mb-1">Anamnese :</div>
+                            <p className="text-justify leading-relaxed whitespace-pre-wrap">
+                                {caseForLetterPrint.kronologi || "-"}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="mt-auto pt-4">
+                        <div className="flex justify-end mb-4">
+                            <div className="text-center text-[10.5pt] leading-tight min-w-[270px]">
+                                <p>A.n Kepala UPTD. Puskeswan dan IB</p>
+                                <p>Kota Pariaman</p>
+                                <div className="h-20" />
+                                <p className="font-bold underline">drh. Reni Gusnita</p>
+                                <p>NIP. 19860826 201903 2 002</p>
+                            </div>
+                        </div>
+
+                        <div className="text-[9pt] leading-snug">
+                            <p>Tembusan disampaikan kepada Yth.</p>
+                            <p>1. Kepala Dinas Kesehatan Kota Pariaman</p>
+                            <p>2. Arsip</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="print-only mb-6 pb-2">
+                <div className="relative flex items-center border-b-[2.5px] border-black pb-2">
+                    <img
+                        src="/images/logo-pariaman.webp"
+                        alt="Logo Kota Pariaman"
+                        className="absolute left-0 top-1 h-16 w-auto object-contain"
+                    />
+                    <div className="text-center font-serif text-black leading-tight w-full pl-16 pr-4">
+                        <div className="text-xs uppercase tracking-wider font-normal">
+                            PEMERINTAH KOTA PARIAMAN
+                        </div>
+                        <div className="text-sm uppercase tracking-wide font-bold">
+                            DINAS PERTANIAN PANGAN DAN PERIKANAN
+                        </div>
+                        <div className="text-base uppercase tracking-wider font-black">
+                            UPT PUSKESWAN DAN IB
+                        </div>
+                        <div className="text-[10px] font-semibold">
+                            (Pusat Kesehatan Hewan dan Inseminasi Buatan)
+                        </div>
+                        <div className="text-[9px] mt-0.5">
+                            Jl. Sentot Ali Basa Jati Telp. (0751) 93898 | E-Mail: puskeswanpariaman1@gmail.com | Kode Pos: 25516
+                        </div>
+                    </div>
+                </div>
+                <div className="mt-3 text-center">
+                    <h4 className="text-sm font-bold uppercase text-gray-900 tracking-wide underline">
                         LAPORAN SURVEILANS EPIDEMIOLOGI KASUS GIGITAN HEWAN PENULAR RABIES (GHPR)
                     </h4>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 mt-0.5">
                         Periode Kejadian: {startDate} s/d {endDate}
                     </p>
                 </div>
@@ -434,14 +752,14 @@ export default function RabiesIndex({
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">No. Surat &amp; Tanggal</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Data Korban / Pasien</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Lokasi &amp; Kejadian</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Hewan Penular</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Status Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Status VAR</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0 no-print">Aksi</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. Surat</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Nama Korban</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Lokasi &amp; Kejadian</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Hewan Penular</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Status Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Status VAR</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-36 shrink-0 no-print">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -478,30 +796,19 @@ export default function RabiesIndex({
                                                     <div className="font-mono font-bold text-purple-700">
                                                         {c.no_surat}
                                                     </div>
-                                                    <div className="text-[11px] text-gray-500 mt-0.5">
-                                                        {c.tgl_kejadian}
-                                                    </div>
+
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
                                                     <div className="font-semibold text-gray-900 text-sm break-words">
                                                         {c.nama_pasien}
                                                     </div>
-                                                    <div className="text-[11px] text-gray-500 mt-0.5 flex flex-wrap items-center gap-1.5">
-                                                        <span>{c.jenis_kelamin_pasien}</span>
-                                                        <span>&bull;</span>
-                                                        <span>{c.umur_pasien} Thn</span>
-                                                        <span>&bull;</span>
-                                                        <span className="font-mono text-gray-600">{c.nik_pasien}</span>
-                                                    </div>
+
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200 max-w-xs">
                                                     <div className="font-semibold text-gray-900 break-words leading-snug">
                                                         {c.lokasi_gigitan}
-                                                    </div>
-                                                    <div className="text-[11px] text-gray-500 break-words leading-relaxed mt-1">
-                                                        {c.alamat_kejadian}
                                                     </div>
                                                 </td>
 
@@ -509,26 +816,23 @@ export default function RabiesIndex({
                                                     <div className="font-semibold text-gray-800 break-words">
                                                         {c.jenis_hewan}
                                                     </div>
-                                                    <div className="text-[11px] text-gray-500 mt-0.5">
-                                                        Pemilik: {c.nama_pemilik_hewan}
-                                                    </div>
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
                                                     {c.status_hewan.toLowerCase().includes('observasi') ? (
-                                                        <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-50 text-amber-700 border border-amber-200">
+                                                        <span className="text-xs font-semibold text-amber-600">
                                                             Observasi
                                                         </span>
                                                     ) : c.status_hewan.toLowerCase().includes('mati') ? (
-                                                        <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-rose-50 text-rose-700 border border-rose-200">
+                                                        <span className="text-xs font-semibold text-rose-600">
                                                             Mati / Positif
                                                         </span>
                                                     ) : c.status_hewan.toLowerCase().includes('sehat') ? (
-                                                        <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                        <span className="text-xs font-semibold text-emerald-600">
                                                             Sehat Bebas
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-gray-100 text-gray-700 border border-gray-200">
+                                                        <span className="text-xs font-medium text-gray-700">
                                                             {c.status_hewan}
                                                         </span>
                                                     )}
@@ -538,29 +842,42 @@ export default function RabiesIndex({
                                                     {c.status_var.toLowerCase().includes('diberikan') ||
                                                     c.status_var.toLowerCase().includes('sudah') ||
                                                     c.status_var.toLowerCase().includes('lengkap') ? (
-                                                        <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                        <span className="text-xs font-semibold text-emerald-600">
                                                             Diberikan VAR
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-rose-50 text-rose-700 border border-rose-200">
+                                                        <span className="text-xs font-semibold text-rose-600">
                                                             Belum VAR
                                                         </span>
                                                     )}
                                                 </td>
 
                                                 <td className="py-3 px-3.5 text-center no-print">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleViewDetail(c)}
-                                                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-purple-200 bg-purple-50/50 hover:bg-purple-100 text-purple-700 font-medium text-xs transition-colors"
-                                                        title="Lihat Rincian Investigasi"
-                                                    >
-                                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                        </svg>
-                                                        <span>Rincian</span>
-                                                    </button>
+                                                    <div className="flex items-center justify-center gap-1.5">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleViewDetail(c)}
+                                                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-purple-200 bg-purple-50/50 hover:bg-purple-100 text-purple-700 font-medium text-xs transition-colors"
+                                                            title="Lihat Rincian Investigasi"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                            </svg>
+                                                            <span>Rincian</span>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handlePrintCase(c)}
+                                                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-rose-200 bg-rose-50/60 hover:bg-rose-100 text-rose-700 font-medium text-xs transition-colors"
+                                                            title="Cetak Surat Kasus Gigitan Rabies (PDF)"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                                            </svg>
+                                                            <span>Surat</span>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -606,15 +923,15 @@ export default function RabiesIndex({
 
                 <div className="print-only mt-10 pt-4 flex justify-end">
                     <div className="text-center w-64">
-                        <p className="text-xs text-gray-700">Dikeluarkan di: Puskeswan Terpadu</p>
+                        <p className="text-xs text-gray-700">Dikeluarkan di: Pariaman</p>
                         <p className="text-xs text-gray-700 mt-0.5">
                             Tanggal: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </p>
-                        <p className="text-xs font-bold text-gray-900 mt-3">Mengetahui,</p>
-                        <p className="text-xs text-gray-700">Kepala UPTD Puskeswan</p>
+                        <p className="text-xs font-bold text-gray-900 mt-3">A.n Kepala UPTD. Puskeswan dan IB</p>
+                        <p className="text-xs text-gray-700">Kota Pariaman</p>
                         <div className="h-16" />
-                        <p className="text-xs font-bold text-gray-900 underline">( .................................................... )</p>
-                        <p className="text-[10px] text-gray-600">NIP. ....................................................</p>
+                        <p className="text-xs font-bold text-gray-900 underline">drh. Reni Gusnita</p>
+                        <p className="text-[10px] text-gray-600">NIP. 19860826 201903 2 002</p>
                     </div>
                 </div>
             </div>
@@ -767,6 +1084,19 @@ export default function RabiesIndex({
                                 onClick={() => setDetailModalOpen(false)}
                             >
                                 Tutup
+                            </Button>
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={() => handlePrintCase(selectedCase)}
+                                className="bg-rose-600 hover:bg-rose-700 text-white"
+                                leftIcon={
+                                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                }
+                            >
+                                Cetak Surat Kasus (PDF)
                             </Button>
                         </div>
                     </div>

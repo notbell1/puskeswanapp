@@ -905,28 +905,28 @@ export default function AdminRabiesIndex({
                         <table className="w-full text-left border-collapse min-w-[940px]">
                             <thead>
                                 <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center font-bold whitespace-nowrap">
                                         No.
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
                                         No. Surat &amp; Tanggal
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
                                         Data Korban
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-40 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-40 text-center font-bold whitespace-nowrap">
                                         Luka &amp; Status VAR
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
                                         Hewan Penular (HPR)
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold whitespace-nowrap">
                                         Status &amp; Kronologi
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-32 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-32 text-center font-bold whitespace-nowrap">
                                         Petugas
                                     </th>
-                                    <th className="py-2.5 px-2 w-32 text-center whitespace-nowrap">
+                                    <th className="py-2.5 px-2 w-32 text-center font-bold whitespace-nowrap">
                                         Aksi
                                     </th>
                                 </tr>
@@ -1005,12 +1005,12 @@ export default function AdminRabiesIndex({
                                                 </span>
                                                 <span
                                                     className={cn(
-                                                        "inline-flex items-center px-1.5 py-0.2 rounded text-[9.5px] font-bold mt-0.5",
+                                                        "text-[11px] font-semibold block mt-0.5",
                                                         item.status_var.includes(
                                                             "Belum",
                                                         )
-                                                            ? "bg-rose-50 text-rose-700 border border-rose-200"
-                                                            : "bg-emerald-50 text-emerald-700 border border-emerald-200",
+                                                            ? "text-rose-600"
+                                                            : "text-emerald-600",
                                                     )}
                                                 >
                                                     {item.status_var}
@@ -1036,16 +1036,16 @@ export default function AdminRabiesIndex({
                                             <td className="py-2 px-3 border-r border-gray-200">
                                                 <span
                                                     className={cn(
-                                                        "inline-flex items-center px-1.5 py-0.2 rounded text-[9.5px] font-bold mb-0.5",
+                                                        "text-[11px] font-semibold block mb-0.5",
                                                         item.status_hewan.includes(
                                                             "Mati",
                                                         )
-                                                            ? "bg-rose-100 text-rose-800"
+                                                            ? "text-rose-600"
                                                             : item.status_hewan.includes(
                                                                     "Observasi",
                                                                 )
-                                                              ? "bg-amber-100 text-amber-800"
-                                                              : "bg-gray-100 text-gray-700",
+                                                              ? "text-amber-600"
+                                                              : "text-gray-700",
                                                     )}
                                                 >
                                                     {item.status_hewan}

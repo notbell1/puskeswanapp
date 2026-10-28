@@ -782,14 +782,14 @@ export default function DokterDashboard({
                         <table className="w-full text-left border-collapse min-w-[880px]">
                             <thead>
                                 <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center whitespace-nowrap">No.</th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-28 whitespace-nowrap">No. RM</th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 whitespace-nowrap">Waktu Selesai</th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-40 whitespace-nowrap">Pasien Hewan</th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 whitespace-nowrap">Pemilik</th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 whitespace-nowrap">Diagnosa Klinis</th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 whitespace-nowrap">Terapi / Pengobatan</th>
-                                    <th className="py-2.5 px-2 w-20 text-center whitespace-nowrap">Status</th>
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center font-bold whitespace-nowrap">No</th>
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-28 text-center font-bold whitespace-nowrap">No. RM</th>
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">Waktu Selesai</th>
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-40 text-center font-bold whitespace-nowrap">Pasien Hewan</th>
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">Pemilik</th>
+                                    <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold whitespace-nowrap">Diagnosa Klinis</th>
+                                    <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold whitespace-nowrap">Terapi / Pengobatan</th>
+                                    <th className="py-2.5 px-2 w-20 text-center font-bold whitespace-nowrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 text-xs text-gray-800">

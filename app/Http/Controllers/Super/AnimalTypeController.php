@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AnimalType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -48,16 +49,29 @@ class AnimalTypeController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'nama_jenis' => ['required', 'string', 'max:255', 'unique:animal_types,nama_jenis'],
+            'nama_jenis' => ['required', 'string', 'max:255'],
             'keterangan' => ['nullable', 'string', 'max:500'],
+        ], [
+            'nama_jenis.required' => 'Nama jenis/kategori hewan wajib diisi.',
+            'nama_jenis.max' => 'Nama jenis/kategori hewan maksimal 255 karakter.',
         ]);
 
+        $namaJenis = trim($validated['nama_jenis']);
+
+        // Deteksi duplikasi cerdas: leetspeak, simbol, case-insensitive, kompresi huruf, & variasi ketikan
+        $duplicate = AnimalType::findSimilar($namaJenis);
+        if ($duplicate) {
+            throw ValidationException::withMessages([
+                'nama_jenis' => "Jenis/Kategori hewan sudah ada dalam sistem (serupa dengan '{$duplicate->nama_jenis}').",
+            ]);
+        }
+
         AnimalType::create([
-            'nama_jenis' => strip_tags($validated['nama_jenis']),
+            'nama_jenis' => strip_tags($namaJenis),
             'keterangan' => ! empty($validated['keterangan']) ? strip_tags($validated['keterangan']) : null,
         ]);
 
-        return back()->with('success', "Jenis hewan {$validated['nama_jenis']} berhasil ditambahkan!");
+        return back()->with('success', "Jenis hewan {$namaJenis} berhasil ditambahkan!");
     }
 
     /**
@@ -66,12 +80,25 @@ class AnimalTypeController extends Controller
     public function update(Request $request, AnimalType $animalType): RedirectResponse
     {
         $validated = $request->validate([
-            'nama_jenis' => ['required', 'string', 'max:255', "unique:animal_types,nama_jenis,{$animalType->id}"],
+            'nama_jenis' => ['required', 'string', 'max:255'],
             'keterangan' => ['nullable', 'string', 'max:500'],
+        ], [
+            'nama_jenis.required' => 'Nama jenis/kategori hewan wajib diisi.',
+            'nama_jenis.max' => 'Nama jenis/kategori hewan maksimal 255 karakter.',
         ]);
 
+        $namaJenis = trim($validated['nama_jenis']);
+
+        // Deteksi duplikasi cerdas dengan mengecualikan data saat ini
+        $duplicate = AnimalType::findSimilar($namaJenis, $animalType->id);
+        if ($duplicate) {
+            throw ValidationException::withMessages([
+                'nama_jenis' => "Jenis/Kategori hewan sudah ada dalam sistem (serupa dengan '{$duplicate->nama_jenis}').",
+            ]);
+        }
+
         $animalType->update([
-            'nama_jenis' => strip_tags($validated['nama_jenis']),
+            'nama_jenis' => strip_tags($namaJenis),
             'keterangan' => ! empty($validated['keterangan']) ? strip_tags($validated['keterangan']) : null,
         ]);
 

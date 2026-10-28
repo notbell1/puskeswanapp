@@ -26,6 +26,29 @@ interface AnimalTypesPageProps {
     };
 }
 
+function normalizeAnimalName(name: string): string {
+    const replacements: Record<string, string> = {
+        "0": "o",
+        "1": "i",
+        "|": "i",
+        "!": "i",
+        "3": "e",
+        "4": "a",
+        "@": "a",
+        "5": "s",
+        $: "s",
+        "6": "g",
+        "7": "t",
+        "+": "t",
+        "8": "b",
+        "9": "g",
+    };
+    let str = name.toLowerCase().trim();
+    str = str.replace(/[01|!34@5$67+89]/g, (char) => replacements[char] || char);
+    str = str.replace(/[^a-z]/g, "");
+    return str.replace(/(.)\1+/g, "$1");
+}
+
 export default function AnimalTypesIndex({
     animalTypes,
     filters,
@@ -108,6 +131,23 @@ export default function AnimalTypesIndex({
             notifyValidation("Nama spesies / jenis hewan wajib diisi!");
             return false;
         }
+
+        const cleanInput = data.nama_jenis.trim();
+        const normalizedInput = normalizeAnimalName(cleanInput);
+
+        const duplicate = animalTypes.data.find((item) => {
+            if (editingItem && item.id === editingItem.id) return false;
+            if (item.nama_jenis.toLowerCase().trim() === cleanInput.toLowerCase()) return true;
+            return normalizeAnimalName(item.nama_jenis) === normalizedInput;
+        });
+
+        if (duplicate) {
+            error(
+                `Jenis/Kategori hewan sudah ada dalam sistem (serupa dengan '${duplicate.nama_jenis}').`
+            );
+            return false;
+        }
+
         return true;
     };
 
@@ -293,14 +333,14 @@ export default function AnimalTypesIndex({
 
                 <div className="overflow-x-auto min-h-[335px]">
                     <table className="w-full min-w-[760px] text-left text-xs border-collapse border border-gray-200">
-                            <thead>
+                            <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Nama Jenis / Spesies</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Deskripsi / Keterangan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Total Pasien Terdaftar</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Terdaftar</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">Kelola</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Jenis / Spesies</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Deskripsi / Keterangan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Total Terdata</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Terdaftar</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Kelola</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -369,13 +409,13 @@ export default function AnimalTypesIndex({
                                                 )}
                                             </td>
 
-                                            <td className="py-3 px-3.5 border-r border-gray-200">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                 {item.animals_count > 0 ? (
-                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10.5px] bg-purple-50 text-purple-700 border border-purple-200">
-                                                        {item.animals_count} Ekor Terdata
+                                                    <span className="text-xs font-semibold text-purple-700 ">
+                                                        {item.animals_count} Pasien
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-block px-2 py-0.5 rounded-md font-medium text-[10.5px] bg-gray-100 text-gray-500">
+                                                    <span className="text-xs font-medium text-gray-400">
                                                         0 Pasien
                                                     </span>
                                                 )}

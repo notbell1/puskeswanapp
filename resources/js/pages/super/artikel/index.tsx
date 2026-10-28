@@ -766,14 +766,14 @@ export default function ArticlesIndex({
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-28 shrink-0">Sampul</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Judul Artikel</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Kategori</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Penulis / Author</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Status Tayang</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Tanggal Terbit</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">Aksi</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-28 shrink-0">Sampul</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Judul Artikel</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kategori</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Penulis / Author</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Status Tayang</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Tanggal Terbit</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -843,29 +843,28 @@ export default function ArticlesIndex({
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                                                    <span className="text-xs font-medium text-gray-800">
                                                         {item.kategori_name}
                                                     </span>
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs font-semibold text-gray-700">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs font-semibold text-gray-700 text-center">
                                                     {item.author_name}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                     {item.status === 'Published' ? (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10.5px] bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                        <span className="text-xs font-semibold text-emerald-600 ">
                                                             Published
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10.5px] bg-slate-100 text-slate-600 border border-slate-200">
+                                                        <span className="text-xs font-medium text-gray-400">
                                                             Draft
                                                         </span>
                                                     )}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium whitespace-nowrap">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium whitespace-nowrap text-center">
                                                     {item.tgl_terbit || '-'}
                                                 </td>
 

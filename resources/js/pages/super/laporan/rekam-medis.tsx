@@ -165,21 +165,36 @@ export default function RekamMedisIndex({
                 }
             `}</style>
 
-            <div className="print-only mb-6 border-b-2 border-gray-900 pb-3 text-center">
-                <h3 className="text-base font-bold uppercase tracking-wider text-gray-900">
-                    Pemerintah Kabupaten / Kota
-                </h3>
-                <h2 className="text-lg font-black uppercase text-gray-900 tracking-wide">
-                    Pusat Kesehatan Hewan (PUSKESWAN) Inseminasi Buatan
-                </h2>
-                <p className="text-xs text-gray-600 mt-1">
-                    Jl. Raya Peternakan No. 12, Wilayah Pelayanan Terpadu Keswan &amp; Kesmavet | Telp: (021) 8899-7711
-                </p>
-                <div className="mt-4 pt-2 border-t border-gray-400">
-                    <h4 className="text-sm font-bold uppercase text-gray-800">
+            <div className="print-only mb-6 pb-2">
+                <div className="relative flex items-center border-b-[2.5px] border-black pb-2">
+                    <img
+                        src="/images/logo-pariaman.webp"
+                        alt="Logo Kota Pariaman"
+                        className="absolute left-0 top-1 h-16 w-auto object-contain"
+                    />
+                    <div className="text-center font-serif text-black leading-tight w-full pl-16 pr-4">
+                        <div className="text-xs uppercase tracking-wider font-normal">
+                            PEMERINTAH KOTA PARIAMAN
+                        </div>
+                        <div className="text-sm uppercase tracking-wide font-bold">
+                            DINAS PERTANIAN PANGAN DAN PERIKANAN
+                        </div>
+                        <div className="text-base uppercase tracking-wider font-black">
+                            UPT PUSKESWAN DAN IB
+                        </div>
+                        <div className="text-[10px] font-semibold">
+                            (Pusat Kesehatan Hewan dan Inseminasi Buatan)
+                        </div>
+                        <div className="text-[9px] mt-0.5">
+                            Jl. Sentot Ali Basa Jati Telp. (0751) 93898 | E-Mail: puskeswanpariaman1@gmail.com | Kode Pos: 25516
+                        </div>
+                    </div>
+                </div>
+                <div className="mt-3 text-center">
+                    <h4 className="text-sm font-bold uppercase text-gray-900 tracking-wide underline">
                         LAPORAN REKAPITULASI PELAYANAN &amp; REKAM MEDIS PASIEN
                     </h4>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 mt-0.5">
                         Periode Pelayanan: {startDate} s/d {endDate}
                     </p>
                 </div>
@@ -461,13 +476,13 @@ export default function RekamMedisIndex({
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Waktu &amp; No. RM</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pasien Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pemilik</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Dokter &amp; Status</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Diagnosa Klinis &amp; Terapi</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0 no-print">Aksi</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Waktu &amp; No. RM</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pasien Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pemilik</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Dokter &amp; Status</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Diagnosa Klinis &amp; Terapi</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0 no-print">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -536,11 +551,11 @@ export default function RekamMedisIndex({
                                                     </div>
                                                     <div className="mt-1">
                                                         {record.status === 'Selesai' ? (
-                                                            <span className="inline-block px-2 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                            <span className="text-xs font-semibold text-emerald-600">
                                                                 Selesai
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-block px-2 py-0.5 rounded-full font-bold text-[10px] bg-amber-50 text-amber-700 border border-amber-200">
+                                                            <span className="text-xs font-semibold text-amber-600">
                                                                 {record.status}
                                                             </span>
                                                         )}
@@ -613,15 +628,15 @@ export default function RekamMedisIndex({
 
                 <div className="print-only mt-10 pt-4 flex justify-end">
                     <div className="text-center w-64">
-                        <p className="text-xs text-gray-700">Dikeluarkan di: Puskeswan Terpadu</p>
+                        <p className="text-xs text-gray-700">Dikeluarkan di: Pariaman</p>
                         <p className="text-xs text-gray-700 mt-0.5">
                             Tanggal: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </p>
-                        <p className="text-xs font-bold text-gray-900 mt-3">Mengetahui,</p>
-                        <p className="text-xs text-gray-700">Kepala UPTD Puskeswan</p>
+                        <p className="text-xs font-bold text-gray-900 mt-3">A.n Kepala UPTD. Puskeswan dan IB</p>
+                        <p className="text-xs text-gray-700">Kota Pariaman</p>
                         <div className="h-16" />
-                        <p className="text-xs font-bold text-gray-900 underline">( .................................................... )</p>
-                        <p className="text-[10px] text-gray-600">NIP. ....................................................</p>
+                        <p className="text-xs font-bold text-gray-900 underline">drh. Reni Gusnita</p>
+                        <p className="text-[10px] text-gray-600">NIP. 19860826 201903 2 002</p>
                     </div>
                 </div>
             </div>

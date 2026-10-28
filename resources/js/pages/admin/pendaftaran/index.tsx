@@ -563,13 +563,13 @@ export default function PendaftaranIndex({
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-16 shrink-0">Antrean</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 w-28 shrink-0">Waktu</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">No. RM &amp; Pasien Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pemilik &amp; Kontak</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Triage Awal &amp; Keluhan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Dokter &amp; Status</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">Aksi</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-16 shrink-0">Antrean</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-28 shrink-0">Waktu</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. RM &amp; Pasien Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pemilik &amp; Kontak</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Triage Awal &amp; Keluhan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Dokter &amp; Status</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -642,26 +642,24 @@ export default function PendaftaranIndex({
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <div className="mb-1">
+                                                    <div className="mb-0.5">
                                                         {visit.status_antrean === 'Pemeriksaan' && (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-blue-50 text-blue-700 border border-blue-200">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                                            <span className="text-xs font-semibold text-blue-600">
                                                                 Pemeriksaan
                                                             </span>
                                                         )}
                                                         {visit.status_antrean === 'Antri' && (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-50 text-amber-700 border border-amber-200">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                            <span className="text-xs font-semibold text-amber-600">
                                                                 Antri
                                                             </span>
                                                         )}
                                                         {visit.status_antrean === 'Selesai' && (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                            <span className="text-xs font-semibold text-emerald-600">
                                                                 Selesai
                                                             </span>
                                                         )}
                                                         {visit.status_antrean === 'Batal' && (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-rose-50 text-rose-700 border border-rose-200">
+                                                            <span className="text-xs font-semibold text-rose-600">
                                                                 Batal
                                                             </span>
                                                         )}

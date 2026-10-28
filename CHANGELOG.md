@@ -6,10 +6,17 @@ Semua perubahan dan pembaruan penting pada proyek **PuskeswanApp** dicatat dalam
 
 ## [2.3.0] - 2026-10-29
 
+### 🛡️ Integritas Sistem, Proteksi Akun & Surveilans Rabies
+
+- **Proteksi Integritas Akun Super Admin**: Pencegahan penonaktifan dan penghapusan akun berstatus Super Admin.
+- **Pencegahan Duplikasi Kategori Hewan (Smart Normalization)**: Integrasi deteksi manipulasi leetspeak.
+- **Standarisasi Template Cetak PDF Laporan Rabies Super Admin**: Penyeragaman format cetak dokumen surat resmi kasus gigitan rabies (HPR).
+- **Fix layout modul**: Standardisasi table header.
+
 ### 🛡️ Audit Penetrasi Keamanan Menyeluruh (OWASP Top 10) & Pembaruan Testing Engine
 
 - **Audit Penetrasi Keamanan 7 Batch (42 Skenario)**: Pelaksanaan audit forensik penetrasi penuh mencakup seluruh spektrum OWASP Top 10:2021 (Broken Access Control, Cryptographic Failures, Injection SQLi/XSS, Insecure Design & Anti-Bot, Security Misconfiguration, Identification & Auth, Software & Data Integrity, SSRF & File Upload) serta Routing Integrity dengan tingkat keberhasilan penangkalan 100% (Grade A+ Hardened).
-- **Publikasi Laporan Audit Resmi (`AUDIT.md`)**: Penyusunan dokumen formal hasil audit keamanan sistem yang disanitasi dari kebocoran data sensitif (bebas path internal, kredensial, dan env) lengkap dengan analisis forensik per skenario.
+- **Publikasi Laporan Audit Resmi (`AUDIT.md`)**: Penyusunan dokumen formal hasil audit keamanan sistem yang disanitasi dari kebocoran data sensitif lengkap dengan analisis forensik per skenario.
 - **Master Audit Inspector Dashboard & Bukti Visual**: Pembangunan toolkit pengujian visual berbasis Burp Suite Repeater UI (menampilkan Address Bar URL asli, raw HTTP request attacker input, dan raw HTTP response server) serta generasi 1 lembar berkas tangkapan layar master (`test/screenshot/MASTER_AUDIT_SUMMARY_REPORT.png`).
 - **Pembaruan Dependensi PHPUnit (Patch GHSA-9vw2-f4vp-x7gf)**: Pembaruan paket pengujian `phpunit/phpunit` ke versi `13.4.5` dan `pestphp/pest` ke versi `5.3.4` untuk mengeliminasi celah keamanan eksekusi kode lokal pada direktori temporary bersama.
 - **Zero Vulnerability Advisories (`composer audit`)**: Verifikasi menyeluruh memastikan repositori bersih 100% dari celah keamanan pihak ketiga.

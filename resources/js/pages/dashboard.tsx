@@ -101,13 +101,13 @@ export default function Dashboard() {
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 text-gray-700 font-bold uppercase text-[11px] tracking-wider border-b border-gray-200">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">No. Antrean</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pasien &amp; Jenis</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pemilik Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Layanan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Dokter Jaga</th>
-                                    <th className="py-3 px-3.5 text-center w-32 shrink-0">Status</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. Antrean</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pasien &amp; Jenis</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pemilik Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Layanan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Dokter Jaga</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-32 shrink-0">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">

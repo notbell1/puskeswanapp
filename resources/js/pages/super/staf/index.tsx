@@ -663,30 +663,30 @@ export default function StaffIndex({
 
                     <div className="overflow-x-auto min-h-83.75">
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
-                            <thead>
+                            <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">
-                                        No.
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">
+                                        No
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-36 shrink-0">
-                                        Section Staff (Order)
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">
+                                        Urutan
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Nama Pegawai
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Jabatan / Posisi
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         NIP / STRV
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
-                                        Asal / Akun Sistem
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                        Status
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Terdaftar
                                     </th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">
                                         Kelola
                                     </th>
                                 </tr>
@@ -744,14 +744,11 @@ export default function StaffIndex({
 
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                         {item.tampil_publik ? (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold bg-purple-50 text-purple-700">
-                                                                <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />
-                                                                Tampil • #
-                                                                {item.urutan ||
-                                                                    1}
+                                                            <span className="text-xs font-semibold text-purple-700">
+                                                                Tampil • #{item.urutan || 1}
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-semibold bg-gray-100 text-gray-500">
+                                                            <span className="text-xs font-medium text-gray-400">
                                                                 Disembunyikan
                                                             </span>
                                                         )}
@@ -795,13 +792,7 @@ export default function StaffIndex({
                                                     </td>
 
                                                     <td className="py-3 px-3.5 border-r border-gray-200">
-                                                        <span
-                                                            className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
-                                                                isPimpinanRow
-                                                                    ? "bg-purple-50 text-purple-700"
-                                                                    : "bg-gray-100 text-gray-800"
-                                                            }`}
-                                                        >
+                                                        <span className="text-xs font-medium text-gray-800">
                                                             {item.jabatan}
                                                         </span>
                                                     </td>
@@ -813,9 +804,8 @@ export default function StaffIndex({
                                                     <td className="py-3 px-3.5 border-r border-gray-200">
                                                         {item.users_count >
                                                         0 ? (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-semibold text-[10.5px] bg-emerald-50 text-emerald-700">
-                                                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                Akun{" "}
+                                                            <span className="text-xs font-semibold text-emerald-600">
+                                                                {" "}
                                                                 {item.linked_role
                                                                     ? item.linked_role.replace(
                                                                           "_",
@@ -824,7 +814,7 @@ export default function StaffIndex({
                                                                     : "Pengguna"}
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-block px-2 py-0.5 rounded-md font-medium text-[10.5px] bg-gray-100 text-gray-500">
+                                                            <span className="text-xs font-medium text-gray-400">
                                                                 Staf Non-Akun
                                                             </span>
                                                         )}

@@ -873,19 +873,19 @@ export default function DokterRiwayatPage({
                                     <table className="w-full text-[9pt] font-serif border-collapse border border-black table-fixed">
                                         <thead>
                                             <tr className="bg-gray-100 font-bold uppercase text-center border-b border-black">
-                                                <th className="border border-black py-1 px-1 w-[14%]">
+                                                <th className="border border-black py-1 px-1 w-[14%] text-center font-bold">
                                                     TANGGAL
                                                 </th>
-                                                <th className="border border-black py-1 px-1 w-[14%]">
+                                                <th className="border border-black py-1 px-1 w-[14%] text-center font-bold">
                                                     BB/SUHU
                                                 </th>
-                                                <th className="border border-black py-1 px-1.5 w-[24%]">
+                                                <th className="border border-black py-1 px-1.5 w-[24%] text-center font-bold">
                                                     ANAMNESA
                                                 </th>
-                                                <th className="border border-black py-1 px-1.5 w-[24%]">
+                                                <th className="border border-black py-1 px-1.5 w-[24%] text-center font-bold">
                                                     DIAGNOSA
                                                 </th>
-                                                <th className="border border-black py-1 px-1.5 w-[24%]">
+                                                <th className="border border-black py-1 px-1.5 w-[24%] text-center font-bold">
                                                     TERAPI
                                                 </th>
                                             </tr>
@@ -1088,28 +1088,28 @@ export default function DokterRiwayatPage({
                         <table className="w-full text-left border-collapse min-w-235">
                             <thead>
                                 <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center whitespace-nowrap">
-                                        No.
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center font-bold whitespace-nowrap">
+                                        No
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-28 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-28 text-center font-bold whitespace-nowrap">
                                         No. RM
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
                                         Tanggal
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">
                                         Pasien Hewan
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">
                                         Pemilik
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 whitespace-nowrap">
+                                    <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold whitespace-nowrap">
                                         Diagnosa Klinis
                                     </th>
-                                    <th className="py-2.5 px-2 border-r border-gray-200 w-16 text-center whitespace-nowrap">
+                                    <th className="py-2.5 px-2 border-r border-gray-200 w-16 text-center font-bold whitespace-nowrap">
                                         Status
                                     </th>
-                                    <th className="py-2.5 px-2 w-32 text-center whitespace-nowrap">
+                                    <th className="py-2.5 px-2 w-32 text-center font-bold whitespace-nowrap">
                                         Aksi Pelayanan
                                     </th>
                                 </tr>

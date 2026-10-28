@@ -93,22 +93,37 @@ export default function ReportIndex({ reportType, startDate, endDate, reportData
                 }
             `}</style>
 
-            <div className="print-only mb-6 border-b-2 border-gray-900 pb-3 text-center">
-                <h3 className="text-base font-bold uppercase tracking-wider text-gray-900">
-                    Pemerintah Kabupaten / Kota
-                </h3>
-                <h2 className="text-lg font-black uppercase text-gray-900 tracking-wide">
-                    Pusat Kesehatan Hewan (PUSKESWAN) Inseminasi Buatan
-                </h2>
-                <p className="text-xs text-gray-600 mt-1">
-                    Jl. Raya Peternakan No. 12, Wilayah Pelayanan Terpadu Keswan &amp; Kesmavet | Telp: (021) 8899-7711
-                </p>
-                <div className="mt-4 pt-2 border-t border-gray-400">
-                    <h4 className="text-sm font-bold uppercase text-gray-800">
+            <div className="print-only mb-6 pb-2">
+                <div className="relative flex items-center border-b-[2.5px] border-black pb-2">
+                    <img
+                        src="/images/logo-pariaman.webp"
+                        alt="Logo Kota Pariaman"
+                        className="absolute left-0 top-1 h-16 w-auto object-contain"
+                    />
+                    <div className="text-center font-serif text-black leading-tight w-full pl-16 pr-4">
+                        <div className="text-xs uppercase tracking-wider font-normal">
+                            PEMERINTAH KOTA PARIAMAN
+                        </div>
+                        <div className="text-sm uppercase tracking-wide font-bold">
+                            DINAS PERTANIAN PANGAN DAN PERIKANAN
+                        </div>
+                        <div className="text-base uppercase tracking-wider font-black">
+                            UPT PUSKESWAN DAN IB
+                        </div>
+                        <div className="text-[10px] font-semibold">
+                            (Pusat Kesehatan Hewan dan Inseminasi Buatan)
+                        </div>
+                        <div className="text-[9px] mt-0.5">
+                            Jl. Sentot Ali Basa Jati Telp. (0751) 93898 | E-Mail: puskeswanpariaman1@gmail.com | Kode Pos: 25516
+                        </div>
+                    </div>
+                </div>
+                <div className="mt-3 text-center">
+                    <h4 className="text-sm font-bold uppercase text-gray-900 tracking-wide underline">
                         {typeTitleMap[selectedType] || 'Laporan Puskeswan'}
                     </h4>
                     {selectedType !== 'obat' && (
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-gray-600 mt-0.5">
                             Periode: {start} s/d {end}
                         </p>
                     )}
@@ -248,14 +263,14 @@ export default function ReportIndex({ reportType, startDate, endDate, reportData
                         <table className="w-full text-xs text-left border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-gray-700 uppercase text-[11px] font-bold tracking-wider">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Waktu Kunjungan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">No. RM &amp; Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pemilik</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Anamnesa &amp; Diagnosa</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Terapi Pengobatan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Dokter Medis</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">Status</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Waktu Kunjungan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. RM &amp; Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pemilik</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Anamnesa &amp; Diagnosa</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Terapi Pengobatan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Dokter Medis</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -300,7 +315,7 @@ export default function ReportIndex({ reportType, startDate, endDate, reportData
                                                 {item.dokter}
                                             </td>
                                             <td className="py-3 px-3.5 text-center">
-                                                <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                                <span className="text-xs font-semibold text-purple-700">
                                                     {item.status}
                                                 </span>
                                             </td>
@@ -315,13 +330,13 @@ export default function ReportIndex({ reportType, startDate, endDate, reportData
                         <table className="w-full text-xs text-left border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-gray-700 uppercase text-[11px] font-bold tracking-wider">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">No. Surat &amp; Tanggal</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Korban / Pasien Gigitan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Lokasi Tubuh Digigit</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Hewan Penggigit</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Status Observasi Hewan</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">Vaksin VAR/SAR</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. Surat &amp; Tanggal</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Korban / Pasien Gigitan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Lokasi Tubuh Digigit</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Hewan Penggigit</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Status Observasi Hewan</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Vaksin VAR/SAR</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -358,12 +373,12 @@ export default function ReportIndex({ reportType, startDate, endDate, reportData
                                                 {item.jenis_hewan}
                                             </td>
                                             <td className="py-3 px-3.5 border-r border-gray-200">
-                                                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                <span className="text-xs font-semibold text-amber-600">
                                                     {item.status_hewan}
                                                 </span>
                                             </td>
                                             <td className="py-3 px-3.5 text-center">
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                <span className="text-xs font-semibold text-emerald-600">
                                                     {item.status_var}
                                                 </span>
                                             </td>
@@ -378,12 +393,12 @@ export default function ReportIndex({ reportType, startDate, endDate, reportData
                         <table className="w-full text-xs text-left border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-gray-700 uppercase text-[11px] font-bold tracking-wider">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Kode Obat</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Nama Obat / Merek Vaksin</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Kuantitas Stok</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Satuan</th>
-                                    <th className="py-3 px-3.5 text-center w-36 shrink-0">Status Ketersediaan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kode</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Nama Obat / Merek Vaksin</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kuantitas Stok</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Satuan</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-36 shrink-0">Status Ketersediaan</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -413,17 +428,17 @@ export default function ReportIndex({ reportType, startDate, endDate, reportData
                                             </td>
                                             <td className="py-3 px-3.5 text-center">
                                                 {item.status === 'Kritis' && (
-                                                    <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-rose-50 text-rose-700 border border-rose-200">
+                                                    <span className="text-xs font-semibold text-rose-600">
                                                         Kritis (≤ 10)
                                                     </span>
                                                 )}
                                                 {item.status === 'Menipis' && (
-                                                    <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-50 text-amber-700 border border-amber-200">
+                                                    <span className="text-xs font-semibold text-amber-600">
                                                         Menipis (11-30)
                                                     </span>
                                                 )}
                                                 {item.status === 'Aman' && (
-                                                    <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    <span className="text-xs font-semibold text-emerald-600">
                                                         Aman (&gt; 30)
                                                     </span>
                                                 )}

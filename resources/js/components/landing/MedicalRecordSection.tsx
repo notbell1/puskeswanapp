@@ -897,28 +897,28 @@ export default function MedicalRecordSection({
                                     <table className="w-full text-left border-collapse table-fixed">
                                         <thead>
                                             <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                                <th className="py-2.5 px-2 border-r border-gray-200 w-10 text-center whitespace-nowrap">
-                                                    No.
+                                                <th className="py-2.5 px-2 border-r border-gray-200 w-10 text-center font-bold whitespace-nowrap">
+                                                    No
                                                 </th>
-                                                <th className="py-2.5 px-3 border-r border-gray-200 w-24 text-center whitespace-nowrap">
+                                                <th className="py-2.5 px-3 border-r border-gray-200 w-24 text-center font-bold whitespace-nowrap">
                                                     No. RM
                                                 </th>
-                                                <th className="py-2.5 px-3 border-r border-gray-200 w-28 text-center whitespace-nowrap">
+                                                <th className="py-2.5 px-3 border-r border-gray-200 w-28 text-center font-bold whitespace-nowrap">
                                                     Tanggal
                                                 </th>
-                                                <th className="py-2.5 px-3 border-r border-gray-200 w-44 whitespace-nowrap">
+                                                <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
                                                     Pasien Hewan
                                                 </th>
-                                                <th className="py-2.5 px-3 border-r border-gray-200">
+                                                <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold">
                                                     Diagnosa Klinis
                                                 </th>
-                                                <th className="py-2.5 px-3 border-r border-gray-200 w-48 whitespace-nowrap">
+                                                <th className="py-2.5 px-3 border-r border-gray-200 w-48 text-center font-bold whitespace-nowrap">
                                                     Dokter Pemeriksa
                                                 </th>
-                                                <th className="py-2.5 px-2 border-r border-gray-200 w-16 text-center whitespace-nowrap">
+                                                <th className="py-2.5 px-2 border-r border-gray-200 w-16 text-center font-bold whitespace-nowrap">
                                                     Status
                                                 </th>
-                                                <th className="py-2.5 px-2 w-24 text-center whitespace-nowrap">
+                                                <th className="py-2.5 px-2 w-24 text-center font-bold whitespace-nowrap">
                                                     Aksi Salinan
                                                 </th>
                                             </tr>

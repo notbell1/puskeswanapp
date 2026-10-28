@@ -244,7 +244,7 @@ class ReportController extends Controller
             ->when($statusHewanFilter, function ($q, $statusHewanFilter) {
                 $q->where('status_hewan', $statusHewanFilter);
             })
-            ->orderBy('tgl_kejadian', 'desc');
+            ->orderBy('tgl_kejadian', 'asc');
 
         $cases = $query->paginate(5)
             ->withQueryString()

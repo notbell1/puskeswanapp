@@ -418,14 +418,14 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Kode Barang</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Nama Peralatan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Kategori</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Jumlah</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Kondisi Fisik</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">Pengelola</th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">Aksi</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kode</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Nama Peralatan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kategori</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Jumlah</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kondisi Fisik</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pengelola</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -461,7 +461,7 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                                                     {inventories.from ? inventories.from + index : index + 1}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 font-mono text-xs font-bold text-purple-700">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 font-mono text-xs font-bold text-purple-700 text-center">
                                                     {item.kode_barang}
                                                 </td>
 
@@ -477,37 +477,34 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                                                    <span className="text-xs font-medium text-gray-800">
                                                         {item.kategori}
                                                     </span>
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs font-bold text-gray-900">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs font-bold text-gray-900 text-center">
                                                     {item.jumlah} Unit
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                     {item.kondisi === 'Baik' && (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10.5px] bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                            Baik (Siap Pakai)
+                                                        <span className="text-xs font-semibold text-emerald-600">
+                                                            Siap Pakai
                                                         </span>
                                                     )}
                                                     {item.kondisi === 'Rusak Ringan' && (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10.5px] bg-amber-50 text-amber-700 border border-amber-200">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                        <span className="text-xs font-semibold text-amber-600">
                                                             Rusak Ringan
                                                         </span>
                                                     )}
                                                     {item.kondisi === 'Rusak Berat' && (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[10.5px] bg-rose-50 text-rose-700 border border-rose-200">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                        <span className="text-xs font-semibold text-rose-600">
                                                             Rusak Berat
                                                         </span>
                                                     )}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium text-center">
                                                     {item.pengelola || '-'}
                                                 </td>
 
@@ -680,7 +677,7 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                                 </p>
                                 <div className="mt-2 rounded-lg border border-gray-100 bg-gray-50/70 p-2.5 space-y-1.5 text-[11px] sm:text-xs">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-500 font-medium">Kode Barang:</span>
+                                        <span className="text-gray-500 font-medium">Kode</span>
                                         <span className="font-mono font-bold text-purple-700">
                                             {data.kode_barang.toUpperCase()}
                                         </span>
@@ -719,7 +716,7 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-1">
                                 <label className="text-[10px] sm:text-xs font-bold text-gray-750 block">
-                                    Kode Barang <span className="text-rose-500">*</span>
+                                    Kode <span className="text-rose-500">*</span>
                                 </label>
                                 <input
                                     type="text"

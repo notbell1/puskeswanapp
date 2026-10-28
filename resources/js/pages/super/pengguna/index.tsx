@@ -625,27 +625,27 @@ export default function UsersIndex({
 
                     <div className="overflow-x-auto min-h-[335px]">
                         <table className="w-full min-w-[950px] text-left text-xs border-collapse border border-gray-200">
-                            <thead>
+                            <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center w-12 shrink-0">
-                                        No.
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">
+                                        No
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Pengguna
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center">
-                                        Hak Akses / Peran
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                        Role
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Staf Terhubung
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Status Akses
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Tanggal Registrasi
                                     </th>
-                                    <th className="py-3 px-3.5 text-center w-28 shrink-0">
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">
                                         Kelola
                                     </th>
                                 </tr>
@@ -741,7 +741,7 @@ export default function UsersIndex({
                                                             </p>
                                                         </div>
                                                     ) : (
-                                                        <span className="inline-flex text-[10px] font-semibold text-gray-400 bg-gray-100/70 px-1.5 py-0.5 rounded">
+                                                        <span className="text-xs text-gray-400">
                                                             Belum Terhubung
                                                         </span>
                                                     )}
@@ -751,27 +751,10 @@ export default function UsersIndex({
                                                     {user.role_name ===
                                                     "SUPER_ADMIN" ? (
                                                         <span
-                                                            className="inline-flex h-6.5 items-center gap-1.5 rounded-full px-2.5 text-[10.5px] font-bold bg-emerald-500/10 text-emerald-700 cursor-default select-none transition-all"
+                                                            className="text-xs font-semibold text-emerald-600 cursor-default select-none inline-flex items-center gap-1"
                                                             title="Akun Super Admin dilindungi dan harus selalu aktif demi keamanan sistem"
                                                         >
-                                                            <span className="relative flex h-2 w-2">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                                                            </span>
-                                                            <span>Aktif</span>
-                                                            <svg
-                                                                className="h-3 w-3 text-emerald-600 shrink-0"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                            >
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth="2.5"
-                                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                                                />
-                                                            </svg>
+                                                            Aktif
                                                         </span>
                                                     ) : (
                                                         <button
@@ -781,26 +764,16 @@ export default function UsersIndex({
                                                                     user,
                                                                 )
                                                             }
-                                                            className={`inline-flex h-6.5 items-center gap-1.5 rounded-full px-2.5 text-[10.5px] font-bold transition-all focus:outline-none active:scale-95 ${
+                                                            className={`text-xs font-semibold focus:outline-none transition-colors hover:underline ${
                                                                 user.status_aktif
-                                                                    ? "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15"
-                                                                    : "bg-rose-500/10 text-rose-700 hover:bg-rose-500/15"
+                                                                    ? "text-emerald-600 hover:text-emerald-700"
+                                                                    : "text-rose-600 hover:text-rose-700"
                                                             }`}
                                                             title="Klik untuk ubah status aktif akun"
                                                         >
-                                                            {user.status_aktif ? (
-                                                                <span className="relative flex h-2 w-2">
-                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                                                                </span>
-                                                            ) : (
-                                                                <span className="h-2 w-2 rounded-full bg-rose-500" />
-                                                            )}
-                                                            <span>
-                                                                {user.status_aktif
-                                                                    ? "Aktif"
-                                                                    : "Nonaktif"}
-                                                            </span>
+                                                            {user.status_aktif
+                                                                ? "Aktif"
+                                                                : "Nonaktif"}
                                                         </button>
                                                     )}
                                                 </td>
@@ -974,7 +947,7 @@ export default function UsersIndex({
                     saveConfirmModalOpen
                         ? undefined
                         : editingUser
-                          ? `Sesuaikan akses dan data akun milik ${editingUser.name}.`
+                          ? `Sesuaikan akses dan data akun milik ${editingUser.name}`
                           : "Lengkapi formulir berikut untuk mendaftarkan akun pengguna baru."
                 }
                 size={saveConfirmModalOpen ? "sm" : "lg"}

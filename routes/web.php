@@ -14,6 +14,7 @@ use App\Http\Controllers\Dokter\DokterHistoryController;
 use App\Http\Controllers\Dokter\DokterQueueController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StorageFileController;
 use App\Http\Controllers\Super\AnimalTypeController;
 use App\Http\Controllers\Super\ArticleController;
 use App\Http\Controllers\Super\InventoryController;
@@ -47,6 +48,11 @@ Route::get('/berita/{slug}', [HomeController::class, 'showArticle'])->name('beri
 Route::get('/staff', [HomeController::class, 'index'])->name('staff');
 Route::get('/kontak', [HomeController::class, 'index'])->name('kontak');
 
+// Secure Controller-brokered public media file delivery
+Route::get('/storage/{path}', [StorageFileController::class, 'show'])
+    ->where('path', '.*')
+    ->name('storage.file');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -73,8 +79,12 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/pengaturan-akun', [ProfileController::class, 'edit'])->name('profile.settings');
-    Route::post('/profil', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profil', [ProfileController::class, 'update'])
+        ->middleware('throttle:15,1')
+        ->name('profile.update');
+    Route::put('/profil/password', [ProfileController::class, 'updatePassword'])
+        ->middleware('throttle:10,1')
+        ->name('profile.password');
     Route::delete('/profil/foto', [ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
 
     Route::get('/api/realtime/queue-notifications', [DokterQueueController::class, 'realtimeQueue'])->name('realtime.queue');

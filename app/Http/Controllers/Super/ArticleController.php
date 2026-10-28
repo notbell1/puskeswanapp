@@ -332,7 +332,20 @@ class ArticleController extends Controller
             return $currentImagePath;
         }
 
-        $realMime = $file->getMimeType();
+        $realPath = $file->getRealPath();
+        if (! $realPath || ! file_exists($realPath)) {
+            throw ValidationException::withMessages([
+                'gambar' => 'Keamanan: Berkas tidak ditemukan atau tidak dapat dibaca.',
+            ]);
+        }
+
+        try {
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $realMime = @$finfo->file($realPath) ?: @$finfo->buffer((string) file_get_contents($realPath));
+        } catch (\Throwable) {
+            $realMime = false;
+        }
+
         $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
 
         if (! $realMime || ! in_array($realMime, $allowedMimes, true)) {

@@ -4,6 +4,20 @@ Semua perubahan dan pembaruan penting pada proyek **PuskeswanApp** dicatat dalam
 
 ---
 
+## [2.2.0] - 2026-10-28
+
+### 🔒 Penguatan Keamanan Media Berkas & Hardening Server (Storage Hardening & Anti-Execution)
+
+- **Controller-Brokered Storage Serving**: Seluruh akses berkas publik `/storage/{path}` dialihkan melalui `StorageFileController` terdedikasi untuk memverifikasi batasan direktori (*path traversal* check), validasi MIME biner via `finfo`, dan mencegah pemanggilan langsung berkas dari webroot.
+- **Pencegahan Eksekusi Skrip Berbahaya (Anti-Execution)**: Penambahan konfigurasi `.htaccess` pada `storage/app/public/` dan `public/` dengan penonaktifan engine PHP (`php_flag engine off`, `RemoveHandler`), pelarangan eksekusi CGI/Shell/ekstensi berbahaya (`.php`, `.sh`, `.exe`, dll), serta pencegahan *directory listing*.
+- **Pemeriksaan Binary MIME Ketat pada Seluruh Modul Unggah**: Penyeragaman verifikasi tipe MIME menggunakan `finfo(FILEINFO_MIME_TYPE)` langsung pada berkas biner (bukan sekadar ekstensi atau header klien) pada seluruh controller (`ProfileController`, `StaffController`, `UserController`, `ArticleController`).
+- **Nama Acak Kriptografis Server-Side**: Penamaan berkas foto hasil unggah dienkripsi menggunakan string acak kriptografis (`random_bytes(16)` / `Str::random(40)`) tanpa mempertahankan nama asli dari pengguna.
+- **Throttling Pembaruan Profil**: Penambahan rate limit `throttle:15,1` untuk pembaruan profil dan `throttle:10,1` untuk pembaruan kata sandi.
+- **Penonaktifan Sourcemap Produksi**: Pengaturan `build.sourcemap = false` pada `vite.config.ts` untuk mencegah kebocoran struktur kode sumber frontend di lingkungan produksi.
+- **Blokir Berkas Sensitif pada Web Server**: Penambahan aturan `.htaccess` di `public/` untuk menolak akses langsung ke berkas konfigurasi, log, dump SQL, skrip build, dan repositori (`.env*`, `.git*`, `composer.*`, `package*.json`, `*.sql`, `*.log`, `*.bak`).
+
+---
+
 ## [2.1.0] - 2026-10-26
 
 ### 🔒 Penguatan Keamanan Sistem & Audit Pre-Deployment (Security Hardening & Audit)

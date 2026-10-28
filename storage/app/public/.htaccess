@@ -1,0 +1,49 @@
+# ----------------------------------------------------------------------
+# Keamanan Storage PuskeswanApp
+# 1. Routing berkas melalui Controller Laravel
+# 2. Pencegahan eksekusi skrip (PHP/CGI/Shell/dll)
+# 3. Pencegahan eksekusi file berbahaya di luar webroot
+# ----------------------------------------------------------------------
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Teruskan seluruh akses berkas ke Front Controller Laravel
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^(.*)$ /index.php [L]
+</IfModule>
+
+# Blokir seluruh eksekusi berkas skrip dan bahasa pemrograman apapun
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps|phar|inc|cgi|pl|py|sh|bash|asp|aspx|jsp|exe|bin|env|git|htaccess|htpasswd)$">
+    <IfModule !mod_authz_core.c>
+        Order Deny,Allow
+        Deny from all
+    </IfModule>
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
+
+# Matikan opsi eksekusi skrip CGI dan indexing direktori
+Options -ExecCGI -Indexes
+
+# Matikan engine PHP di dalam direktori penyimpanan
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Hapus seluruh handler PHP dari file di direktori ini
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .phar
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .phar
+
+# Tambahkan header keamanan ekstra untuk mencegah MIME sniffing
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Security-Policy "default-src 'none'"
+</IfModule>
+

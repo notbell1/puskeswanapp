@@ -6,7 +6,8 @@
     RewriteEngine On
 
     # Block access to sensitive files and hidden files (Server Hardening)
-    RewriteRule ^(\.git|\.env|composer\.(json|lock)|package\.json) - [F,L]
+    RewriteRule ^(\.git|\.env|composer\.(json|lock)|package(-lock)?\.json|vite\.config|tsconfig) - [F,L]
+    RewriteRule \.(sql|bak|log|sh|inc|swp|dist|env)$ - [F,L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

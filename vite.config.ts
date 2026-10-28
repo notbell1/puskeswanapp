@@ -28,6 +28,9 @@ export default defineConfig({
             formVariants: true,
         }),
     ]),
+    build: {
+        sourcemap: false,
+    },
     server: {
         watch: {
             ignored: [

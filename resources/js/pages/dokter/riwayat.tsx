@@ -143,7 +143,7 @@ function PatientHistoryPagination({
                     <span className="font-bold text-gray-800 block text-xs">
                         Pasien Baru (Kunjungan Pertama)
                     </span>
-                    <span className="text-[11px] text-gray-400 block mt-1 leading-relaxed max-w-[200px]">
+                    <span className="text-[11px] text-gray-400 block mt-1 leading-relaxed max-w-50">
                         Belum ada riwayat rekam medis terdahulu di sistem.
                     </span>
                 </div>
@@ -256,7 +256,7 @@ function PatientHistoryPagination({
                                     🩺
                                 </div>
                             )}
-                            <div className="text-right leading-tight max-w-[120px]">
+                            <div className="text-right leading-tight max-w-30">
                                 <span className="font-bold text-gray-900 text-[10.5px] block truncate">
                                     {formatDoctorName(selectedRec.dokter)}
                                 </span>
@@ -739,7 +739,7 @@ export default function DokterRiwayatPage({
                         <div className="print-record-only max-w-4xl mx-auto bg-white font-serif text-black leading-relaxed">
                             <div className="content-wrapper">
                                 <div className="flex items-center justify-between gap-3 pb-1">
-                                    <div className="w-[80px] shrink-0 flex items-center justify-center">
+                                    <div className="w-20 shrink-0 flex items-center justify-center">
                                         <img
                                             src="/images/logo-pariaman.webp"
                                             alt="Logo Kota Pariaman"
@@ -773,7 +773,7 @@ export default function DokterRiwayatPage({
                                         </p>
                                     </div>
 
-                                    <div className="w-[80px] shrink-0 flex items-center justify-center">
+                                    <div className="w-20 shrink-0 flex items-center justify-center">
                                         <img
                                             src="/images/logo-pdhi.webp"
                                             alt="Logo PDHI"
@@ -820,7 +820,7 @@ export default function DokterRiwayatPage({
                                             <span className="mr-1.5 pt-0.5">
                                                 :
                                             </span>
-                                            <div className="flex-1 border-b border-dotted border-gray-500 px-1 min-h-[16px] leading-snug break-words">
+                                            <div className="flex-1 border-b border-dotted border-gray-500 px-1 min-h-4 leading-snug wrap-break-words">
                                                 {selectedRecord.alamat_pemilik ||
                                                     "-"}
                                             </div>
@@ -905,17 +905,17 @@ export default function DokterRiwayatPage({
                                                         {item.berat_badan} kg /{" "}
                                                         {item.suhu_tubuh}&deg;C
                                                     </td>
-                                                    <td className="border border-black py-1 px-1.5 break-words leading-tight">
+                                                    <td className="border border-black py-1 px-1.5 wrap-break-words leading-tight">
                                                         {(
                                                             item.anamnesa || "-"
                                                         ).trim()}
                                                     </td>
-                                                    <td className="border border-black py-1 px-1.5 font-medium break-words leading-tight">
+                                                    <td className="border border-black py-1 px-1.5 font-medium wrap-break-words leading-tight">
                                                         {(
                                                             item.diagnosa || "-"
                                                         ).trim()}
                                                     </td>
-                                                    <td className="border border-black py-1 px-1.5 whitespace-pre-line break-words leading-tight">
+                                                    <td className="border border-black py-1 px-1.5 whitespace-pre-line wrap-break-words leading-tight">
                                                         {(
                                                             item.terapi_pengobatan ||
                                                             "-"
@@ -1085,7 +1085,7 @@ export default function DokterRiwayatPage({
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse min-w-[940px]">
+                        <table className="w-full text-left border-collapse min-w-235">
                             <thead>
                                 <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
                                     <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center whitespace-nowrap">
@@ -1164,7 +1164,7 @@ export default function DokterRiwayatPage({
 
                                             <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
                                                 <span
-                                                    className="font-bold text-gray-900 text-xs truncate max-w-[130px] block"
+                                                    className="font-bold text-gray-900 text-xs truncate max-w-32.5 block"
                                                     title={item.nama_hewan}
                                                 >
                                                     {item.nama_hewan}
@@ -1173,7 +1173,7 @@ export default function DokterRiwayatPage({
 
                                             <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
                                                 <span
-                                                    className="font-medium text-gray-800 text-xs truncate max-w-[130px] block"
+                                                    className="font-medium text-gray-800 text-xs truncate max-w-32.5 block"
                                                     title={item.pemilik}
                                                 >
                                                     {item.pemilik}
@@ -1390,7 +1390,7 @@ export default function DokterRiwayatPage({
                 {selectedRecord && (
                     <div className="text-xs">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5 items-stretch">
-                            <div className="lg:col-span-4 lg:h-[490px] p-3 rounded-xl border border-gray-200 bg-gray-50/70 flex flex-col">
+                            <div className="lg:col-span-4 lg:h-122.5 p-3 rounded-xl border border-gray-200 bg-gray-50/70 flex flex-col">
                                 <PatientHistoryPagination
                                     records={selectedRecord.historical_records}
                                     activeIndex={activeDetailHistoryIndex}
@@ -1399,7 +1399,7 @@ export default function DokterRiwayatPage({
                                 />
                             </div>
 
-                            <div className="lg:col-span-4 lg:h-[490px] flex flex-col justify-between space-y-2">
+                            <div className="lg:col-span-4 lg:h-122.5 flex flex-col justify-between space-y-2">
                                 <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/70 space-y-2">
                                     <div className="flex items-center justify-between border-b border-gray-200 pb-1.5 shrink-0">
                                         <div>
@@ -1559,13 +1559,13 @@ export default function DokterRiwayatPage({
                                 </div>
                             </div>
 
-                            <div className="lg:col-span-4 lg:h-[490px] flex flex-col justify-between space-y-2">
+                            <div className="lg:col-span-4 lg:h-122.5 flex flex-col justify-between space-y-2">
                                 <div className="space-y-2 flex-1 overflow-y-auto pr-0.5">
                                     <div className="p-2.5 rounded-xl border border-gray-200 bg-gray-50/70">
                                         <span className="text-[10.5px] font-bold text-gray-700 uppercase tracking-wider block mb-1">
                                             Diagnosa Klinis Dokter
                                         </span>
-                                        <div className="p-2 bg-white rounded-lg border border-gray-200 text-xs text-gray-900 min-h-[44px]">
+                                        <div className="p-2 bg-white rounded-lg border border-gray-200 text-xs text-gray-900 min-h-11">
                                             {selectedRecord.diagnosa || (
                                                 <span className="text-gray-400 italic">
                                                     Belum ada diagnosa klinis
@@ -1579,7 +1579,7 @@ export default function DokterRiwayatPage({
                                             Terapi Pengobatan &amp; Tindakan
                                             Medis
                                         </span>
-                                        <div className="p-2 bg-white rounded-lg border border-gray-200 text-xs font-mono text-gray-800 leading-relaxed max-h-[85px] overflow-y-auto whitespace-pre-wrap">
+                                        <div className="p-2 bg-white rounded-lg border border-gray-200 text-xs font-mono text-gray-800 leading-relaxed max-h-21.25 overflow-y-auto whitespace-pre-wrap">
                                             {selectedRecord.terapi_pengobatan || (
                                                 <span className="text-gray-400 italic font-sans">
                                                     Belum ada terapi tindakan
@@ -1593,7 +1593,7 @@ export default function DokterRiwayatPage({
                                         <span className="text-[10.5px] font-bold text-gray-700 uppercase tracking-wider block mb-0.5">
                                             Catatan / Anjuran Khusus Pemilik
                                         </span>
-                                        <div className="p-2 bg-white rounded-lg border border-gray-200 text-xs text-gray-800 min-h-[32px]">
+                                        <div className="p-2 bg-white rounded-lg border border-gray-200 text-xs text-gray-800 min-h-8">
                                             {selectedRecord.catatan &&
                                             selectedRecord.catatan !== "-" ? (
                                                 selectedRecord.catatan
@@ -1730,7 +1730,7 @@ export default function DokterRiwayatPage({
                         className="text-xs"
                     >
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5 items-stretch">
-                            <div className="lg:col-span-4 lg:h-[490px] p-3 rounded-xl border border-gray-200 bg-gray-50/70 flex flex-col">
+                            <div className="lg:col-span-4 lg:h-122.5 p-3 rounded-xl border border-gray-200 bg-gray-50/70 flex flex-col">
                                 <PatientHistoryPagination
                                     records={examRecord.historical_records}
                                     activeIndex={activeExamHistoryIndex}
@@ -1739,7 +1739,7 @@ export default function DokterRiwayatPage({
                                 />
                             </div>
 
-                            <div className="lg:col-span-4 lg:h-[490px] flex flex-col justify-between space-y-2">
+                            <div className="lg:col-span-4 lg:h-122.5 flex flex-col justify-between space-y-2">
                                 <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/70 space-y-2">
                                     <div className="flex items-center justify-between border-b border-gray-200 pb-1.5 shrink-0">
                                         <div>
@@ -1891,7 +1891,7 @@ export default function DokterRiwayatPage({
                                 </div>
                             </div>
 
-                            <div className="lg:col-span-4 lg:h-[490px] flex flex-col justify-between space-y-2">
+                            <div className="lg:col-span-4 lg:h-122.5 flex flex-col justify-between space-y-2">
                                 <div className="space-y-1.5 flex-1 overflow-y-auto pr-0.5">
                                     <div>
                                         <label className="block text-[11px] font-bold text-gray-900 mb-0.5">

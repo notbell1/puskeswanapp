@@ -34,3 +34,4 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 echo "Launching Supervisor (Nginx + PHP-FPM)..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+

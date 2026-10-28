@@ -40,9 +40,9 @@ export default function Error403({ status = 403, message }: Error403Props) {
         <>
             <Head title={`${status} - ${title}`} />
 
-            <div className="flex min-h-[100dvh] w-full flex-col relative overflow-hidden bg-gray-50 font-sans lg:flex-row">
+            <div className="flex min-h-dvh w-full flex-col relative overflow-hidden bg-gray-50 font-sans lg:flex-row">
                 {/* Kolom kiri — background dan pattern tapak kaki */}
-                <div className="hidden lg:flex relative w-1/2 bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 items-center justify-center overflow-hidden">
+                <div className="hidden lg:flex relative w-1/2 bg-linear-to-br from-purple-900 via-purple-800 to-purple-600 items-center justify-center overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-30">
                         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500 rounded-full blur-[100px]" />
                         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-500 rounded-full blur-[100px]" />
@@ -101,7 +101,7 @@ export default function Error403({ status = 403, message }: Error403Props) {
 
                 {/* Kolom kanan — card error */}
                 <div className="relative flex-1 flex flex-col justify-center items-center w-full lg:w-1/2 p-4 sm:p-8 overflow-y-auto">
-                    <div className="absolute inset-0 lg:hidden bg-gradient-to-br from-purple-50/90 via-white to-purple-100/80 -z-10" />
+                    <div className="absolute inset-0 lg:hidden bg-linear-to-br from-purple-50/90 via-white to-purple-100/80 -z-10" />
 
                     <div className="absolute -top-24 -left-24 w-72 h-72 bg-purple-300/30 rounded-full blur-3xl lg:hidden -z-10" />
 

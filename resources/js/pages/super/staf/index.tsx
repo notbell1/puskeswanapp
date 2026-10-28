@@ -515,7 +515,7 @@ export default function StaffIndex({
                                     />
                                 </div>
 
-                                <div className="w-full sm:w-[280px] lg:w-[320px] shrink-0">
+                                <div className="w-full sm:w-70 lg:w-[320px] shrink-0">
                                     <Dropdown size="md" matchWidth>
                                         <Dropdown.Trigger>
                                             <button
@@ -661,7 +661,7 @@ export default function StaffIndex({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[335px]">
+                    <div className="overflow-x-auto min-h-83.75">
                         <table className="w-full text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
@@ -734,7 +734,7 @@ export default function StaffIndex({
                                             return (
                                                 <tr
                                                     key={item.id}
-                                                    className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-[58px]"
+                                                    className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-14.5"
                                                 >
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center font-medium text-gray-600">
                                                         {staff.from
@@ -780,7 +780,7 @@ export default function StaffIndex({
                                                                 </div>
                                                             )}
                                                             <div>
-                                                                <span className="font-bold text-gray-900 block leading-tight break-words">
+                                                                <span className="font-bold text-gray-900 block leading-tight wrap-break-words">
                                                                     {
                                                                         item.nama_staf
                                                                     }
@@ -897,7 +897,7 @@ export default function StaffIndex({
                                                 <tr
                                                     key={`empty-${idx}`}
                                                     aria-hidden="true"
-                                                    className="odd:bg-white even:bg-gray-50/70 h-[58px]"
+                                                    className="odd:bg-white even:bg-gray-50/70 h-14.5"
                                                 >
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                         &nbsp;
@@ -1064,7 +1064,7 @@ export default function StaffIndex({
                                         <span className="text-gray-500 font-medium">
                                             Nama:
                                         </span>
-                                        <span className="font-bold text-gray-900 truncate max-w-[180px]">
+                                        <span className="font-bold text-gray-900 truncate max-w-45">
                                             {data.nama_staf}
                                         </span>
                                     </div>
@@ -1072,7 +1072,7 @@ export default function StaffIndex({
                                         <span className="text-gray-500 font-medium">
                                             Jabatan:
                                         </span>
-                                        <span className="font-semibold text-purple-700 truncate max-w-[180px]">
+                                        <span className="font-semibold text-purple-700 truncate max-w-45">
                                             {data.jabatan}
                                         </span>
                                     </div>
@@ -1080,7 +1080,7 @@ export default function StaffIndex({
                                         <span className="text-gray-500 font-medium">
                                             NIP / STRV:
                                         </span>
-                                        <span className="font-mono text-gray-700 truncate max-w-[180px]">
+                                        <span className="font-mono text-gray-700 truncate max-w-45">
                                             {data.nip_strv || "-"}
                                         </span>
                                     </div>

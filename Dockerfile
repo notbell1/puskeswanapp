@@ -66,3 +66,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 EXPOSE 10000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+

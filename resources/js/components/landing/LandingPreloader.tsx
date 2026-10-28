@@ -42,7 +42,7 @@ export default function LandingPreloader() {
 
     return (
         <div
-            className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-white transition-opacity duration-400 ease-out select-none ${
+            className={`fixed inset-0 z-99999 flex flex-col items-center justify-center bg-white transition-opacity duration-400 ease-out select-none ${
                 isFadingOut ? "opacity-0 pointer-events-none" : "opacity-100"
             }`}
             aria-hidden="true"
@@ -53,7 +53,7 @@ export default function LandingPreloader() {
             <div className="relative flex flex-col items-center px-4 max-w-sm w-full text-center">
                 {/* Logo Puskeswan dengan Soft Pulse & Glow */}
                 <div className="relative mb-5">
-                    <div className="absolute -inset-2 bg-gradient-to-tr from-purple-400/30 to-indigo-400/30 rounded-3xl blur-md animate-pulse" />
+                    <div className="absolute -inset-2 bg-linear-to-tr from-purple-400/30 to-indigo-400/30 rounded-3xl blur-md animate-pulse" />
                     <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white border border-purple-100 shadow-md flex items-center justify-center p-3">
                         <img
                             src="/images/logo_puskeswan.webp"
@@ -75,7 +75,7 @@ export default function LandingPreloader() {
                 {/* Progress Bar Halus */}
                 <div className="w-52 sm:w-64 h-1.5 bg-gray-100 rounded-full mt-6 overflow-hidden shadow-inner relative">
                     <div
-                        className="h-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-full transition-all duration-300 ease-out"
+                        className="h-full bg-linear-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-full transition-all duration-300 ease-out"
                         style={{ width: `${progress}%` }}
                     />
                 </div>

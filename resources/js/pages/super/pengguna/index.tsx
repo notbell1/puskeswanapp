@@ -633,13 +633,13 @@ export default function UsersIndex({
                                     <th className="py-3 px-3.5 border-r border-gray-200">
                                         Pengguna
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center">
                                         Hak Akses / Peran
                                     </th>
                                     <th className="py-3 px-3.5 border-r border-gray-200">
                                         Staf Terhubung
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center">
                                         Status Akses
                                     </th>
                                     <th className="py-3 px-3.5 border-r border-gray-200">
@@ -724,10 +724,8 @@ export default function UsersIndex({
                                                     </div>
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span
-                                                        className={`inline-flex items-center whitespace-nowrap rounded px-1.5 py-0.5 text-[9.5px] font-bold ring-1 ring-inset ${getRoleBadgeClass(user.role_name)}`}
-                                                    >
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-center">
+                                                    <span className="text-xs font-semibold text-gray-700">
                                                         {user.role_name.replace(
                                                             /_/g,
                                                             " ",
@@ -743,20 +741,23 @@ export default function UsersIndex({
                                                             </p>
                                                         </div>
                                                     ) : (
-                                                        <span className="inline-flex text-[10px] font-semibold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                                                        <span className="inline-flex text-[10px] font-semibold text-gray-400 bg-gray-100/70 px-1.5 py-0.5 rounded">
                                                             Belum Terhubung
                                                         </span>
                                                     )}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                     {user.role_name ===
                                                     "SUPER_ADMIN" ? (
                                                         <span
-                                                            className="inline-flex h-6.5 items-center gap-1.5 rounded-full px-2.5 text-[10.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default select-none shadow-2xs"
+                                                            className="inline-flex h-6.5 items-center gap-1.5 rounded-full px-2.5 text-[10.5px] font-bold bg-emerald-500/10 text-emerald-700 cursor-default select-none transition-all"
                                                             title="Akun Super Admin dilindungi dan harus selalu aktif demi keamanan sistem"
                                                         >
-                                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                            <span className="relative flex h-2 w-2">
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                                            </span>
                                                             <span>Aktif</span>
                                                             <svg
                                                                 className="h-3 w-3 text-emerald-600 shrink-0"
@@ -780,19 +781,26 @@ export default function UsersIndex({
                                                                     user,
                                                                 )
                                                             }
-                                                            className={`inline-flex h-6.5 items-center gap-1 rounded-full px-2.5 text-[10.5px] font-bold transition-all focus:outline-none active:scale-95 ${
+                                                            className={`inline-flex h-6.5 items-center gap-1.5 rounded-full px-2.5 text-[10.5px] font-bold transition-all focus:outline-none active:scale-95 ${
                                                                 user.status_aktif
-                                                                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100"
-                                                                    : "bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100"
+                                                                    ? "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/15"
+                                                                    : "bg-rose-500/10 text-rose-700 hover:bg-rose-500/15"
                                                             }`}
                                                             title="Klik untuk ubah status aktif akun"
                                                         >
-                                                            <span
-                                                                className={`h-1 w-1 rounded-full ${user.status_aktif ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}
-                                                            />
-                                                            {user.status_aktif
-                                                                ? "Aktif"
-                                                                : "Nonaktif"}
+                                                            {user.status_aktif ? (
+                                                                <span className="relative flex h-2 w-2">
+                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                                                </span>
+                                                            ) : (
+                                                                <span className="h-2 w-2 rounded-full bg-rose-500" />
+                                                            )}
+                                                            <span>
+                                                                {user.status_aktif
+                                                                    ? "Aktif"
+                                                                    : "Nonaktif"}
+                                                            </span>
                                                         </button>
                                                     )}
                                                 </td>

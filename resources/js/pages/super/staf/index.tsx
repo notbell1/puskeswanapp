@@ -744,14 +744,14 @@ export default function StaffIndex({
 
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                         {item.tampil_publik ? (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold bg-purple-50 text-purple-700 border border-purple-200">
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold bg-purple-50 text-purple-700">
                                                                 <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />
                                                                 Tampil • #
                                                                 {item.urutan ||
                                                                     1}
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-semibold bg-gray-100 text-gray-500 border border-gray-200">
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-semibold bg-gray-100 text-gray-500">
                                                                 Disembunyikan
                                                             </span>
                                                         )}
@@ -796,10 +796,10 @@ export default function StaffIndex({
 
                                                     <td className="py-3 px-3.5 border-r border-gray-200">
                                                         <span
-                                                            className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                                                            className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
                                                                 isPimpinanRow
-                                                                    ? "bg-purple-50 text-purple-700 border-purple-200"
-                                                                    : "bg-gray-100 text-gray-800 border-gray-200"
+                                                                    ? "bg-purple-50 text-purple-700"
+                                                                    : "bg-gray-100 text-gray-800"
                                                             }`}
                                                         >
                                                             {item.jabatan}
@@ -813,7 +813,7 @@ export default function StaffIndex({
                                                     <td className="py-3 px-3.5 border-r border-gray-200">
                                                         {item.users_count >
                                                         0 ? (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-semibold text-[10.5px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-semibold text-[10.5px] bg-emerald-50 text-emerald-700">
                                                                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                                                 Akun{" "}
                                                                 {item.linked_role
@@ -824,7 +824,7 @@ export default function StaffIndex({
                                                                     : "Pengguna"}
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-block px-2 py-0.5 rounded-md font-medium text-[10.5px] bg-gray-50 text-gray-500 border border-gray-200">
+                                                            <span className="inline-block px-2 py-0.5 rounded-md font-medium text-[10.5px] bg-gray-100 text-gray-500">
                                                                 Staf Non-Akun
                                                             </span>
                                                         )}

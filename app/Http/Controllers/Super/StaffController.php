@@ -37,8 +37,6 @@ class StaffController extends Controller
             ->when($jabatanFilter, function ($query, $jabatanFilter) {
                 $query->where('jabatan', $jabatanFilter);
             })
-            ->orderByDesc('tampil_publik')
-            ->orderByRaw('CASE WHEN urutan IS NULL THEN 999999 ELSE urutan END ASC')
             ->orderBy('id', 'asc')
             ->paginate(5)
             ->withQueryString()

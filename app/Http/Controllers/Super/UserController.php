@@ -42,6 +42,7 @@ class UserController extends Controller
                     $q->where('nama_role', $roleFilter);
                 });
             })
+            ->orderBy('id_role', 'asc')
             ->orderBy('id', 'asc')
             ->paginate(5)
             ->withQueryString()

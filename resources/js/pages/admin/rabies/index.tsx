@@ -182,6 +182,7 @@ export default function AdminRabiesIndex({
     const [statusHewanFilter, setStatusHewanFilter] = useState(
         filters.status_hewan || "",
     );
+    const isFirstSearchRender = useRef(true);
 
     const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [selectedCase, setSelectedCase] = useState<RabiesCaseItem | null>(
@@ -194,6 +195,31 @@ export default function AdminRabiesIndex({
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isSubmittingRef = useRef(false);
+
+    React.useEffect(() => {
+        if (isFirstSearchRender.current) {
+            isFirstSearchRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                "/admin/rabies",
+                {
+                    search: search || undefined,
+                    status_var: statusVarFilter || undefined,
+                    status_hewan: statusHewanFilter || undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                },
+            );
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -711,10 +737,7 @@ export default function AdminRabiesIndex({
 
                     <div className="p-4 sm:p-5 border-b border-gray-200 bg-gray-50/60">
                         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-                            <form
-                                onSubmit={handleSearchSubmit}
-                                className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3"
-                            >
+                            <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                 <div className="relative flex-1">
                                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                                         <svg
@@ -738,8 +761,20 @@ export default function AdminRabiesIndex({
                                             setSearch(e.target.value)
                                         }
                                         placeholder="Cari No. Surat, korban, NIK, lokasi gigitan, kronologi..."
-                                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all placeholder:text-gray-400"
+                                        className="w-full pl-10 pr-9 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all placeholder:text-gray-400"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSearch("")}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-48 shrink-0">
@@ -853,29 +888,7 @@ export default function AdminRabiesIndex({
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <Button
-                                        type="submit"
-                                        variant="secondary"
-                                        size="sm"
-                                        className="px-4 py-2 text-xs font-semibold cursor-pointer border-gray-200"
-                                    >
-                                        Cari
-                                    </Button>
-                                    {(search ||
-                                        statusVarFilter ||
-                                        statusHewanFilter) && (
-                                        <button
-                                            type="button"
-                                            onClick={handleResetFilter}
-                                            className="px-3 py-2 text-xs text-gray-500 hover:text-gray-800 bg-white border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
-                                        >
-                                            Reset
-                                        </button>
-                                    )}
-                                </div>
-                            </form>
+                            </div>
 
                             <div className="shrink-0 pt-2 lg:pt-0 border-t border-gray-100 lg:border-t-0">
                                 <Link
@@ -901,32 +914,32 @@ export default function AdminRabiesIndex({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse min-w-[940px]">
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1050px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead>
-                                <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center font-bold whitespace-nowrap">
+                                <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider text-center">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-14 text-center font-bold shrink-0">
                                         No.
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-44 text-center font-bold shrink-0">
                                         No. Surat &amp; Tanggal
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-44 text-center font-bold shrink-0">
                                         Data Korban
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-40 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-40 text-center font-bold shrink-0">
                                         Luka &amp; Status VAR
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-44 text-center font-bold shrink-0">
                                         Hewan Penular (HPR)
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Status &amp; Kronologi
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-32 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-32 text-center font-bold shrink-0">
                                         Petugas
                                     </th>
-                                    <th className="py-2.5 px-2 w-32 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-2 w-32 text-center font-bold shrink-0">
                                         Aksi
                                     </th>
                                 </tr>
@@ -936,37 +949,49 @@ export default function AdminRabiesIndex({
                                     <tr>
                                         <td
                                             colSpan={8}
-                                            className="py-12 text-center text-xs text-gray-500"
+                                            className="px-4 py-16 text-center"
                                         >
-                                            <div className="flex flex-col items-center justify-center">
-                                                <span className="text-3xl mb-2 text-gray-400">
-                                                    🔍
-                                                </span>
-                                                <p className="font-semibold text-gray-700">
-                                                    Tidak ada data kasus GHPR
-                                                    ditemukan
-                                                </p>
-                                                <p className="text-[11px] text-gray-400 mt-1">
-                                                    Coba sesuaikan kata kunci
-                                                    pencarian atau reset filter
-                                                    aktif Anda.
-                                                </p>
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-3 border border-rose-100">
+                                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
                                             </div>
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || statusVarFilter || statusHewanFilter ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Data Kasus GHPR'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || statusVarFilter || statusHewanFilter ? (
+                                                    <>
+                                                        Tidak ada data kasus gigitan hewan yang cocok dengan kriteria pencarian Anda.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada data kasus gigitan hewan penular rabies terdaftar di sistem.'
+                                                )}
+                                            </p>
+                                            {(search || statusVarFilter || statusHewanFilter) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilter}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     cases.data.map((item, index) => (
                                         <tr
                                             key={item.id}
-                                            className="h-11 even:bg-gray-50/50 hover:bg-rose-50/20 transition-colors"
+                                            className="odd:bg-white even:bg-gray-50/70 hover:bg-rose-50/30 transition-colors h-[58px]"
                                         >
-                                            <td className="py-2 px-3 border-r border-gray-200 text-center whitespace-nowrap font-medium text-gray-500 text-xs">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-center whitespace-nowrap font-medium text-gray-600 text-xs">
                                                 {(cases.current_page - 1) * 5 +
                                                     index +
                                                     1}
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                 <span className="font-mono font-bold text-xs text-rose-700 block leading-tight">
                                                     {item.no_surat}
                                                 </span>
@@ -975,15 +1000,15 @@ export default function AdminRabiesIndex({
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
-                                                <div className="flex items-center gap-1.5">
+                                            <td className="py-3 px-3.5 border-r border-gray-200">
+                                                <div className="flex items-center gap-1.5 min-w-0">
                                                     <span
-                                                        className="font-bold text-xs text-gray-900 truncate max-w-[120px] block"
+                                                        className="font-bold text-xs text-gray-900 block truncate"
                                                         title={item.nama_pasien}
                                                     >
                                                         {item.nama_pasien}
                                                     </span>
-                                                    <span className="text-[9.5px] px-1 py-0.2 rounded font-semibold bg-gray-100 text-gray-600">
+                                                    <span className="text-[9.5px] px-1 py-0.2 rounded font-semibold bg-gray-100 text-gray-600 shrink-0">
                                                         {item.jenis_kelamin_pasien ===
                                                         "Laki-Laki"
                                                             ? "L"
@@ -991,21 +1016,21 @@ export default function AdminRabiesIndex({
                                                         • {item.umur_pasien}
                                                     </span>
                                                 </div>
-                                                <span className="text-[10px] text-gray-400 font-mono block mt-0.5">
+                                                <span className="text-[10px] text-gray-400 font-mono block w-full truncate mt-0.5">
                                                     NIK: {item.nik_pasien}
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                            <td className="py-3 px-3.5 border-r border-gray-200">
                                                 <span
-                                                    className="font-semibold text-xs text-gray-800 block truncate max-w-[130px]"
+                                                    className="font-semibold text-xs text-gray-800 block w-full truncate"
                                                     title={item.lokasi_gigitan}
                                                 >
                                                     {item.lokasi_gigitan}
                                                 </span>
                                                 <span
                                                     className={cn(
-                                                        "text-[11px] font-semibold block mt-0.5",
+                                                        "text-[11px] font-semibold block w-full truncate mt-0.5",
                                                         item.status_var.includes(
                                                             "Belum",
                                                         )
@@ -1017,13 +1042,13 @@ export default function AdminRabiesIndex({
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
-                                                <span className="font-bold text-xs text-gray-900 block truncate max-w-[130px]">
+                                            <td className="py-3 px-3.5 border-r border-gray-200">
+                                                <span className="font-bold text-xs text-gray-900 block w-full truncate">
                                                     {item.jenis_hewan} (
                                                     {item.ras_hewan})
                                                 </span>
                                                 <span
-                                                    className="text-[10.5px] text-gray-500 block truncate max-w-[130px]"
+                                                    className="text-[10.5px] text-gray-500 block w-full truncate mt-0.5"
                                                     title={
                                                         item.nama_pemilik_hewan
                                                     }
@@ -1033,10 +1058,10 @@ export default function AdminRabiesIndex({
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200">
+                                            <td className="py-3 px-3.5 border-r border-gray-200">
                                                 <span
                                                     className={cn(
-                                                        "text-[11px] font-semibold block mb-0.5",
+                                                        "text-[11px] font-semibold block w-full truncate mb-0.5",
                                                         item.status_hewan.includes(
                                                             "Mati",
                                                         )
@@ -1051,16 +1076,16 @@ export default function AdminRabiesIndex({
                                                     {item.status_hewan}
                                                 </span>
                                                 <p
-                                                    className="text-[11px] text-gray-600 line-clamp-1 leading-snug"
+                                                    className="text-[11px] text-gray-600 block w-full truncate leading-snug"
                                                     title={item.kronologi}
                                                 >
                                                     {item.kronologi}
                                                 </p>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                 <span
-                                                    className="text-xs text-gray-700 font-medium block truncate max-w-[110px]"
+                                                    className="text-xs text-gray-700 font-medium block w-full truncate"
                                                     title={item.petugas}
                                                 >
                                                     {item.petugas}

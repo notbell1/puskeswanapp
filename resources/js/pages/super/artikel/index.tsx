@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Button, Dropdown, Modal, Pagination, Select, useToast } from '@/components/ui';
@@ -38,12 +38,7 @@ interface AuthorOptionItem {
 interface ArticlesPageProps {
     articles: {
         data: ArticleItem[];
-        links: any[];
-        current_page: number;
-        last_page: number;
-        from: number;
-        to: number;
-        total: number;
+        total?: number;
     };
     categories: CategoryItem[];
     staffList: StaffItem[];
@@ -67,6 +62,8 @@ const STATUS_FILTER_OPTIONS: Record<string, string> = {
     Draft: 'Status: Draft',
 };
 
+const ITEMS_PER_PAGE = 5;
+
 export default function ArticlesIndex({
     articles,
     categories,
@@ -76,10 +73,43 @@ export default function ArticlesIndex({
 }: ArticlesPageProps) {
     const { success, error, warning } = useToast();
 
-    const [search, setSearch] = useState(filters.search || '');
-    const [categoryFilter, setCategoryFilter] = useState(filters.kategori || '');
-    const [authorFilter, setAuthorFilter] = useState(filters.author || '');
-    const [statusFilter, setStatusFilter] = useState(filters.status || '');
+    const [search, setSearch] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [authorFilter, setAuthorFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const filteredArticles = useMemo<ArticleItem[]>(() => {
+        let list = articles.data;
+        if (categoryFilter && categoryFilter.trim()) {
+            list = list.filter((a) => String(a.id_kategori) === String(categoryFilter));
+        }
+        if (statusFilter && statusFilter.trim()) {
+            list = list.filter((a) => a.status === statusFilter);
+        }
+        if (authorFilter && authorFilter.trim()) {
+            list = list.filter((a) => a.author_name === authorFilter);
+        }
+        if (search.trim()) {
+            const q = search.toLowerCase().trim();
+            list = list.filter(
+                (a) =>
+                    a.judul.toLowerCase().includes(q) ||
+                    a.author_name.toLowerCase().includes(q) ||
+                    (a.ringkasan && a.ringkasan.toLowerCase().includes(q))
+            );
+        }
+        return list;
+    }, [articles.data, categoryFilter, statusFilter, authorFilter, search]);
+
+    const totalFiltered = filteredArticles.length;
+    const totalPages = Math.max(1, Math.ceil(totalFiltered / ITEMS_PER_PAGE));
+    const safePage = Math.min(currentPage, totalPages);
+
+    const paginatedArticles = useMemo<ArticleItem[]>(() => {
+        const start = (safePage - 1) * ITEMS_PER_PAGE;
+        return filteredArticles.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredArticles, safePage]);
 
     const [formModalOpen, setFormModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<ArticleItem | null>(null);
@@ -133,62 +163,24 @@ export default function ArticlesIndex({
         status: 'Published',
     });
 
-    const applyFilters = (params: {
-        search?: string;
-        kategori?: string;
-        author?: string;
-        status?: string;
-    }) => {
-        router.get(
-            '/super/artikel',
-            {
-                search: params.search || undefined,
-                kategori: params.kategori || undefined,
-                author: params.author || undefined,
-                status: params.status || undefined,
-            },
-            { preserveState: true, replace: true }
-        );
-    };
-
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        applyFilters({
-            search,
-            kategori: categoryFilter,
-            author: authorFilter,
-            status: statusFilter,
-        });
+        setCurrentPage(1);
     };
 
     const handleFilterCategory = (catId: string) => {
         setCategoryFilter(catId);
-        applyFilters({
-            search,
-            kategori: catId,
-            author: authorFilter,
-            status: statusFilter,
-        });
+        setCurrentPage(1);
     };
 
     const handleFilterAuthor = (authorVal: string) => {
         setAuthorFilter(authorVal);
-        applyFilters({
-            search,
-            kategori: categoryFilter,
-            author: authorVal,
-            status: statusFilter,
-        });
+        setCurrentPage(1);
     };
 
     const handleFilterStatus = (stat: string) => {
         setStatusFilter(stat);
-        applyFilters({
-            search,
-            kategori: categoryFilter,
-            author: authorFilter,
-            status: stat,
-        });
+        setCurrentPage(1);
     };
 
     const handleResetFilter = () => {
@@ -196,7 +188,7 @@ export default function ArticlesIndex({
         setCategoryFilter('');
         setAuthorFilter('');
         setStatusFilter('');
-        router.get('/super/artikel', {}, { preserveState: true, replace: true });
+        setCurrentPage(1);
     };
 
     const notifyValidation = (message: string) => {
@@ -540,10 +532,28 @@ export default function ArticlesIndex({
                                     <input
                                         type="text"
                                         value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        placeholder="Cari judul artikel atau penulis..."
-                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-xs sm:text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        onChange={(e) => {
+                                            setSearch(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
+                                        placeholder="Ketik untuk mencari judul artikel atau penulis..."
+                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-xs sm:text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSearch('');
+                                                setCurrentPage(1);
+                                            }}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[185px] shrink-0">
@@ -701,29 +711,6 @@ export default function ArticlesIndex({
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <div className="flex items-center gap-1.5 shrink-0">
-                                    <Button
-                                        type="submit"
-                                        variant="secondary"
-                                        size="md"
-                                        className="h-10 px-3.5 text-xs font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                                    >
-                                        Cari
-                                    </Button>
-                                    {hasActiveFilter && (
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="md"
-                                            onClick={handleResetFilter}
-                                            className="h-10 px-3 text-xs font-semibold text-gray-500 hover:text-gray-700 border-gray-200 hover:bg-gray-50 shrink-0"
-                                            title="Reset Filter"
-                                        >
-                                            Reset
-                                        </Button>
-                                    )}
-                                </div>
                             </form>
 
                             <div className="flex items-center gap-2 shrink-0 pt-2 xl:pt-0 border-t border-gray-100 xl:border-t-0">
@@ -762,55 +749,71 @@ export default function ArticlesIndex({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[425px]">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-200">
-                            <thead>
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1000px] table-fixed text-left text-xs border-collapse border border-gray-200">
+                            <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-28 shrink-0">Sampul</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-14 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-24 shrink-0">Sampul</th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Judul Artikel</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kategori</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Penulis / Author</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Status Tayang</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Tanggal Terbit</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Kategori</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Penulis / Author</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-32 shrink-0">Status Tayang</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Tanggal Terbit</th>
                                     <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
-                                {articles.data.length === 0 ? (
+                                {totalFiltered === 0 ? (
                                     <tr>
                                         <td colSpan={8} className="px-4 py-16 text-center">
-                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 mb-3">
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
                                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path
                                                         strokeLinecap="round"
                                                         strokeLinejoin="round"
                                                         strokeWidth="2"
-                                                        d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                                     />
                                                 </svg>
                                             </div>
-                                            <h4 className="text-sm font-semibold text-gray-700">Tidak ada artikel atau materi edukasi</h4>
-                                            <p className="mt-1 text-xs text-gray-400">
-                                                {hasActiveFilter
-                                                    ? 'Coba sesuaikan kata kunci pencarian atau atur ulang filter kategori, penulis, dan status Anda.'
-                                                    : 'Belum ada naskah berita atau artikel edukasi yang diterbitkan.'}
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || categoryFilter || authorFilter || statusFilter ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Artikel'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || categoryFilter || authorFilter || statusFilter ? (
+                                                    <>
+                                                        Tidak ada naskah artikel yang cocok dengan kata kunci{' '}
+                                                        {search ? <span className="font-semibold text-purple-700">"{search}"</span> : 'kriteria'} atau filter yang dipilih.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada naskah berita atau artikel edukasi yang diterbitkan.'
+                                                )}
                                             </p>
+                                            {(search || categoryFilter || authorFilter || statusFilter) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilter}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     <>
-                                        {articles.data.map((item, index) => (
+                                        {paginatedArticles.map((item, index) => (
                                             <tr
                                                 key={item.id}
-                                                className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-[76px]"
+                                                className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-[58px]"
                                             >
                                                 <td className="py-3 px-3.5 border-r border-gray-200 text-center font-medium text-gray-600">
-                                                    {articles.from ? articles.from + index : index + 1}
+                                                    {(safePage - 1) * ITEMS_PER_PAGE + index + 1}
                                                 </td>
 
-                                                <td className="py-2.5 px-3 border-r border-gray-200 text-center">
-                                                    <div className="mx-auto relative h-12 w-20 overflow-hidden rounded-lg border border-purple-100 bg-purple-50/50 shadow-2xs">
+                                                <td className="py-2 px-3 border-r border-gray-200 text-center">
+                                                    <div className="mx-auto relative h-8.5 w-14 overflow-hidden rounded-md border border-purple-100 bg-purple-50/50 shadow-2xs">
                                                         {item.gambar ? (
                                                             <img
                                                                 src={item.gambar}
@@ -822,7 +825,7 @@ export default function ArticlesIndex({
                                                             />
                                                         ) : (
                                                             <div className="flex h-full w-full flex-col items-center justify-center text-purple-300">
-                                                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path
                                                                         strokeLinecap="round"
                                                                         strokeLinejoin="round"
@@ -830,26 +833,28 @@ export default function ArticlesIndex({
                                                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                                                                     />
                                                                 </svg>
-                                                                <span className="text-[8.5px] font-semibold">No Cover</span>
+                                                                <span className="text-[7.5px] font-semibold leading-none">No Cover</span>
                                                             </div>
                                                         )}
                                                     </div>
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 max-w-md">
-                                                    <span className="font-bold text-xs sm:text-[13px] text-gray-900 block leading-snug break-words">
+                                                <td className="py-3 px-3.5 border-r border-gray-200">
+                                                    <span className="font-bold text-xs sm:text-[13px] text-gray-900 block w-full truncate" title={item.judul}>
                                                         {item.judul}
                                                     </span>
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="text-xs font-medium text-gray-800">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-center">
+                                                    <span className="text-xs font-medium text-gray-800 block w-full truncate" title={item.kategori_name}>
                                                         {item.kategori_name}
                                                     </span>
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200 text-xs font-semibold text-gray-700 text-center">
-                                                    {item.author_name}
+                                                    <span className="block w-full truncate" title={item.author_name}>
+                                                        {item.author_name}
+                                                    </span>
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200 text-center">
@@ -904,13 +909,13 @@ export default function ArticlesIndex({
                                                 </td>
                                             </tr>
                                         ))}
-                                        {articles.data.length > 0 &&
-                                            articles.data.length < 5 &&
-                                            Array.from({ length: 5 - articles.data.length }).map((_, idx) => (
+                                        {paginatedArticles.length > 0 &&
+                                            paginatedArticles.length < 5 &&
+                                            Array.from({ length: 5 - paginatedArticles.length }).map((_, idx) => (
                                                 <tr
                                                     key={`empty-${idx}`}
                                                     aria-hidden="true"
-                                                    className="odd:bg-white even:bg-gray-50/70 h-[76px]"
+                                                    className="odd:bg-white even:bg-gray-50/70 h-[58px]"
                                                 >
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center">&nbsp;</td>
                                                     <td className="py-3 px-3.5 border-r border-gray-200">&nbsp;</td>
@@ -931,16 +936,20 @@ export default function ArticlesIndex({
                     <div className="flex flex-col gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50/30">
                         <p className="text-xs text-gray-500 font-medium">
                             Menampilkan{' '}
-                            <span className="font-bold text-gray-800">{articles.from || 0}</span>{' '}
+                            <span className="font-bold text-gray-800">
+                                {totalFiltered > 0 ? (safePage - 1) * ITEMS_PER_PAGE + 1 : 0}
+                            </span>{' '}
                             hingga{' '}
-                            <span className="font-bold text-gray-800">{articles.to || 0}</span>{' '}
+                            <span className="font-bold text-gray-800">
+                                {Math.min(safePage * ITEMS_PER_PAGE, totalFiltered)}
+                            </span>{' '}
                             dari total{' '}
-                            <span className="font-bold text-gray-800">{articles.total}</span> artikel edukasi.
+                            <span className="font-bold text-gray-800">{totalFiltered}</span> artikel edukasi.
                         </p>
                         <Pagination
-                            links={articles.links}
-                            currentPage={articles.current_page}
-                            totalPages={articles.last_page}
+                            currentPage={safePage}
+                            totalPages={totalPages}
+                            onPageChange={(p) => setCurrentPage(p)}
                         />
                     </div>
                 </div>

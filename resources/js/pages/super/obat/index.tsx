@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Button, Dropdown, Modal, Pagination, Select, useToast } from '@/components/ui';
@@ -16,12 +16,7 @@ interface MedicineItem {
 interface MedicinesPageProps {
     medicines: {
         data: MedicineItem[];
-        links: any[];
-        current_page: number;
-        last_page: number;
-        from: number;
-        to: number;
-        total: number;
+        total?: number;
     };
     filters: {
         search?: string;
@@ -48,11 +43,42 @@ const STATUS_FILTER_OPTIONS: Record<string, string> = {
     aman: 'Stok Aman (> 30)',
 };
 
+const ITEMS_PER_PAGE = 5;
+
 export default function MedicinesIndex({ medicines, filters }: MedicinesPageProps) {
     const { success, error, warning } = useToast();
 
-    const [search, setSearch] = useState(filters.search || '');
-    const [statusFilter, setStatusFilter] = useState(filters.status || '');
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const filteredMedicines = useMemo<MedicineItem[]>(() => {
+        let list = medicines.data;
+        if (statusFilter && statusFilter.trim()) {
+            if (statusFilter === 'kritis') list = list.filter((m) => m.stok <= 10);
+            else if (statusFilter === 'menipis') list = list.filter((m) => m.stok > 10 && m.stok <= 30);
+            else if (statusFilter === 'aman') list = list.filter((m) => m.stok > 30);
+        }
+        if (search.trim()) {
+            const q = search.toLowerCase().trim();
+            list = list.filter(
+                (m) =>
+                    m.nama_obat.toLowerCase().includes(q) ||
+                    m.kode_obat.toLowerCase().includes(q) ||
+                    m.satuan.toLowerCase().includes(q)
+            );
+        }
+        return list;
+    }, [medicines.data, statusFilter, search]);
+
+    const totalFiltered = filteredMedicines.length;
+    const totalPages = Math.max(1, Math.ceil(totalFiltered / ITEMS_PER_PAGE));
+    const safePage = Math.min(currentPage, totalPages);
+
+    const paginatedMedicines = useMemo<MedicineItem[]>(() => {
+        const start = (safePage - 1) * ITEMS_PER_PAGE;
+        return filteredMedicines.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredMedicines, safePage]);
 
     const [formModalOpen, setFormModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<MedicineItem | null>(null);
@@ -74,32 +100,18 @@ export default function MedicinesIndex({ medicines, filters }: MedicinesPageProp
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(
-            '/super/obat',
-            {
-                search: search || undefined,
-                status: statusFilter || undefined,
-            },
-            { preserveState: true, replace: true }
-        );
+        setCurrentPage(1);
     };
 
     const handleFilterStatus = (status: string) => {
         setStatusFilter(status);
-        router.get(
-            '/super/obat',
-            {
-                search: search || undefined,
-                status: status || undefined,
-            },
-            { preserveState: true, replace: true }
-        );
+        setCurrentPage(1);
     };
 
     const handleResetFilter = () => {
         setSearch('');
         setStatusFilter('');
-        router.get('/super/obat', {}, { preserveState: true, replace: true });
+        setCurrentPage(1);
     };
 
     const openCreateModal = () => {
@@ -303,10 +315,28 @@ export default function MedicinesIndex({ medicines, filters }: MedicinesPageProp
                                     <input
                                         type="text"
                                         value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        placeholder="Cari kode obat atau nama farmasi (contoh: Rabivet, Amoxicillin)..."
-                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        onChange={(e) => {
+                                            setSearch(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
+                                        placeholder="Ketik untuk mencari nama obat atau kode..."
+                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSearch('');
+                                                setCurrentPage(1);
+                                            }}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[240px] shrink-0">
@@ -351,29 +381,6 @@ export default function MedicinesIndex({ medicines, filters }: MedicinesPageProp
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        type="submit"
-                                        variant="secondary"
-                                        size="md"
-                                        className="h-10 px-4 text-xs font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                                    >
-                                        Cari
-                                    </Button>
-                                    {(search || statusFilter) && (
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="md"
-                                            onClick={handleResetFilter}
-                                            className="h-10 px-3 text-xs font-semibold text-gray-500 hover:text-gray-700 border-gray-200 hover:bg-gray-50 shrink-0"
-                                            title="Reset Filter"
-                                        >
-                                            Reset
-                                        </Button>
-                                    )}
-                                </div>
                             </form>
 
                             <div className="shrink-0 pt-2 lg:pt-0 border-t border-gray-100 lg:border-t-0">
@@ -395,59 +402,76 @@ export default function MedicinesIndex({ medicines, filters }: MedicinesPageProp
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[335px]">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-200">
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1000px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kode</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-14 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-32 shrink-0">Kode</th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Nama Farmasi / Vaksin</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kuantitas Stok</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Satuan Kemasan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kondisi Stok</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Terdaftar</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-32 shrink-0">Kuantitas Stok</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Satuan Kemasan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Kondisi Stok</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Terdaftar</th>
                                     <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
-                                {medicines.data.length === 0 ? (
+                                {totalFiltered === 0 ? (
                                     <tr>
                                         <td colSpan={8} className="px-4 py-16 text-center">
-                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 mb-3">
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
                                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path
                                                         strokeLinecap="round"
                                                         strokeLinejoin="round"
                                                         strokeWidth="2"
-                                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                                     />
                                                 </svg>
                                             </div>
-                                            <h4 className="text-sm font-semibold text-gray-700">Tidak ada data obat atau vaksin</h4>
-                                            <p className="mt-1 text-xs text-gray-400">
-                                                {search || statusFilter
-                                                    ? 'Coba sesuaikan kata kunci pencarian atau ubah filter status stok Anda.'
-                                                    : 'Belum ada item farmasi yang terdaftar di dalam inventori.'}
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || statusFilter ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Data Obat & Vaksin'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || statusFilter ? (
+                                                    <>
+                                                        Tidak ada data obat atau vaksin yang cocok dengan kata kunci{' '}
+                                                        <span className="font-semibold text-purple-700">"{search}"</span>
+                                                        {statusFilter ? ` pada filter ${STATUS_FILTER_OPTIONS[statusFilter] || statusFilter}` : ''}.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada item farmasi yang terdaftar di dalam inventori apotek.'
+                                                )}
                                             </p>
+                                            {(search || statusFilter) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilter}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     <>
-                                        {medicines.data.map((item, index) => (
+                                        {paginatedMedicines.map((item, index) => (
                                             <tr
                                                 key={item.id}
                                                 className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-[58px]"
                                             >
                                                 <td className="py-3 px-3.5 border-r border-gray-200 text-center font-medium text-gray-600">
-                                                    {medicines.from ? medicines.from + index : index + 1}
+                                                    {(safePage - 1) * ITEMS_PER_PAGE + index + 1}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 font-mono text-xs font-bold text-purple-700">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 font-mono text-xs font-bold text-purple-700 text-center">
                                                     {item.kode_obat}
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="font-bold text-xs text-gray-900 block leading-snug break-words">
+                                                    <span className="font-bold text-xs text-gray-900 block w-full truncate" title={item.nama_obat}>
                                                         {item.nama_obat}
                                                     </span>
                                                 </td>
@@ -480,7 +504,7 @@ export default function MedicinesIndex({ medicines, filters }: MedicinesPageProp
                                                     )}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium whitespace-nowrap">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium whitespace-nowrap text-center">
                                                     {item.created_at || '-'}
                                                 </td>
 
@@ -520,8 +544,8 @@ export default function MedicinesIndex({ medicines, filters }: MedicinesPageProp
                                                 </td>
                                             </tr>
                                         ))}
-                                        {medicines.data.length > 0 && medicines.data.length < 5 &&
-                                            Array.from({ length: 5 - medicines.data.length }).map((_, idx) => (
+                                        {paginatedMedicines.length > 0 && paginatedMedicines.length < 5 &&
+                                            Array.from({ length: 5 - paginatedMedicines.length }).map((_, idx) => (
                                                 <tr
                                                     key={`empty-${idx}`}
                                                     aria-hidden="true"
@@ -546,16 +570,20 @@ export default function MedicinesIndex({ medicines, filters }: MedicinesPageProp
                     <div className="flex flex-col gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50/30">
                         <p className="text-xs text-gray-500 font-medium">
                             Menampilkan{' '}
-                            <span className="font-bold text-gray-800">{medicines.from || 0}</span>{' '}
+                            <span className="font-bold text-gray-800">
+                                {totalFiltered > 0 ? (safePage - 1) * ITEMS_PER_PAGE + 1 : 0}
+                            </span>{' '}
                             hingga{' '}
-                            <span className="font-bold text-gray-800">{medicines.to || 0}</span>{' '}
+                            <span className="font-bold text-gray-800">
+                                {Math.min(safePage * ITEMS_PER_PAGE, totalFiltered)}
+                            </span>{' '}
                             dari total{' '}
-                            <span className="font-bold text-gray-800">{medicines.total}</span> item farmasi.
+                            <span className="font-bold text-gray-800">{totalFiltered}</span> item farmasi.
                         </p>
                         <Pagination
-                            links={medicines.links}
-                            currentPage={medicines.current_page}
-                            totalPages={medicines.last_page}
+                            currentPage={safePage}
+                            totalPages={totalPages}
+                            onPageChange={(p) => setCurrentPage(p)}
                         />
                     </div>
                 </div>

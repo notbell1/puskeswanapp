@@ -153,21 +153,21 @@ class AuthSecurityService
 
     protected function getBlockKey(string $ip): string
     {
-        return 'auth_ip_blocked_' . md5($ip);
+        return 'auth_ip_blocked_'.md5($ip);
     }
 
     protected function getStrikesKey(string $ip): string
     {
-        return 'auth_ip_strikes_' . md5($ip);
+        return 'auth_ip_strikes_'.md5($ip);
     }
 
     protected function getLockoutKey(string $ip): string
     {
-        return 'auth_login_lockout_' . md5($ip);
+        return 'auth_login_lockout_'.md5($ip);
     }
 
     protected function getAttemptsKey(string $ip): string
     {
-        return 'auth_login_attempts_' . md5($ip);
+        return 'auth_login_attempts_'.md5($ip);
     }
 }

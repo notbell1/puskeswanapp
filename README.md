@@ -2,7 +2,7 @@
   <img src="public/images/logo_puskeswan.webp" alt="Logo Puskeswan Kota Pariaman" width="110" />
 </p>
 
-<h1 align="center">PuskeswanApp V.2.3.0</h1>
+<h1 align="center">PuskeswanApp V.2.4.0</h1>
 
 <p align="center">
   <strong>Sistem Informasi Pelayanan Kesehatan Hewan, Rekam Medis Veteriner & Surveilans Zoonosis Terpadu</strong><br>
@@ -261,6 +261,15 @@ flowchart LR
 - **Inventaris Alat Medis:** Pengawasan kondisi peralatan medis dan operasional lapangan (_Baik_, _Rusak Ringan_, _Rusak Berat_) lengkap dengan riwayat pencatatan penanggung jawab.
   </details>
 
+<details>
+<summary><strong>📊 5. Standarisasi Tampilan Tabel, Truncate Dinamis & Pencarian Real-Time</strong></summary>
+
+- **Rigid Table-Fixed Architecture:** Seluruh tabel data pada modul Super Admin, Admin, dan Dokter menggunakan arsitektur `table-fixed` dengan lebar kolom rigid, tinggi baris konsisten `58px`, dan baris kosong penyeimbang (5 baris stabil per halaman) agar layout tidak melonjak antar halaman.
+- **Dynamic Text Truncation with Tooltip:** Teks panjang fleksibel memenuhi 100% sisa lebar kolom yang tersedia sebelum memotong elipsis (`...`), lengkap dengan tooltip bawaan browser saat kursor di-hover untuk kenyamanan membaca.
+- **Zero-Click Instant Search:** Pencarian otomatis menyaring data secara real-time saat pengguna mengetik (0ms pada master data, 300ms debounce pada data transaksional) tanpa memerlukan penekanan tombol manual "Cari" atau "Reset".
+- **Harmonized 5-Number Pagination:** Navigasi pagination terstandarisasi yang secara konsisten selalu menyajikan tepat 5 nomor halaman aktif pada seluruh kondisi penjelajahan data.
+  </details>
+
 ---
 
 ## 🛠️ Spesifikasi Teknologi Rinci (Tech Stack)
@@ -279,7 +288,7 @@ Aplikasi dibangun menggunakan kombinasi pustaka dan kerangka kerja modern versi 
 | **Iconography**         | **Lucide Icons**              |      `v1.16.0`      | Pustaka ikon SVG modern yang ringan dan konsisten                             |
 | **Type-Safe Routing**   | **Laravel Wayfinder**         |      `v0.1.23`      | Generator otomatis fungsi rute TypeScript langsung dari controller Laravel    |
 | **Database Engine**     | **MySQL / MariaDB**           |  `v8.0+ / v10.5+`   | Basis data relasional dengan indeks komposit pada tabel frekuensi tinggi      |
-| **Automated Testing**   | **Pest PHP**                  |      `v5.3.4`       | Kerangka pengujian fitur otomatis                                             |
+| **Automated Testing**   | **Pest PHP**                  |      `v5.3.4`       | Kerangka pengujian fitur otomatis (85 Feature & Security Tests, 100% Passed)   |
 | **Code Style Linter**   | **Laravel Pint**              |      `v1.32.1`      | Formatter kode otomatis berstandar PSR-12 dan panduan Laravel                 |
 | **Build Tooling**       | **Vite-Plus (VoidZero)**      |      `v1.4.0`       | Bundler modul berkas frontend super cepat untuk lingkungan produksi           |
 
@@ -317,13 +326,13 @@ Dokter Dashboard : 0 Kueri Duplikat (Reuse hasil kueri agregasi 30 hari)     -> 
 | :------------------------------- | :-----------: | :-------------------: | :----------: | :-----------------: |
 | **Landing Page & Edukasi**       |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
 | **Cek Rekam Medis Mandiri**      |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
-| **Dashboard Loket Pendaftaran**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |     ❌ Ditolak      |
-| **Registrasi Pemilik & Pasien**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |     ❌ Ditolak      |
-| **Manajemen Antrean Loket**      |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |     ❌ Ditolak      |
+| **Dashboard Loket Pendaftaran**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
+| **Registrasi Pemilik & Pasien**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
+| **Manajemen Antrean Loket**      |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
 | **Surveilans Rabies (GHPR)**     |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
-| **Dashboard Dokter Hewan**       |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |     ❌ Ditolak      |
-| **Pemeriksaan & Diagnosa Medis** |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |     ❌ Ditolak      |
-| **Riwayat Pelayanan Dokter**     |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |     ❌ Ditolak      |
+| **Dashboard Dokter Hewan**       |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
+| **Pemeriksaan & Diagnosa Medis** |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
+| **Riwayat Pelayanan Dokter**     |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
 | **Dashboard Eksekutif**          |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
 | **Manajemen Akun Pengguna**      |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
 | **Manajemen Pegawai & Staf**     |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
@@ -441,7 +450,7 @@ Sistem **PuskeswanApp** telah melalui pengujian penetrasi keamanan mendalam (*Fu
 Aplikasi dilengkapi _automated regression testing_ menggunakan Pest PHP dan standardisasi gaya kode Laravel Pint:
 
 ```bash
-# Menjalankan seluruh pengujian otomatis fitur & keamanan (84 Tests)
+# Menjalankan seluruh pengujian otomatis fitur & keamanan (85 Tests)
 php artisan test --compact
 
 # Hasil Pengujian:
@@ -452,7 +461,7 @@ php artisan test --compact
 # PASS  Tests\Feature\SecurityPenetrationTest
 # PASS  Tests\Feature\AuthRateLimitingTest
 # PASS  Tests\Feature\UserPhotoManagementTest
-# Tests:    84 passed (606 assertions)
+# Tests:    85 passed (622 assertions)
 # Duration: 5.12s (100% Passed)
 ```
 

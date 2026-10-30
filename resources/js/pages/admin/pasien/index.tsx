@@ -69,6 +69,7 @@ export default function PatientsIndex({
 
     const [search, setSearch] = useState(filters.search || '');
     const [speciesFilter, setSpeciesFilter] = useState(filters.jenis_hewan || '');
+    const isFirstSearchRender = useRef(true);
 
     const [historyModalOpen, setHistoryModalOpen] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState<PatientItem | null>(null);
@@ -79,6 +80,30 @@ export default function PatientsIndex({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isSubmittingRef = useRef(false);
 
+    React.useEffect(() => {
+        if (isFirstSearchRender.current) {
+            isFirstSearchRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                '/admin/pasien',
+                {
+                    search: search || undefined,
+                    jenis_hewan: speciesFilter || undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                }
+            );
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
     const { data, setData, errors, clearErrors } = useForm({
         id_jenis_hewan: '',
         nama_hewan: '',
@@ -86,18 +111,6 @@ export default function PatientsIndex({
         umur: '',
         warna_hewan: '',
     });
-
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.get(
-            '/admin/pasien',
-            {
-                search: search || undefined,
-                jenis_hewan: speciesFilter || undefined,
-            },
-            { preserveState: true, replace: true }
-        );
-    };
 
     const handleFilterSpecies = (id: string) => {
         setSpeciesFilter(id);
@@ -189,10 +202,7 @@ export default function PatientsIndex({
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
                     <div className="p-3 border-b border-gray-200 bg-white">
                         <div className="flex flex-col lg:flex-row gap-2.5 items-stretch lg:items-center justify-between">
-                            <form
-                                onSubmit={handleSearch}
-                                className="flex flex-1 flex-col sm:flex-row gap-2.5 items-stretch sm:items-center"
-                            >
+                            <div className="flex flex-1 flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
                                 <div className="relative flex-1">
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,8 +214,20 @@ export default function PatientsIndex({
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
                                         placeholder="Cari No. RM, nama hewan, nama pemilik, NIK, atau nomor WhatsApp..."
-                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSearch('')}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[220px] shrink-0">
@@ -248,30 +270,7 @@ export default function PatientsIndex({
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        type="submit"
-                                        variant="secondary"
-                                        size="md"
-                                        className="h-10 px-4 text-xs font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                                    >
-                                        Cari
-                                    </Button>
-                                    {(search || speciesFilter) && (
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="md"
-                                            onClick={handleResetFilter}
-                                            className="h-10 px-3 text-xs font-semibold text-gray-500 hover:text-gray-700 border-gray-200 hover:bg-gray-50 shrink-0"
-                                            title="Reset Filter"
-                                        >
-                                            Reset
-                                        </Button>
-                                    )}
-                                </div>
-                            </form>
+                            </div>
 
                             <div className="shrink-0 pt-2 lg:pt-0 border-t border-gray-100 lg:border-t-0">
                                 <Button
@@ -292,15 +291,15 @@ export default function PatientsIndex({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[335px]">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-200">
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1050px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No.</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. Rekam Medis</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pasien Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pemilik &amp; NIK</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Ciri Fisik</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-14 shrink-0">No.</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">No. Rekam Medis</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-52 shrink-0">Pasien Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-52 shrink-0">Pemilik &amp; NIK</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-44 shrink-0">Ciri Fisik</th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kunjungan Terakhir</th>
                                     <th className="py-3 px-3.5 text-center font-bold w-36 shrink-0">Aksi &amp; Riwayat</th>
                                 </tr>
@@ -309,17 +308,34 @@ export default function PatientsIndex({
                                 {patients.data.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="px-4 py-16 text-center">
-                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 mb-3">
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
                                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                                 </svg>
                                             </div>
-                                            <h4 className="text-sm font-semibold text-gray-700">Data pasien hewan tidak ditemukan</h4>
-                                            <p className="mt-1 text-xs text-gray-400">
-                                                {search || speciesFilter
-                                                    ? 'Coba sesuaikan kata kunci pencarian atau ganti filter spesies.'
-                                                    : 'Belum ada pasien hewan yang terdaftar di dalam sistem.'}
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || speciesFilter ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Data Pasien Hewan'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || speciesFilter ? (
+                                                    <>
+                                                        Tidak ada data pasien yang cocok dengan kata kunci{' '}
+                                                        <span className="font-semibold text-purple-700">"{search}"</span>
+                                                        {speciesFilter ? ` pada filter spesies ${activeSpeciesName || speciesFilter}` : ''}.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada pasien hewan yang terdaftar di dalam sistem.'
+                                                )}
                                             </p>
+                                            {(search || speciesFilter) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilter}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -333,35 +349,35 @@ export default function PatientsIndex({
                                                     {patients.from ? patients.from + index : index + 1}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                     <span className="font-mono font-bold text-xs text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 inline-block">
                                                         {patient.no_rm}
                                                     </span>
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="font-bold text-xs text-gray-900 block leading-tight">
+                                                    <span className="font-bold text-xs text-gray-900 block w-full truncate leading-tight" title={patient.nama_hewan}>
                                                         {patient.nama_hewan}
                                                     </span>
-                                                    <span className="text-[11px] text-gray-500 block mt-0.5">
+                                                    <span className="text-[11px] text-gray-500 block w-full truncate mt-0.5" title={`${patient.jenis_hewan} • ${patient.jenis_kelamin}`}>
                                                         {patient.jenis_hewan} &bull; {patient.jenis_kelamin}
                                                     </span>
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="font-bold text-xs text-gray-900 block leading-tight">
+                                                    <span className="font-bold text-xs text-gray-900 block w-full truncate leading-tight" title={patient.nama_pemilik}>
                                                         {patient.nama_pemilik}
                                                     </span>
-                                                    <span className="text-[11px] text-gray-500 font-mono block mt-0.5">
+                                                    <span className="text-[11px] text-gray-500 font-mono block w-full truncate mt-0.5" title={`NIK: ${patient.nik_pemilik}`}>
                                                         NIK: {patient.nik_pemilik}
                                                     </span>
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="text-xs text-gray-800 font-medium block">
+                                                    <span className="text-xs text-gray-800 font-medium block w-full truncate" title={patient.warna_hewan}>
                                                         {patient.warna_hewan}
                                                     </span>
-                                                    <span className="text-[11px] text-gray-500 block mt-0.5">
+                                                    <span className="text-[11px] text-gray-500 block w-full truncate mt-0.5" title={`Umur: ${patient.umur}`}>
                                                         Umur: {patient.umur}
                                                     </span>
                                                 </td>

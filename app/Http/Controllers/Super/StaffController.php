@@ -25,33 +25,27 @@ class StaffController extends Controller
         $search = trim((string) $request->input('search', ''));
         $jabatanFilter = $request->input('jabatan');
 
-        $staff = Staff::with(['users:id,id_staf,foto,id_role', 'users.role:id,nama_role'])
+        $query = Staff::with(['users:id,id_staf,foto,id_role', 'users.role:id,nama_role'])
             ->withCount('users')
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama_staf', 'like', "%{$search}%")
-                        ->orWhere('nip_strv', 'like', "%{$search}%")
-                        ->orWhere('jabatan', 'like', "%{$search}%");
-                });
-            })
-            ->when($jabatanFilter, function ($query, $jabatanFilter) {
-                $query->where('jabatan', $jabatanFilter);
-            })
-            ->orderBy('id', 'asc')
-            ->paginate(5)
-            ->withQueryString()
-            ->through(fn ($staf) => [
-                'id' => $staf->id,
-                'nama_staf' => $staf->nama_staf,
-                'jabatan' => $staf->jabatan,
-                'nip_strv' => $staf->nip_strv,
-                'tampil_publik' => (bool) $staf->tampil_publik,
-                'urutan' => $staf->tampil_publik ? (int) ($staf->urutan ?: 1) : null,
-                'foto' => $staf->foto ?: $staf->users->first()?->foto,
-                'users_count' => $staf->users_count,
-                'linked_role' => $staf->users->first()?->role?->nama_role,
-                'created_at' => $staf->created_at?->format('d/m/Y'),
-            ]);
+            ->orderBy('id', 'asc');
+
+        $allStaff = $query->get()->map(fn ($staf) => [
+            'id' => $staf->id,
+            'nama_staf' => $staf->nama_staf,
+            'jabatan' => $staf->jabatan,
+            'nip_strv' => $staf->nip_strv,
+            'tampil_publik' => (bool) $staf->tampil_publik,
+            'urutan' => $staf->tampil_publik ? (int) ($staf->urutan ?: 1) : null,
+            'foto' => $staf->foto ?: $staf->users->first()?->foto,
+            'users_count' => $staf->users_count,
+            'linked_role' => $staf->users->first()?->role?->nama_role,
+            'created_at' => $staf->created_at?->format('d/m/Y'),
+        ]);
+
+        $staff = [
+            'data' => $allStaff,
+            'total' => $allStaff->count(),
+        ];
 
         $masterPositions = StaffPosition::orderBy('nama_jabatan')->pluck('nama_jabatan')->all();
         $usedPositions = Staff::select('jabatan')

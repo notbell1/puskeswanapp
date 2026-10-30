@@ -29,26 +29,9 @@ class ArticleController extends Controller
         $authorFilter = trim((string) $request->input('author', ''));
 
         $articles = Article::with(['kategori', 'penulis'])
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('judul', 'like', "%{$search}%")
-                        ->orWhere('author_name', 'like', "%{$search}%")
-                        ->orWhere('ringkasan', 'like', "%{$search}%");
-                });
-            })
-            ->when($categoryFilter, function ($query, $categoryFilter) {
-                $query->where('id_kategori', $categoryFilter);
-            })
-            ->when($statusFilter, function ($query, $statusFilter) {
-                $query->where('status', $statusFilter);
-            })
-            ->when($authorFilter, function ($query, $authorFilter) {
-                $query->where('author_name', $authorFilter);
-            })
             ->orderBy('id', 'desc')
-            ->paginate(5)
-            ->withQueryString()
-            ->through(fn ($art) => [
+            ->get()
+            ->map(fn ($art) => [
                 'id' => $art->id,
                 'judul' => $art->judul,
                 'slug' => $art->slug,
@@ -121,7 +104,10 @@ class ArticleController extends Controller
         }
 
         return Inertia::render('super/artikel/index', [
-            'articles' => $articles,
+            'articles' => [
+                'data' => $articles,
+                'total' => $articles->count(),
+            ],
             'categories' => $categories,
             'staffList' => $staffList,
             'authorOptions' => $authorOptions,

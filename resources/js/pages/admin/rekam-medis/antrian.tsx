@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Button, Dropdown, Modal, Pagination } from '@/components/ui';
@@ -74,18 +74,44 @@ export default function RekamMedisAntrian({
     const [search, setSearch] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || '');
     const [dateFilter, setDateFilter] = useState(filters.tanggal || new Date().toISOString().split('T')[0]);
+    const isFirstSearchRender = useRef(true);
 
     const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [selectedVisit, setSelectedVisit] = useState<VisitItem | null>(null);
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
+    React.useEffect(() => {
+        if (isFirstSearchRender.current) {
+            isFirstSearchRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                '/admin/rekam-medis/antrian',
+                {
+                    search: search || undefined,
+                    status: statusFilter || undefined,
+                    tanggal: dateFilter || undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                }
+            );
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const handleDateChange = (val: string) => {
+        setDateFilter(val);
         router.get(
             '/admin/rekam-medis/antrian',
             {
                 search: search || undefined,
                 status: statusFilter || undefined,
-                tanggal: dateFilter || undefined,
+                tanggal: val || undefined,
             },
             { preserveState: true, replace: true }
         );
@@ -260,10 +286,7 @@ export default function RekamMedisAntrian({
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
                     <div className="p-3 border-b border-gray-200 bg-white">
                         <div className="flex flex-col lg:flex-row gap-2.5 items-stretch lg:items-center justify-between">
-                            <form
-                                onSubmit={handleSearch}
-                                className="flex flex-1 flex-col sm:flex-row gap-2.5 items-stretch sm:items-center"
-                            >
+                            <div className="flex flex-1 flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
                                 <div className="relative flex-1">
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -275,15 +298,27 @@ export default function RekamMedisAntrian({
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
                                         placeholder="Cari No. RM, nama hewan, pemilik, NIK, atau keluhan..."
-                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSearch('')}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="flex items-center gap-1.5 shrink-0">
                                     <input
                                         type="date"
                                         value={dateFilter}
-                                        onChange={(e) => setDateFilter(e.target.value)}
+                                        onChange={(e) => handleDateChange(e.target.value)}
                                         className="h-10 px-3 rounded-lg border border-gray-200 bg-white text-xs text-gray-700 transition-all focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
                                 </div>
@@ -320,30 +355,7 @@ export default function RekamMedisAntrian({
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        type="submit"
-                                        variant="secondary"
-                                        size="md"
-                                        className="h-10 px-4 text-xs font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                                    >
-                                        Cari
-                                    </Button>
-                                    {(search || statusFilter || dateFilter !== new Date().toISOString().split('T')[0]) && (
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="md"
-                                            onClick={handleResetFilter}
-                                            className="h-10 px-3 text-xs font-semibold text-gray-500 hover:text-gray-700 border-gray-200 hover:bg-gray-50 shrink-0"
-                                            title="Reset Filter"
-                                        >
-                                            Reset
-                                        </Button>
-                                    )}
-                                </div>
-                            </form>
+                            </div>
 
                             <div className="shrink-0 pt-2 lg:pt-0 border-t border-gray-100 lg:border-t-0">
                                 <Link
@@ -359,16 +371,16 @@ export default function RekamMedisAntrian({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[335px]">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-200">
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1050px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead>
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-16 shrink-0">Antrean</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-20 shrink-0">Antrean</th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-28 shrink-0">Waktu</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">No. RM &amp; Pasien Hewan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pemilik &amp; Kontak</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-56 shrink-0">No. RM &amp; Pasien Hewan</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-52 shrink-0">Pemilik &amp; Kontak</th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Triage Awal &amp; Keluhan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Dokter &amp; Status</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-40 shrink-0">Dokter &amp; Status</th>
                                     <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
@@ -376,17 +388,34 @@ export default function RekamMedisAntrian({
                                 {visits.data.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="px-4 py-16 text-center">
-                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 mb-3">
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
                                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                                 </svg>
                                             </div>
-                                            <h4 className="text-sm font-semibold text-gray-700">Tidak ada antrean pasien ditemukan</h4>
-                                            <p className="mt-1 text-xs text-gray-400">
-                                                {search || statusFilter
-                                                    ? 'Coba sesuaikan kata kunci pencarian atau ubah filter status antrean.'
-                                                    : 'Belum ada antrean pendaftaran pada tanggal terpilih.'}
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || statusFilter ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Antrean Pasien'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || statusFilter ? (
+                                                    <>
+                                                        Tidak ada antrean yang cocok dengan kata kunci{' '}
+                                                        <span className="font-semibold text-purple-700">"{search}"</span>
+                                                        {statusFilter ? ` pada status ${STATUS_FILTER_OPTIONS[statusFilter] || statusFilter}` : ''}.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada antrean pendaftaran pada tanggal terpilih.'
+                                                )}
                                             </p>
+                                            {(search || statusFilter || dateFilter !== new Date().toISOString().split('T')[0]) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilter}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -400,43 +429,43 @@ export default function RekamMedisAntrian({
                                                     {visit.no_antrean}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 text-gray-600 font-mono text-xs whitespace-nowrap">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 text-gray-600 font-mono text-xs whitespace-nowrap text-center">
                                                     {visit.tgl_kunjungan}
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-mono font-bold text-xs text-purple-800 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">
+                                                    <div className="flex items-center gap-1.5 min-w-0">
+                                                        <span className="font-mono font-bold text-xs text-purple-800 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 shrink-0">
                                                             {visit.no_rm}
                                                         </span>
-                                                        <span className="font-bold text-xs text-gray-900">
+                                                        <span className="font-bold text-xs text-gray-900 block truncate" title={visit.nama_hewan}>
                                                             {visit.nama_hewan}
                                                         </span>
                                                     </div>
-                                                    <div className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1.5">
+                                                    <div className="text-[11px] text-gray-500 mt-0.5 block w-full truncate" title={`${visit.jenis_hewan} • ${visit.jenis_kelamin}${visit.umur ? ` (${visit.umur})` : ''}`}>
                                                         <span>{visit.jenis_hewan}</span>
-                                                        <span>&bull;</span>
+                                                        <span> &bull; </span>
                                                         <span>{visit.jenis_kelamin}</span>
-                                                        {visit.umur && <span>({visit.umur})</span>}
+                                                        {visit.umur && <span> ({visit.umur})</span>}
                                                     </div>
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="font-bold text-xs text-gray-900 block leading-tight">
+                                                    <span className="font-bold text-xs text-gray-900 block w-full truncate leading-tight" title={visit.pemilik}>
                                                         {visit.pemilik}
                                                     </span>
-                                                    <span className="text-[11px] text-gray-500 font-mono block mt-0.5">
+                                                    <span className="text-[11px] text-gray-500 font-mono block w-full truncate mt-0.5" title={`WA: ${visit.no_hp}`}>
                                                         WA: {visit.no_hp}
                                                     </span>
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 max-w-xs">
+                                                <td className="py-3 px-3.5 border-r border-gray-200">
                                                     <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-700 mb-0.5">
                                                         <span>BB: {visit.berat_badan} kg</span>
                                                         <span>&bull;</span>
                                                         <span>Suhu: {visit.suhu_tubuh} °C</span>
                                                     </div>
-                                                    <p className="text-[11px] text-gray-500 line-clamp-1 leading-snug">
+                                                    <p className="text-[11px] text-gray-500 block w-full truncate leading-snug" title={visit.anamnesa}>
                                                         {visit.anamnesa}
                                                     </p>
                                                 </td>
@@ -464,7 +493,7 @@ export default function RekamMedisAntrian({
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <span className="text-[10px] text-gray-500 block truncate max-w-[120px]">
+                                                    <span className="text-[10px] text-gray-500 block w-full truncate" title={visit.dokter}>
                                                         {visit.dokter}
                                                     </span>
                                                 </td>

@@ -63,6 +63,16 @@ const menusByRole = {
             group: "PUSAT LAPORAN",
             items: [
                 {
+                    label: "Pantau Antrean Loket",
+                    href: "/super/monitoring/antrian-loket",
+                    icon: "clipboard",
+                },
+                {
+                    label: "Pantau Pelayanan Dokter",
+                    href: "/super/monitoring/pelayanan-dokter",
+                    icon: "medical",
+                },
+                {
                     label: "Rekam Medis Pasien",
                     href: "/super/laporan/rekam-medis",
                     icon: "clipboard",
@@ -97,7 +107,7 @@ const menusByRole = {
             ],
         },
         {
-            group: "KELOMPOK REKAM MEDIS",
+            group: "REKAM MEDIS",
             items: [
                 {
                     label: "Rekam Medis",
@@ -117,7 +127,7 @@ const menusByRole = {
             ],
         },
         {
-            group: "KELOMPOK CATATAN KASUS GIGITAN RABIES",
+            group: "KASUS GIGITAN RABIES",
             items: [
                 {
                     label: "Catat Kasus Gigitan",

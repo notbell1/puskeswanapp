@@ -61,17 +61,38 @@ export default function Pagination({
         return null;
     }
 
-    let startPage = Math.max(1, current - Math.floor(windowSize / 2));
-    let endPage = Math.min(computedTotalPages, startPage + windowSize - 1);
+    // Generate pagination items dengan format konsisten selalu tepat 5 nomor halaman:
+    // Contoh di awal: < 1 2 3 4 .. 20 >
+    // Contoh di tengah (misal halaman 4 atau 5): < 1 .. 3 4 5 .. 20 > atau < 1 .. 4 5 6 .. 20 >
+    // Contoh di akhir: < 1 .. 17 18 19 20 >
+    const generatePaginationItems = (curr, total) => {
+        if (total <= 5) {
+            return Array.from({ length: total }, (_, i) => i + 1);
+        }
 
-    if (endPage - startPage + 1 < windowSize) {
-        startPage = Math.max(1, endPage - windowSize + 1);
-    }
+        // Dekat awal: tepat 5 nomor halaman (1, 2, 3, 4, total)
+        if (curr <= 3) {
+            return [1, 2, 3, 4, 'ellipsis-end', total];
+        }
 
-    const visiblePages = [];
-    for (let p = startPage; p <= endPage; p++) {
-        visiblePages.push(p);
-    }
+        // Dekat akhir: tepat 5 nomor halaman (1, total-3, total-2, total-1, total)
+        if (curr >= total - 2) {
+            return [1, 'ellipsis-start', total - 3, total - 2, total - 1, total];
+        }
+
+        // Di tengah: tepat 5 nomor halaman (1, curr-1, curr, curr+1, total)
+        return [
+            1,
+            'ellipsis-start',
+            curr - 1,
+            curr,
+            curr + 1,
+            'ellipsis-end',
+            total,
+        ];
+    };
+
+    const paginationItems = generatePaginationItems(current, computedTotalPages);
 
     const getPageUrl = (pageNumber) => {
         if (pageUrlMap.has(pageNumber)) {
@@ -134,6 +155,8 @@ export default function Pagination({
                 href={targetUrl}
                 preserveScroll
                 preserveState
+                prefetch
+                cacheFor="1m"
                 className={commonClasses}
                 aria-label={`Buka halaman ${label}`}
             >
@@ -159,9 +182,20 @@ export default function Pagination({
             <nav className="inline-flex items-center gap-1.5" aria-label="Pagination">
                 {renderPageButton(current - 1, '<', false, !hasPrevious, prevUrl)}
 
-                {visiblePages.map((page) =>
-                    renderPageButton(page, String(page), page === current, false)
-                )}
+                {paginationItems.map((item) => {
+                    if (typeof item === 'string') {
+                        return (
+                            <span
+                                key={item}
+                                className="h-8 min-w-[28px] px-1 text-xs font-bold text-gray-400 inline-flex items-center justify-center select-none"
+                                aria-hidden="true"
+                            >
+                                ..
+                            </span>
+                        );
+                    }
+                    return renderPageButton(item, String(item), item === current, false);
+                })}
 
                 {renderPageButton(current + 1, '>', false, !hasNext, nextUrl)}
             </nav>

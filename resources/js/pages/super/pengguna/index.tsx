@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Head, router, useForm } from "@inertiajs/react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import {
@@ -38,12 +38,12 @@ interface StaffItem {
 interface UsersPageProps {
     users: {
         data: UserItem[];
-        links: any[];
-        current_page: number;
-        last_page: number;
-        from: number;
-        to: number;
-        total: number;
+        total?: number;
+        links?: any[];
+        current_page?: number;
+        last_page?: number;
+        from?: number;
+        to?: number;
     };
     filters: {
         search?: string;
@@ -141,22 +141,43 @@ export default function UsersIndex({
         }
     };
 
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const ITEMS_PER_PAGE = 5;
+
+    // Filter instan di client side
+    const filteredUsers = useMemo<UserItem[]>(() => {
+        let list = users.data;
+        if (selectedRole && selectedRole.trim()) {
+            list = list.filter((u) => u.role_name === selectedRole);
+        }
+        if (search.trim()) {
+            const q = search.toLowerCase().trim();
+            list = list.filter(
+                (u) =>
+                    u.name.toLowerCase().includes(q) ||
+                    u.email.toLowerCase().includes(q) ||
+                    (u.staf_name && u.staf_name.toLowerCase().includes(q))
+            );
+        }
+        return list;
+    }, [users.data, selectedRole, search]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / ITEMS_PER_PAGE));
+    const safePage = Math.min(currentPage, totalPages);
+
+    const paginatedUsers = useMemo<UserItem[]>(() => {
+        const start = (safePage - 1) * ITEMS_PER_PAGE;
+        return filteredUsers.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredUsers, safePage]);
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(
-            "/super/pengguna",
-            { search, role: selectedRole },
-            { preserveState: true, preserveScroll: true, replace: true },
-        );
+        setCurrentPage(1);
     };
 
     const handleRoleFilter = (roleName: string) => {
         setSelectedRole(roleName);
-        router.get(
-            "/super/pengguna",
-            { search, role: roleName },
-            { preserveState: true, preserveScroll: true, replace: true },
-        );
+        setCurrentPage(1);
     };
 
     const openCreateModal = () => {
@@ -492,12 +513,28 @@ export default function UsersIndex({
                                     <input
                                         type="text"
                                         value={search}
-                                        onChange={(e) =>
-                                            setSearch(e.target.value)
-                                        }
-                                        placeholder="Cari berdasarkan nama atau email petugas..."
-                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        onChange={(e) => {
+                                            setSearch(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
+                                        placeholder="Ketik untuk mencari nama pengguna atau email..."
+                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSearch('');
+                                                setCurrentPage(1);
+                                            }}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[280px] lg:w-[320px] shrink-0">
@@ -583,15 +620,6 @@ export default function UsersIndex({
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <Button
-                                    type="submit"
-                                    variant="secondary"
-                                    size="md"
-                                    className="h-10 px-5 text-sm font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                                >
-                                    Cari
-                                </Button>
                             </form>
 
                             <div className="shrink-0 pt-2 lg:pt-0 border-t border-gray-100 lg:border-t-0">
@@ -623,79 +651,88 @@ export default function UsersIndex({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[335px]">
-                        <table className="w-full min-w-[950px] text-left text-xs border-collapse border border-gray-200">
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1000px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-14 shrink-0">
                                         No
                                     </th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Pengguna
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">
                                         Role
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-44 shrink-0">
                                         Staf Terhubung
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-32 shrink-0">
                                         Status Akses
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">
                                         Tanggal Registrasi
                                     </th>
                                     <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">
-                                        Kelola
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
-                                {users.data.length === 0 ? (
+                                {filteredUsers.length === 0 ? (
                                     <tr>
                                         <td
                                             colSpan={7}
-                                            className="px-4 py-12 text-center"
+                                            className="px-4 py-16 text-center"
                                         >
-                                            <div className="mx-auto flex max-w-xs flex-col items-center">
-                                                <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 border border-gray-150 text-gray-400">
-                                                    <svg
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="1.8"
-                                                            d="M21 21l-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z"
-                                                        />
-                                                    </svg>
-                                                </div>
-                                                <p className="text-xs font-bold text-gray-800">
-                                                    Data pengguna tidak
-                                                    ditemukan
-                                                </p>
-                                                <p className="mt-0.5 text-xs text-gray-500">
-                                                    Coba gunakan kata kunci lain
-                                                    atau setel ulang filter
-                                                    peran.
-                                                </p>
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
+                                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                    />
+                                                </svg>
                                             </div>
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || selectedRole ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Data Pengguna'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || selectedRole ? (
+                                                    <>
+                                                        Tidak ada akun pengguna yang cocok dengan kata kunci{' '}
+                                                        <span className="font-semibold text-purple-700">"{search}"</span>
+                                                        {selectedRole ? ` pada peran ${selectedRole.replace(/_/g, ' ')}` : ''}.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada akun pengguna yang terdaftar di dalam sistem.'
+                                                )}
+                                            </p>
+                                            {(search || selectedRole) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSearch('');
+                                                        setSelectedRole('');
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     <>
-                                        {users.data.map((user, index) => (
+                                        {paginatedUsers.map((user: UserItem, index: number) => (
                                             <tr
                                                 key={user.id}
                                                 className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-[58px]"
                                             >
                                                 <td className="py-3 px-3.5 border-r border-gray-200 text-center font-medium text-gray-600">
-                                                    {users.from
-                                                        ? users.from + index
-                                                        : index + 1}
+                                                    {(safePage - 1) * ITEMS_PER_PAGE + index + 1}
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
@@ -713,11 +750,11 @@ export default function UsersIndex({
                                                                     .toUpperCase()}
                                                             </div>
                                                         )}
-                                                        <div className="min-w-0">
-                                                            <p className="break-words text-xs font-bold text-gray-900 leading-snug">
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="block w-full truncate text-xs font-bold text-gray-900 leading-snug" title={user.name}>
                                                                 {user.name}
                                                             </p>
-                                                            <p className="mt-0.5 break-all text-[11px] text-gray-500 font-medium">
+                                                            <p className="mt-0.5 block w-full truncate text-[11px] text-gray-500 font-medium" title={user.email}>
                                                                 {user.email}
                                                             </p>
                                                         </div>
@@ -735,8 +772,8 @@ export default function UsersIndex({
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
                                                     {user.staf_name ? (
-                                                        <div className="text-xs">
-                                                            <p className="font-semibold text-gray-800 leading-snug">
+                                                        <div className="text-xs min-w-0">
+                                                            <p className="font-semibold text-gray-800 leading-snug block w-full truncate" title={user.staf_name}>
                                                                 {user.staf_name}
                                                             </p>
                                                         </div>
@@ -778,7 +815,7 @@ export default function UsersIndex({
                                                     )}
                                                 </td>
 
-                                                <td className="py-3 px-3.5 border-r border-gray-200 whitespace-nowrap text-xs text-gray-600 font-medium">
+                                                <td className="py-3 px-3.5 border-r border-gray-200 whitespace-nowrap text-xs text-gray-600 font-medium text-center">
                                                     {user.created_at}
                                                 </td>
 
@@ -860,10 +897,10 @@ export default function UsersIndex({
                                                 </td>
                                             </tr>
                                         ))}
-                                        {users.data.length > 0 &&
-                                            users.data.length < 5 &&
+                                        {paginatedUsers.length > 0 &&
+                                            paginatedUsers.length < 5 &&
                                             Array.from({
-                                                length: 5 - users.data.length,
+                                                length: 5 - paginatedUsers.length,
                                             }).map((_, idx) => (
                                                 <tr
                                                     key={`empty-${idx}`}
@@ -903,22 +940,22 @@ export default function UsersIndex({
                         <p className="text-xs text-gray-500 font-medium">
                             Menampilkan{" "}
                             <span className="font-bold text-gray-800">
-                                {users.from || 0}
+                                {filteredUsers.length === 0 ? 0 : (safePage - 1) * ITEMS_PER_PAGE + 1}
                             </span>{" "}
                             hingga{" "}
                             <span className="font-bold text-gray-800">
-                                {users.to || 0}
+                                {Math.min(safePage * ITEMS_PER_PAGE, filteredUsers.length)}
                             </span>{" "}
                             dari total{" "}
                             <span className="font-bold text-gray-800">
-                                {users.total}
+                                {filteredUsers.length}
                             </span>{" "}
                             pengguna.
                         </p>
                         <Pagination
-                            links={users.links}
-                            currentPage={users.current_page}
-                            totalPages={users.last_page}
+                            currentPage={safePage}
+                            totalPages={totalPages}
+                            onPageChange={(p) => setCurrentPage(p)}
                         />
                     </div>
                 </div>

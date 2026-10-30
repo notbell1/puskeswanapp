@@ -807,104 +807,117 @@ export default function DokterAntrianPage({
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[940px]">
+                <div className="overflow-x-auto min-h-[350px]">
+                    <table className="w-full min-w-[1000px] table-fixed text-left text-xs border-collapse border border-gray-200">
                         <thead>
-                            <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center font-bold whitespace-nowrap">
+                            <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider text-center">
+                                <th className="py-3 px-3.5 border-r border-gray-200 w-14 text-center font-bold shrink-0">
                                     No
                                 </th>
-                                <th className="py-2.5 px-3 border-r border-gray-200 w-28 text-center font-bold whitespace-nowrap">
+                                <th className="py-3 px-3.5 border-r border-gray-200 w-32 text-center font-bold shrink-0">
                                     No. RM
                                 </th>
-                                <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
+                                <th className="py-3 px-3.5 border-r border-gray-200 w-36 text-center font-bold shrink-0">
                                     Tanggal
                                 </th>
-                                <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">
+                                <th className="py-3 px-3.5 border-r border-gray-200 w-44 text-center font-bold shrink-0">
                                     Pasien Hewan
                                 </th>
-                                <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">
+                                <th className="py-3 px-3.5 border-r border-gray-200 w-44 text-center font-bold shrink-0">
                                     Pemilik
                                 </th>
-                                <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold whitespace-nowrap">
+                                <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                     Anamnesa / Keluhan
                                 </th>
-                                <th className="py-2.5 px-2 border-r border-gray-200 w-16 text-center font-bold whitespace-nowrap">
+                                <th className="py-3 px-2 border-r border-gray-200 w-20 text-center font-bold shrink-0">
                                     Status
                                 </th>
-                                <th className="py-2.5 px-2 w-28 text-center font-bold whitespace-nowrap">
+                                <th className="py-3 px-2 w-28 text-center font-bold shrink-0">
                                     Aksi Pelayanan
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 text-xs text-gray-800">
+                        <tbody className="divide-y divide-gray-200 text-xs text-gray-800 bg-white">
                             {dataCount === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={8}
-                                        className="py-12 text-center text-gray-400"
+                                        className="px-4 py-16 text-center"
                                     >
-                                        <div className="flex flex-col items-center justify-center">
-                                            <span className="text-3xl mb-2">
-                                                📋
-                                            </span>
-                                            <p className="font-semibold text-gray-700">
-                                                Tidak ada data antrean ditemukan
-                                            </p>
-                                            <p className="text-[11px] text-gray-400 mt-1">
-                                                Coba sesuaikan kata kunci
-                                                pencarian atau filter status
-                                                antrean Anda.
-                                            </p>
+                                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 mb-3 border border-emerald-100">
+                                            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
                                         </div>
+                                        <h4 className="text-sm font-semibold text-gray-800">
+                                            {search || tanggal ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Antrean Pasien'}
+                                        </h4>
+                                        <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                            {search || tanggal ? (
+                                                <>
+                                                    Tidak ada pasien antrean yang cocok dengan kata kunci atau filter tanggal Anda.
+                                                </>
+                                            ) : (
+                                                'Tidak ada antrean pasien yang menunggu pemeriksaan dokter.'
+                                            )}
+                                        </p>
+                                        {(search || tanggal) && (
+                                            <button
+                                                type="button"
+                                                onClick={handleResetFilter}
+                                                className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                                            >
+                                                Bersihkan Pencarian & Filter
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ) : (
                                 visits.data.map((visit, index) => (
                                     <tr
                                         key={visit.id}
-                                        className="h-11 even:bg-gray-50/50 hover:bg-emerald-50/30 transition-colors"
+                                        className="odd:bg-white even:bg-gray-50/70 hover:bg-emerald-50/30 transition-colors h-[58px]"
                                     >
-                                        <td className="py-2 px-3 border-r border-gray-200 text-center whitespace-nowrap font-medium text-gray-500 text-xs">
+                                        <td className="py-3 px-3.5 border-r border-gray-200 text-center whitespace-nowrap font-medium text-gray-600 text-xs">
                                             {(visits.current_page - 1) *
                                                 visits.per_page +
                                                 index +
                                                 1}
                                         </td>
 
-                                        <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                        <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                             <span className="font-mono font-bold text-gray-900 text-xs">
                                                 {visit.no_rm}
                                             </span>
                                         </td>
 
-                                        <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap text-xs text-gray-700">
+                                        <td className="py-3 px-3.5 border-r border-gray-200 text-center text-xs text-gray-700">
                                             <span className="font-semibold text-gray-900">
                                                 {visit.tgl_kunjungan}
                                             </span>
                                         </td>
 
-                                        <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                        <td className="py-3 px-3.5 border-r border-gray-200">
                                             <span
-                                                className="font-bold text-gray-900 text-xs truncate max-w-[130px] block"
+                                                className="font-bold text-gray-900 text-xs block w-full truncate"
                                                 title={visit.nama_hewan}
                                             >
                                                 {visit.nama_hewan}
                                             </span>
                                         </td>
 
-                                        <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                        <td className="py-3 px-3.5 border-r border-gray-200">
                                             <span
-                                                className="font-medium text-gray-800 text-xs truncate max-w-[130px] block"
+                                                className="font-medium text-gray-800 text-xs block w-full truncate"
                                                 title={visit.pemilik}
                                             >
                                                 {visit.pemilik}
                                             </span>
                                         </td>
 
-                                        <td className="py-2 px-3 border-r border-gray-200 max-w-0">
+                                        <td className="py-3 px-3.5 border-r border-gray-200">
                                             <span
-                                                className="text-gray-700 text-xs truncate block w-full"
+                                                className="text-gray-700 text-xs block w-full truncate"
                                                 title={visit.anamnesa}
                                             >
                                                 {visit.anamnesa}

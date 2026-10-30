@@ -20,34 +20,26 @@ class InventoryController extends Controller
         $search = trim((string) $request->input('search', ''));
         $conditionFilter = $request->input('kondisi');
 
-        $inventories = Inventory::with('pengelola:id,name')
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('kode_barang', 'like', "%{$search}%")
-                        ->orWhere('nama_barang', 'like', "%{$search}%")
-                        ->orWhere('kategori', 'like', "%{$search}%");
-                });
-            })
-            ->when($conditionFilter, function ($query, $conditionFilter) {
-                $query->where('kondisi', $conditionFilter);
-            })
-            ->orderBy('id', 'asc')
-            ->paginate(5)
-            ->withQueryString()
-            ->through(fn ($inv) => [
-                'id' => $inv->id,
-                'kode_barang' => $inv->kode_barang,
-                'nama_barang' => $inv->nama_barang,
-                'kategori' => $inv->kategori,
-                'jumlah' => $inv->jumlah,
-                'kondisi' => $inv->kondisi,
-                'keterangan' => $inv->keterangan,
-                'pengelola' => $inv->pengelola?->name ?? 'Puskeswan',
-                'created_at' => $inv->created_at?->format('d/m/Y'),
-            ]);
+        $query = Inventory::with('pengelola:id,name')
+            ->orderBy('id', 'asc');
+
+        $allInventories = $query->get()->map(fn ($inv) => [
+            'id' => $inv->id,
+            'kode_barang' => $inv->kode_barang,
+            'nama_barang' => $inv->nama_barang,
+            'kategori' => $inv->kategori,
+            'jumlah' => $inv->jumlah,
+            'kondisi' => $inv->kondisi,
+            'keterangan' => $inv->keterangan,
+            'pengelola' => $inv->pengelola?->name ?? 'Puskeswan',
+            'created_at' => $inv->created_at?->format('d/m/Y'),
+        ]);
 
         return Inertia::render('super/inventaris/index', [
-            'inventories' => $inventories,
+            'inventories' => [
+                'data' => $allInventories,
+                'total' => $allInventories->count(),
+            ],
             'filters' => [
                 'search' => $search,
                 'kondisi' => $conditionFilter,

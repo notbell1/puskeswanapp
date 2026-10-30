@@ -26,12 +26,12 @@ interface StaffItem {
 interface StaffPageProps {
     staff: {
         data: StaffItem[];
-        links: any[];
-        current_page: number;
-        last_page: number;
-        from: number;
-        to: number;
-        total: number;
+        total?: number;
+        links?: any[];
+        current_page?: number;
+        last_page?: number;
+        from?: number;
+        to?: number;
     };
     filters: {
         search?: string;
@@ -225,28 +225,43 @@ export default function StaffIndex({
         }
     };
 
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const ITEMS_PER_PAGE = 5;
+
+    // Filter instan di client side
+    const filteredStaff = useMemo(() => {
+        let list = staff.data;
+        if (selectedJabatanFilter && selectedJabatanFilter.trim()) {
+            list = list.filter((s) => s.jabatan === selectedJabatanFilter);
+        }
+        if (search.trim()) {
+            const q = search.toLowerCase().trim();
+            list = list.filter(
+                (s) =>
+                    s.nama_staf.toLowerCase().includes(q) ||
+                    (s.nip_strv && s.nip_strv.toLowerCase().includes(q)) ||
+                    s.jabatan.toLowerCase().includes(q)
+            );
+        }
+        return list;
+    }, [staff.data, selectedJabatanFilter, search]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredStaff.length / ITEMS_PER_PAGE));
+    const safePage = Math.min(currentPage, totalPages);
+
+    const paginatedStaff = useMemo(() => {
+        const start = (safePage - 1) * ITEMS_PER_PAGE;
+        return filteredStaff.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredStaff, safePage]);
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(
-            "/super/staf",
-            {
-                search: search || undefined,
-                jabatan: selectedJabatanFilter || undefined,
-            },
-            { preserveState: true, replace: true },
-        );
+        setCurrentPage(1);
     };
 
     const handleJabatanFilter = (jabatanValue: string) => {
         setSelectedJabatanFilter(jabatanValue);
-        router.get(
-            "/super/staf",
-            {
-                search: search || undefined,
-                jabatan: jabatanValue || undefined,
-            },
-            { preserveState: true, replace: true },
-        );
+        setCurrentPage(1);
     };
 
     const openCreateModal = () => {
@@ -507,12 +522,28 @@ export default function StaffIndex({
                                     <input
                                         type="text"
                                         value={search}
-                                        onChange={(e) =>
-                                            setSearch(e.target.value)
-                                        }
-                                        placeholder="Cari berdasarkan nama pegawai, jabatan, atau NIP/STRV..."
-                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        onChange={(e) => {
+                                            setSearch(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
+                                        placeholder="Ketik untuk mencari nama pegawai, jabatan, atau NIP/STRV..."
+                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSearch('');
+                                                setCurrentPage(1);
+                                            }}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-70 lg:w-[320px] shrink-0">
@@ -593,15 +624,6 @@ export default function StaffIndex({
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <Button
-                                    type="submit"
-                                    variant="secondary"
-                                    size="md"
-                                    className="h-10 px-5 text-sm font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                                >
-                                    Cari
-                                </Button>
                             </form>
 
                             <div className="shrink-0 pt-2 lg:pt-0 border-t border-gray-100 lg:border-t-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -661,72 +683,85 @@ export default function StaffIndex({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-83.75">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-200">
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1000px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-14 shrink-0">
                                         No
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-28 shrink-0">
                                         Urutan
                                     </th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Nama Pegawai
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-44 shrink-0">
                                         Jabatan / Posisi
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">
                                         NIP / STRV
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
-                                        Status
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-32 shrink-0">
+                                        Status Akun
                                     </th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">
                                         Terdaftar
                                     </th>
                                     <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">
-                                        Kelola
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
-                                {staff.data.length === 0 ? (
+                                {filteredStaff.length === 0 ? (
                                     <tr>
                                         <td
                                             colSpan={8}
-                                            className="px-4 py-12 text-center"
+                                            className="px-4 py-16 text-center"
                                         >
-                                            <div className="mx-auto flex max-w-xs flex-col items-center">
-                                                <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 border border-gray-150 text-gray-400">
-                                                    <svg
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="1.8"
-                                                            d="M21 21l-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z"
-                                                        />
-                                                    </svg>
-                                                </div>
-                                                <p className="text-xs font-bold text-gray-800">
-                                                    Data pegawai tidak ditemukan
-                                                </p>
-                                                <p className="mt-0.5 text-xs text-gray-500">
-                                                    Tambahkan pegawai baru atau
-                                                    sesuaikan filter pencarian.
-                                                </p>
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
+                                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                    />
+                                                </svg>
                                             </div>
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || selectedJabatanFilter ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Data Pegawai'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || selectedJabatanFilter ? (
+                                                    <>
+                                                        Tidak ada data pegawai yang cocok dengan kata kunci{' '}
+                                                        <span className="font-semibold text-purple-700">"{search}"</span>
+                                                        {selectedJabatanFilter ? ` pada jabatan ${selectedJabatanFilter}` : ''}.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada data pegawai atau tenaga medis yang terdaftar di sistem.'
+                                                )}
+                                            </p>
+                                            {(search || selectedJabatanFilter) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSearch('');
+                                                        setSelectedJabatanFilter('');
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     <>
-                                        {staff.data.map((item, index) => {
+                                        {paginatedStaff.map((item, index) => {
                                             const isPimpinanRow =
                                                 item.jabatan.toLowerCase() ===
                                                 pimpinanJabatan.toLowerCase();
@@ -737,9 +772,7 @@ export default function StaffIndex({
                                                     className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-14.5"
                                                 >
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center font-medium text-gray-600">
-                                                        {staff.from
-                                                            ? staff.from + index
-                                                            : index + 1}
+                                                        {(safePage - 1) * ITEMS_PER_PAGE + index + 1}
                                                     </td>
 
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center">
@@ -776,8 +809,8 @@ export default function StaffIndex({
                                                                         .toUpperCase()}
                                                                 </div>
                                                             )}
-                                                            <div>
-                                                                <span className="font-bold text-gray-900 block leading-tight wrap-break-words">
+                                                            <div className="min-w-0 flex-1">
+                                                                <span className="font-bold text-gray-900 block w-full leading-tight truncate" title={item.nama_staf}>
                                                                     {
                                                                         item.nama_staf
                                                                     }
@@ -792,16 +825,16 @@ export default function StaffIndex({
                                                     </td>
 
                                                     <td className="py-3 px-3.5 border-r border-gray-200">
-                                                        <span className="text-xs font-medium text-gray-800">
+                                                        <span className="text-xs font-medium text-gray-800 block w-full truncate" title={item.jabatan}>
                                                             {item.jabatan}
                                                         </span>
                                                     </td>
 
-                                                    <td className="py-3 px-3.5 border-r border-gray-200 font-mono text-xs text-gray-650 font-medium">
+                                                    <td className="py-3 px-3.5 border-r border-gray-200 font-mono text-xs text-gray-650 font-medium text-center">
                                                         {item.nip_strv || "-"}
                                                     </td>
 
-                                                    <td className="py-3 px-3.5 border-r border-gray-200">
+                                                    <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                         {item.users_count >
                                                         0 ? (
                                                             <span className="text-xs font-semibold text-emerald-600">
@@ -820,7 +853,7 @@ export default function StaffIndex({
                                                         )}
                                                     </td>
 
-                                                    <td className="py-3 px-3.5 border-r border-gray-200 whitespace-nowrap text-xs text-gray-600 font-medium">
+                                                    <td className="py-3 px-3.5 border-r border-gray-200 whitespace-nowrap text-xs text-gray-600 font-medium text-center">
                                                         {item.created_at || "-"}
                                                     </td>
 
@@ -879,15 +912,15 @@ export default function StaffIndex({
                                                 </tr>
                                             );
                                         })}
-                                        {staff.data.length > 0 &&
-                                            staff.data.length < 5 &&
+                                        {paginatedStaff.length > 0 &&
+                                            paginatedStaff.length < 5 &&
                                             Array.from({
-                                                length: 5 - staff.data.length,
+                                                length: 5 - paginatedStaff.length,
                                             }).map((_, idx) => (
                                                 <tr
                                                     key={`empty-${idx}`}
                                                     aria-hidden="true"
-                                                    className="odd:bg-white even:bg-gray-50/70 h-14.5"
+                                                    className="odd:bg-white even:bg-gray-50/70 h-[58px]"
                                                 >
                                                     <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                         &nbsp;
@@ -925,22 +958,22 @@ export default function StaffIndex({
                         <p className="text-xs text-gray-500 font-medium">
                             Menampilkan{" "}
                             <span className="font-bold text-gray-800">
-                                {staff.from || 0}
+                                {filteredStaff.length === 0 ? 0 : (safePage - 1) * ITEMS_PER_PAGE + 1}
                             </span>{" "}
                             hingga{" "}
                             <span className="font-bold text-gray-800">
-                                {staff.to || 0}
+                                {Math.min(safePage * ITEMS_PER_PAGE, filteredStaff.length)}
                             </span>{" "}
                             dari total{" "}
                             <span className="font-bold text-gray-800">
-                                {staff.total}
+                                {filteredStaff.length}
                             </span>{" "}
                             data pegawai.
                         </p>
                         <Pagination
-                            links={staff.links}
-                            currentPage={staff.current_page}
-                            totalPages={staff.last_page}
+                            currentPage={safePage}
+                            totalPages={totalPages}
+                            onPageChange={(p) => setCurrentPage(p)}
                         />
                     </div>
                 </div>

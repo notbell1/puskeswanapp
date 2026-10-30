@@ -4,6 +4,43 @@ Semua perubahan dan pembaruan penting pada proyek **PuskeswanApp** dicatat dalam
 
 ---
 
+## [2.4.0] - 2026-10-30
+
+### 🎨 Standarisasi Layout Tabel, Truncate Dinamis & Pagination Konsisten 5 Nomor
+
+- **Format Standar Pagination 5 Nomor Halaman (`Pagination.jsx`)**:
+  - Merombak algoritma navigasi halaman agar konsisten selalu menampilkan tepat 5 nomor halaman di seluruh status navigasi:
+    - Halaman awal: `< 1 2 3 4 .. [halaman terakhir] >`
+    - Halaman tengah (contoh: halaman 4): `< 1 .. 3 4 5 .. [halaman terakhir] >`
+    - Halaman akhir: `< 1 .. [akhir-3] [akhir-2] [akhir-1] [akhir] >`
+  - Mendukung penanganan pagination instan di sisi klien (*client-side*) maupun tautan server (*Inertia pagination links*).
+
+- **Konsistensi Layout Tabel Kaku (`table-fixed`) & Tinggi Baris Rigid**:
+  - Mengubah layout seluruh tabel data dari `table-auto` menjadi `table-fixed w-full min-w-[...] border-collapse border border-gray-200`.
+  - Mengunci lebar kolom non-konten (No, Kode/No. RM, Tanggal, Status, Aksi) dengan ukuran piksel rigid (`w-14`, `w-20`, `w-28`, `w-32`, `w-36`, `w-40`, `w-44`, `w-52`, `w-56`).
+  - Mengunci tinggi baris data persis `h-[58px]` dan menambahkan baris kosong penyeimbang (*placeholder padding rows*) sehingga tinggi tabel tidak melonjak antar halaman.
+  - Khusus modul CMS Artikel: Kolom kategori dikunci rapi menjadi 1 baris (`block w-full truncate`) untuk mencegah teks turun menjadi 2–3 baris.
+
+- **Truncate Teks Panjang Dinamis (`block w-full truncate`)**:
+  - Menghapus pembatasan lebar statis kaku (`max-w-[...]`) dan menggantinya dengan `block w-full truncate`. Teks kini memenuhi 100% sisa lebar kolom yang tersedia sebelum memotong elipsis (`...`).
+  - Menyematkan atribut `title={...}` bawaan peramban pada semua kolom konten penting (nama hewan, pemilik, diagnosa, terapi, kronologi, keterangan) agar teks utuh tetap dapat dibaca saat kursor di-hover.
+
+- **Pencarian Real-Time (Instant Search 0ms / 300ms Debounce)**:
+  - Menghapus tombol manual "Cari", "Filter", dan "Reset" yang berlebihan di seluruh toolbar filter.
+  - Menyediakan tombol pembersih cepat `✕` di dalam kolom input pencarian.
+  - Menampilkan tampilan pesan informatif (*Empty State*) saat data pencarian tidak ditemukan, lengkap dengan tombol *"Bersihkan Pencarian & Filter"*.
+
+- **Arsitektur Hybrid Data Retrieval (Query Safety)**:
+  - **Master Data Super Admin** (Obat, Inventaris, Jenis Hewan, Staf, Pengguna, Artikel): Mengirim full dataset ke klien untuk penyaringan dan pagination instan 0ms tanpa beban lalu lintas server berulang.
+  - **Data Transaksional Admin & Dokter** (Pasien, Antrean Loket, Hasil Rekam Medis, Kasus Rabies, Antrean Dokter, Riwayat Dokter): Tetap menggunakan server-side pagination terindeks (`paginate(5)->withQueryString()`) dengan eager loading lengkap guna menjamin keamanan memori dan performa database pada data berskala besar.
+
+- **Cakupan 12 Modul yang Dimutakhirkan**:
+  - **Super Admin**: Master Data Obat & Vaksin, Inventaris Peralatan, Master Data Jenis Hewan, Data Tenaga Staf, Manajemen Pengguna, Artikel & Edukasi CMS.
+  - **Admin**: Master Pasien & Pemilik, Antrian Loket Rekam Medis, Hasil Rekam Medis, Kasus GHPR / Rabies.
+  - **Dokter**: Antrean Pasien Dokter, Riwayat Pemeriksaan Dokter.
+
+---
+
 ## [2.3.0] - 2026-10-29
 
 ### 🛡️ Integritas Sistem, Proteksi Akun & Surveilans Rabies
@@ -12,6 +49,14 @@ Semua perubahan dan pembaruan penting pada proyek **PuskeswanApp** dicatat dalam
 - **Pencegahan Duplikasi Kategori Hewan (Smart Normalization)**: Integrasi deteksi manipulasi leetspeak.
 - **Standarisasi Template Cetak PDF Laporan Rabies Super Admin**: Penyeragaman format cetak dokumen surat resmi kasus gigitan rabies (HPR).
 - **Fix layout modul**: Standardisasi table header.
+
+### 🛡️ Integritas Sistem, Proteksi Akun & Surveilans Rabies
+
+- **Pusat Monitoring Layanan Real-Time Super Admin**: Penambahan grup menu navigasi baru "MONITORING LAYANAN" pada Sidebar Super Admin yang mencakup menu pantauan "Pantau Antrean Loket" dan "Pantau Pelayanan Dokter" secara live read-only oversight lengkap dengan indikator status, kartu ringkasan, dan audit modal.
+- **Proteksi Integritas Akun Super Admin**: Pencegahan penonaktifan dan penghapusan akun berstatus Super Admin guna menjamin kelangsungan akses administrator tertinggi sistem.
+- **Pencegahan Duplikasi Kategori Hewan (Smart Normalization)**: Integrasi deteksi manipulasi leetspeak dan perbandingan case-insensitive pada penambahan dan pengubahan kategori/jenis hewan untuk mencegah data ganda.
+- **Standarisasi Template Cetak PDF Laporan Rabies Super Admin**: Penyeragaman format cetak dokumen surat resmi kasus gigitan rabies (HPR) pada modul Super Admin agar identik dengan format resmi UPTD Puskeswan dan IB Kota Pariaman pada modul Admin.
+- **Fix layout modul**: Standardisasi table header rata tengah dan tebal pada seluruh modul (Super Admin, Admin, Dokter) serta penyederhanaan tampilan status, hak akses, dan tata letak data staf.
 
 ### 🛡️ Audit Penetrasi Keamanan Menyeluruh (OWASP Top 10) & Pembaruan Testing Engine
 

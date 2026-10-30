@@ -357,11 +357,37 @@ export default function DokterRiwayatPage({
         filters.id_jenis_hewan ? String(filters.id_jenis_hewan) : "",
     );
     const [tanggal, setTanggal] = useState(filters.tanggal || "");
+    const isFirstSearchRender = React.useRef(true);
 
     const [selectedRecord, setSelectedRecord] =
         useState<MedicalRecordItem | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [activeDetailHistoryIndex, setActiveDetailHistoryIndex] = useState(0);
+
+    React.useEffect(() => {
+        if (isFirstSearchRender.current) {
+            isFirstSearchRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                "/dokter/riwayat",
+                {
+                    search: search || undefined,
+                    id_jenis_hewan: idJenisHewan || undefined,
+                    tanggal: tanggal || undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                },
+            );
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const [isExamModalOpen, setIsExamModalOpen] = useState(false);
     const [examRecord, setExamRecord] = useState<MedicalRecordItem | null>(
@@ -1016,10 +1042,7 @@ export default function DokterRiwayatPage({
                     </div>
 
                     <div className="p-4 sm:p-5 border-b border-gray-200 bg-gray-50/60">
-                        <form
-                            onSubmit={handleSearchSubmit}
-                            className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3"
-                        >
+                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
                             <div className="relative flex-1">
                                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                                     <svg
@@ -1041,8 +1064,20 @@ export default function DokterRiwayatPage({
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Cari No. RM, nama pasien, pemilik, diagnosa klinis, atau terapi..."
-                                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 transition-all placeholder:text-gray-400"
+                                    className="w-full pl-10 pr-9 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 transition-all placeholder:text-gray-400"
                                 />
+                                {search && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearch("")}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                        title="Hapus pencarian"
+                                    >
+                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
                             </div>
 
                             <div className="w-full sm:w-56 shrink-0">
@@ -1062,127 +1097,120 @@ export default function DokterRiwayatPage({
                                     className="w-full px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-700/20 focus:border-emerald-700 transition-all text-gray-700"
                                 />
                             </div>
-
-                            <div className="flex items-center gap-2 shrink-0">
-                                <Button
-                                    type="submit"
-                                    variant="primary"
-                                    className="text-xs sm:text-sm px-4 py-2"
-                                >
-                                    Filter
-                                </Button>
-                                {(search || idJenisHewan || tanggal) && (
-                                    <button
-                                        type="button"
-                                        onClick={handleResetFilter}
-                                        className="px-3 py-2 text-xs text-gray-500 hover:text-gray-800 bg-white border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors"
-                                    >
-                                        Reset
-                                    </button>
-                                )}
-                            </div>
-                        </form>
+                        </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse min-w-235">
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1050px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead>
-                                <tr className="bg-gray-100/80 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-12 text-center font-bold whitespace-nowrap">
+                                <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold text-gray-700 uppercase tracking-wider text-center">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-14 text-center font-bold shrink-0">
                                         No
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-28 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-32 text-center font-bold shrink-0">
                                         No. RM
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-44 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-36 text-center font-bold shrink-0">
                                         Tanggal
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-44 text-center font-bold shrink-0">
                                         Pasien Hewan
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 w-36 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 w-44 text-center font-bold shrink-0">
                                         Pemilik
                                     </th>
-                                    <th className="py-2.5 px-3 border-r border-gray-200 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">
                                         Diagnosa Klinis
                                     </th>
-                                    <th className="py-2.5 px-2 border-r border-gray-200 w-16 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-2 border-r border-gray-200 w-20 text-center font-bold shrink-0">
                                         Status
                                     </th>
-                                    <th className="py-2.5 px-2 w-32 text-center font-bold whitespace-nowrap">
+                                    <th className="py-3 px-2 w-32 text-center font-bold shrink-0">
                                         Aksi Pelayanan
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 text-xs text-gray-800">
+                            <tbody className="divide-y divide-gray-200 text-xs text-gray-800 bg-white">
                                 {dataCount === 0 ? (
                                     <tr>
                                         <td
                                             colSpan={8}
-                                            className="py-12 text-center text-gray-400"
+                                            className="px-4 py-16 text-center"
                                         >
-                                            <div className="flex flex-col items-center justify-center">
-                                                <span className="text-3xl mb-2">
-                                                    🔍
-                                                </span>
-                                                <p className="font-semibold text-gray-700">
-                                                    Tidak ada riwayat rekam
-                                                    medis ditemukan
-                                                </p>
-                                                <p className="text-[11px] text-gray-400 mt-1">
-                                                    Coba sesuaikan kata kunci
-                                                    pencarian atau filter
-                                                    tanggal Anda.
-                                                </p>
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 mb-3 border border-emerald-100">
+                                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
                                             </div>
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || idJenisHewan || tanggal ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Riwayat Rekam Medis'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || idJenisHewan || tanggal ? (
+                                                    <>
+                                                        Tidak ada riwayat rekam medis yang cocok dengan kriteria pencarian Anda.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada riwayat pelayanan rekam medis pasien.'
+                                                )}
+                                            </p>
+                                            {(search || idJenisHewan || tanggal) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilter}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     results.data.map((item, index) => (
                                         <tr
                                             key={item.id}
-                                            className="h-11 even:bg-gray-50/50 hover:bg-emerald-50/30 transition-colors"
+                                            className="odd:bg-white even:bg-gray-50/70 hover:bg-emerald-50/30 transition-colors h-[58px]"
                                         >
-                                            <td className="py-2 px-3 border-r border-gray-200 text-center whitespace-nowrap font-medium text-gray-500 text-xs">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-center whitespace-nowrap font-medium text-gray-600 text-xs">
                                                 {(results.current_page - 1) *
                                                     results.per_page +
                                                     index +
                                                     1}
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-center">
                                                 <span className="font-mono font-bold text-gray-900 text-xs">
                                                     {item.no_rm}
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap text-xs text-gray-700">
-                                                <span className="font-semibold text-gray-900">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-center text-xs text-gray-700">
+                                                <span className="font-semibold text-gray-900 block leading-tight">
                                                     {item.tgl_kunjungan}
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                            <td className="py-3 px-3.5 border-r border-gray-200">
                                                 <span
-                                                    className="font-bold text-gray-900 text-xs truncate max-w-32.5 block"
+                                                    className="font-bold text-gray-900 text-xs block w-full truncate"
                                                     title={item.nama_hewan}
                                                 >
                                                     {item.nama_hewan}
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200 whitespace-nowrap">
+                                            <td className="py-3 px-3.5 border-r border-gray-200">
                                                 <span
-                                                    className="font-medium text-gray-800 text-xs truncate max-w-32.5 block"
+                                                    className="font-medium text-gray-800 text-xs block w-full truncate"
                                                     title={item.pemilik}
                                                 >
                                                     {item.pemilik}
                                                 </span>
                                             </td>
 
-                                            <td className="py-2 px-3 border-r border-gray-200">
+                                            <td className="py-3 px-3.5 border-r border-gray-200">
                                                 <span
-                                                    className="text-gray-700 text-xs truncate block w-full"
+                                                    className="text-gray-700 text-xs block w-full truncate"
                                                     title={item.diagnosa}
                                                 >
                                                     {item.diagnosa}

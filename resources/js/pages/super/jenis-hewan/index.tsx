@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Head, router, useForm } from "@inertiajs/react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Button, Modal, Pagination, useToast } from "@/components/ui";
@@ -14,12 +14,12 @@ interface AnimalTypeItem {
 interface AnimalTypesPageProps {
     animalTypes: {
         data: AnimalTypeItem[];
-        links: any[];
-        current_page: number;
-        last_page: number;
-        from: number;
-        to: number;
-        total: number;
+        total?: number;
+        links?: any[];
+        current_page?: number;
+        last_page?: number;
+        from?: number;
+        to?: number;
     };
     filters: {
         search?: string;
@@ -73,13 +73,32 @@ export default function AnimalTypesIndex({
         keterangan: "",
     });
 
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const ITEMS_PER_PAGE = 5;
+
+    // Filter pencarian instan di browser
+    const filteredAnimalTypes = useMemo(() => {
+        if (!search.trim()) return animalTypes.data;
+        const q = search.toLowerCase().trim();
+        return animalTypes.data.filter(
+            (item) =>
+                item.nama_jenis.toLowerCase().includes(q) ||
+                (item.keterangan && item.keterangan.toLowerCase().includes(q))
+        );
+    }, [animalTypes.data, search]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredAnimalTypes.length / ITEMS_PER_PAGE));
+    const safePage = Math.min(currentPage, totalPages);
+
+    // Data yang dipotong instan per halaman
+    const paginatedAnimalTypes = useMemo(() => {
+        const start = (safePage - 1) * ITEMS_PER_PAGE;
+        return filteredAnimalTypes.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredAnimalTypes, safePage]);
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(
-            "/super/jenis-hewan",
-            { search: search || undefined },
-            { preserveState: true, replace: true }
-        );
+        setCurrentPage(1);
     };
 
     const openCreateModal = () => {
@@ -286,20 +305,29 @@ export default function AnimalTypesIndex({
                                 <input
                                     type="text"
                                     value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="Cari berdasarkan nama jenis atau keterangan taksonomi..."
-                                    className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                    onChange={(e) => {
+                                        setSearch(e.target.value);
+                                        setCurrentPage(1);
+                                    }}
+                                    placeholder="Ketik untuk mencari nama jenis atau deskripsi..."
+                                    className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                 />
+                                {search && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSearch('');
+                                            setCurrentPage(1);
+                                        }}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                        title="Hapus pencarian"
+                                    >
+                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
                             </div>
-
-                            <Button
-                                type="submit"
-                                variant="secondary"
-                                size="md"
-                                className="h-10 px-5 text-sm font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                            >
-                                Cari
-                            </Button>
                         </form>
 
                         <div className="shrink-0 pt-2 sm:pt-0 border-t border-gray-100 sm:border-t-0">
@@ -331,56 +359,68 @@ export default function AnimalTypesIndex({
                     </div>
                 </div>
 
-                <div className="overflow-x-auto min-h-[335px]">
-                    <table className="w-full min-w-[760px] text-left text-xs border-collapse border border-gray-200">
+                <div className="overflow-x-auto min-h-[350px]">
+                    <table className="w-full min-w-[900px] table-fixed text-left text-xs border-collapse border border-gray-200">
                             <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Jenis / Spesies</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-14 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-56 shrink-0">Jenis / Spesies</th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Deskripsi / Keterangan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Total Terdata</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Terdaftar</th>
-                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Kelola</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Total Terdata</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Terdaftar</th>
+                                    <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
-                                {animalTypes.data.length === 0 ? (
+                                {filteredAnimalTypes.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-4 py-12 text-center">
-                                            <div className="mx-auto flex max-w-xs flex-col items-center">
-                                                <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 border border-gray-150 text-gray-400">
-                                                    <svg
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="1.8"
-                                                            d="M21 21l-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z"
-                                                        />
-                                                    </svg>
-                                                </div>
-                                                <p className="text-xs font-bold text-gray-800">
-                                                    Data jenis hewan tidak ditemukan
-                                                </p>
-                                                <p className="mt-0.5 text-xs text-gray-500">
-                                                    Coba gunakan kata kunci pencarian yang lain.
-                                                </p>
+                                        <td colSpan={6} className="px-4 py-16 text-center">
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
+                                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                    />
+                                                </svg>
                                             </div>
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Data Jenis Hewan'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search ? (
+                                                    <>
+                                                        Tidak ada data jenis atau spesies hewan yang cocok dengan kata kunci{' '}
+                                                        <span className="font-semibold text-purple-700">"{search}"</span>.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada data jenis atau spesies hewan pasien yang terdaftar di sistem.'
+                                                )}
+                                            </p>
+                                            {search && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSearch('');
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     <>
-                                        {animalTypes.data.map((item, index) => (
+                                        {paginatedAnimalTypes.map((item, index) => (
                                             <tr
                                                 key={item.id}
                                                 className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-[58px]"
                                             >
                                             <td className="py-3 px-3.5 border-r border-gray-200 text-center font-medium text-gray-600">
-                                                {animalTypes.from ? animalTypes.from + index : index + 1}
+                                                {(safePage - 1) * ITEMS_PER_PAGE + index + 1}
                                             </td>
 
                                             <td className="py-3 px-3.5 border-r border-gray-200">
@@ -388,8 +428,8 @@ export default function AnimalTypesIndex({
                                                     <div className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-lg bg-purple-50 text-sm font-bold text-purple-700 ring-1 ring-purple-100 shadow-2xs">
                                                         🐾
                                                     </div>
-                                                    <div className="min-w-0">
-                                                        <p className="break-words text-xs font-bold text-gray-900 leading-snug">
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="block w-full truncate text-xs font-bold text-gray-900 leading-snug" title={item.nama_jenis}>
                                                             {item.nama_jenis}
                                                         </p>
                                                         <p className="mt-0.5 text-[10.5px] font-medium text-purple-700">
@@ -401,7 +441,7 @@ export default function AnimalTypesIndex({
 
                                             <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600">
                                                 {item.keterangan ? (
-                                                    <span className="break-words leading-relaxed">{item.keterangan}</span>
+                                                    <span className="block w-full truncate" title={item.keterangan}>{item.keterangan}</span>
                                                 ) : (
                                                     <span className="text-gray-400 italic">
                                                         Tidak ada catatan tambahan
@@ -421,7 +461,7 @@ export default function AnimalTypesIndex({
                                                 )}
                                             </td>
 
-                                            <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium whitespace-nowrap">
+                                            <td className="py-3 px-3.5 border-r border-gray-200 text-xs text-gray-600 font-medium whitespace-nowrap text-center">
                                                 {item.created_at || "-"}
                                             </td>
 
@@ -471,10 +511,10 @@ export default function AnimalTypesIndex({
                                             </td>
                                         </tr>
                                     ))}
-                                    {animalTypes.data.length > 0 &&
-                                        animalTypes.data.length < 5 &&
+                                    {paginatedAnimalTypes.length > 0 &&
+                                        paginatedAnimalTypes.length < 5 &&
                                         Array.from({
-                                            length: 5 - animalTypes.data.length,
+                                            length: 5 - paginatedAnimalTypes.length,
                                         }).map((_, idx) => (
                                             <tr
                                                 key={`empty-${idx}`}
@@ -499,22 +539,22 @@ export default function AnimalTypesIndex({
                         <p className="text-xs text-gray-500 font-medium">
                             Menampilkan{" "}
                             <span className="font-bold text-gray-800">
-                                {animalTypes.from || 0}
+                                {filteredAnimalTypes.length === 0 ? 0 : (safePage - 1) * ITEMS_PER_PAGE + 1}
                             </span>{" "}
                             hingga{" "}
                             <span className="font-bold text-gray-800">
-                                {animalTypes.to || 0}
+                                {Math.min(safePage * ITEMS_PER_PAGE, filteredAnimalTypes.length)}
                             </span>{" "}
                             dari total{" "}
                             <span className="font-bold text-gray-800">
-                                {animalTypes.total}
+                                {filteredAnimalTypes.length}
                             </span>{" "}
                             jenis hewan.
                         </p>
                         <Pagination
-                            links={animalTypes.links}
-                            currentPage={animalTypes.current_page}
-                            totalPages={animalTypes.last_page}
+                            currentPage={safePage}
+                            totalPages={totalPages}
+                            onPageChange={(p) => setCurrentPage(p)}
                         />
                     </div>
                 </div>

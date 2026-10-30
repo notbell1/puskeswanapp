@@ -20,25 +20,9 @@ class MedicineController extends Controller
         $stockFilter = $request->input('status');
 
         $medicines = Medicine::query()
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('kode_obat', 'like', "%{$search}%")
-                        ->orWhere('nama_obat', 'like', "%{$search}%");
-                });
-            })
-            ->when($stockFilter === 'kritis', function ($query) {
-                $query->where('stok', '<=', 10);
-            })
-            ->when($stockFilter === 'menipis', function ($query) {
-                $query->whereBetween('stok', [11, 30]);
-            })
-            ->when($stockFilter === 'aman', function ($query) {
-                $query->where('stok', '>', 30);
-            })
             ->orderBy('id', 'asc')
-            ->paginate(5)
-            ->withQueryString()
-            ->through(fn ($med) => [
+            ->get()
+            ->map(fn ($med) => [
                 'id' => $med->id,
                 'kode_obat' => $med->kode_obat,
                 'nama_obat' => $med->nama_obat,
@@ -49,7 +33,10 @@ class MedicineController extends Controller
             ]);
 
         return Inertia::render('super/obat/index', [
-            'medicines' => $medicines,
+            'medicines' => [
+                'data' => $medicines,
+                'total' => $medicines->count(),
+            ],
             'filters' => [
                 'search' => $search,
                 'status' => $stockFilter,

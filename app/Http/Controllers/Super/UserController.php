@@ -30,34 +30,27 @@ class UserController extends Controller
         $search = trim((string) $request->input('search', ''));
         $roleFilter = $request->input('role');
 
-        $users = User::with(['role:id,nama_role', 'staf:id,nama_staf'])
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                });
-            })
-            ->when($roleFilter, function ($query, $roleFilter) {
-                $query->whereHas('role', function ($q) use ($roleFilter) {
-                    $q->where('nama_role', $roleFilter);
-                });
-            })
+        $query = User::with(['role:id,nama_role', 'staf:id,nama_staf'])
             ->orderBy('id_role', 'asc')
-            ->orderBy('id', 'asc')
-            ->paginate(5)
-            ->withQueryString()
-            ->through(fn ($user) => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'status_aktif' => (bool) $user->status_aktif,
-                'id_role' => $user->id_role,
-                'role_name' => $user->role?->nama_role ?? 'USER',
-                'id_staf' => $user->id_staf,
-                'staf_name' => $user->staf?->nama_staf,
-                'foto' => $user->foto,
-                'created_at' => $user->created_at?->format('d/m/Y H:i'),
-            ]);
+            ->orderBy('id', 'asc');
+
+        $allUsers = $query->get()->map(fn ($user) => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'status_aktif' => (bool) $user->status_aktif,
+            'id_role' => $user->id_role,
+            'role_name' => $user->role?->nama_role ?? 'USER',
+            'id_staf' => $user->id_staf,
+            'staf_name' => $user->staf?->nama_staf,
+            'foto' => $user->foto,
+            'created_at' => $user->created_at?->format('d/m/Y H:i'),
+        ]);
+
+        $users = [
+            'data' => $allUsers,
+            'total' => $allUsers->count(),
+        ];
 
         $roles = Role::select(['id', 'nama_role', 'deskripsi'])->get();
         $staffList = Staff::select(['id', 'nama_staf', 'jabatan'])->get();

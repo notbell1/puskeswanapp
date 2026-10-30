@@ -19,24 +19,23 @@ class AnimalTypeController extends Controller
     {
         $search = trim((string) $request->input('search', ''));
 
-        $animalTypes = AnimalType::withCount('animals')
-            ->when($search, function ($query, $search) {
-                $query->where('nama_jenis', 'like', "%{$search}%")
-                    ->orWhere('keterangan', 'like', "%{$search}%");
-            })
-            ->orderBy('id', 'asc')
-            ->paginate(5)
-            ->withQueryString()
-            ->through(fn ($type) => [
-                'id' => $type->id,
-                'nama_jenis' => $type->nama_jenis,
-                'keterangan' => $type->keterangan,
-                'animals_count' => $type->animals_count,
-                'created_at' => $type->created_at?->format('d/m/Y'),
-            ]);
+        $query = AnimalType::withCount('animals')
+            ->orderBy('id', 'asc');
+
+        // Jika request menginginkan client-side pagination instan atau tanpa query page khusus
+        $allAnimalTypes = $query->get()->map(fn ($type) => [
+            'id' => $type->id,
+            'nama_jenis' => $type->nama_jenis,
+            'keterangan' => $type->keterangan,
+            'animals_count' => $type->animals_count,
+            'created_at' => $type->created_at?->format('d/m/Y'),
+        ]);
 
         return Inertia::render('super/jenis-hewan/index', [
-            'animalTypes' => $animalTypes,
+            'animalTypes' => [
+                'data' => $allAnimalTypes,
+                'total' => $allAnimalTypes->count(),
+            ],
             'filters' => [
                 'search' => $search,
             ],

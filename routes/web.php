@@ -19,6 +19,7 @@ use App\Http\Controllers\Super\AnimalTypeController;
 use App\Http\Controllers\Super\ArticleController;
 use App\Http\Controllers\Super\InventoryController;
 use App\Http\Controllers\Super\MedicineController;
+use App\Http\Controllers\Super\MonitoringController;
 use App\Http\Controllers\Super\ReportController;
 use App\Http\Controllers\Super\StaffController;
 use App\Http\Controllers\Super\SuperDashboardController;
@@ -139,6 +140,9 @@ Route::middleware(['auth', 'role:SUPER_ADMIN'])->prefix('super')->name('super.')
     Route::post('/artikel/kategori', [ArticleController::class, 'storeCategory'])->name('artikel.kategori.store');
     Route::put('/artikel/{article}', [ArticleController::class, 'update'])->name('artikel.update');
     Route::delete('/artikel/{article}', [ArticleController::class, 'destroy'])->name('artikel.destroy');
+
+    Route::get('/monitoring/antrian-loket', [MonitoringController::class, 'antrianLoket'])->name('monitoring.antrian-loket');
+    Route::get('/monitoring/pelayanan-dokter', [MonitoringController::class, 'pelayananDokter'])->name('monitoring.pelayanan-dokter');
 
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/rekam-medis', [ReportController::class, 'rekamMedis'])->name('laporan.rekam-medis');

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Button, Dropdown, Modal, Pagination, Select, useToast } from '@/components/ui';
@@ -18,12 +18,12 @@ interface InventoryItem {
 interface InventoriesPageProps {
     inventories: {
         data: InventoryItem[];
-        links: any[];
-        current_page: number;
-        last_page: number;
-        from: number;
-        to: number;
-        total: number;
+        total?: number;
+        links?: any[];
+        current_page?: number;
+        last_page?: number;
+        from?: number;
+        to?: number;
     };
     filters: {
         search?: string;
@@ -80,34 +80,49 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
         keterangan: '',
     });
 
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const ITEMS_PER_PAGE = 5;
+
+    // Filter instan di client side
+    const filteredInventories = useMemo<InventoryItem[]>(() => {
+        let list = inventories.data;
+        if (conditionFilter && conditionFilter.trim()) {
+            list = list.filter((i) => i.kondisi === conditionFilter);
+        }
+        if (search.trim()) {
+            const q = search.toLowerCase().trim();
+            list = list.filter(
+                (i) =>
+                    i.nama_barang.toLowerCase().includes(q) ||
+                    i.kode_barang.toLowerCase().includes(q) ||
+                    i.kategori.toLowerCase().includes(q)
+            );
+        }
+        return list;
+    }, [inventories.data, conditionFilter, search]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredInventories.length / ITEMS_PER_PAGE));
+    const safePage = Math.min(currentPage, totalPages);
+
+    const paginatedInventories = useMemo<InventoryItem[]>(() => {
+        const start = (safePage - 1) * ITEMS_PER_PAGE;
+        return filteredInventories.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredInventories, safePage]);
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(
-            '/super/inventaris',
-            {
-                search: search || undefined,
-                kondisi: conditionFilter || undefined,
-            },
-            { preserveState: true, replace: true }
-        );
+        setCurrentPage(1);
     };
 
     const handleFilterCondition = (cond: string) => {
         setConditionFilter(cond);
-        router.get(
-            '/super/inventaris',
-            {
-                search: search || undefined,
-                kondisi: cond || undefined,
-            },
-            { preserveState: true, replace: true }
-        );
+        setCurrentPage(1);
     };
 
     const handleResetFilter = () => {
         setSearch('');
         setConditionFilter('');
-        router.get('/super/inventaris', {}, { preserveState: true, replace: true });
+        setCurrentPage(1);
     };
 
     const openCreateModal = () => {
@@ -322,10 +337,28 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                                     <input
                                         type="text"
                                         value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        placeholder="Cari kode barang, nama peralatan, atau kategori..."
-                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        onChange={(e) => {
+                                            setSearch(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
+                                        placeholder="Ketik untuk mencari kode barang, nama peralatan, atau kategori..."
+                                        className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50/50 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 transition-all focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
                                     />
+                                    {search && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSearch('');
+                                                setCurrentPage(1);
+                                            }}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                            title="Hapus pencarian"
+                                        >
+                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[260px] shrink-0">
@@ -370,29 +403,6 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                                         </Dropdown.Content>
                                     </Dropdown>
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        type="submit"
-                                        variant="secondary"
-                                        size="md"
-                                        className="h-10 px-4 text-xs font-semibold border-gray-200 hover:bg-gray-50 shrink-0"
-                                    >
-                                        Cari
-                                    </Button>
-                                    {(search || conditionFilter) && (
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="md"
-                                            onClick={handleResetFilter}
-                                            className="h-10 px-3 text-xs font-semibold text-gray-500 hover:text-gray-700 border-gray-200 hover:bg-gray-50 shrink-0"
-                                            title="Reset Filter"
-                                        >
-                                            Reset
-                                        </Button>
-                                    )}
-                                </div>
                             </form>
 
                             <div className="shrink-0 pt-2 lg:pt-0 border-t border-gray-100 lg:border-t-0">
@@ -414,51 +424,68 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto min-h-[335px]">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-200">
-                            <thead>
+                    <div className="overflow-x-auto min-h-[350px]">
+                        <table className="w-full min-w-[1000px] table-fixed text-left text-xs border-collapse border border-gray-200">
+                            <thead className="text-center">
                                 <tr className="bg-gray-100/90 border-b border-gray-200 text-[11px] font-bold uppercase tracking-wider text-gray-700">
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-12 shrink-0">No</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kode</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-14 shrink-0">No</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-32 shrink-0">Kode</th>
                                     <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Nama Peralatan</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kategori</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Jumlah</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Kondisi Fisik</th>
-                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold">Pengelola</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Kategori</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-28 shrink-0">Jumlah</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Kondisi Fisik</th>
+                                    <th className="py-3 px-3.5 border-r border-gray-200 text-center font-bold w-36 shrink-0">Pengelola</th>
                                     <th className="py-3 px-3.5 text-center font-bold w-28 shrink-0">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
-                                {inventories.data.length === 0 ? (
+                                {filteredInventories.length === 0 ? (
                                     <tr>
                                         <td colSpan={8} className="px-4 py-16 text-center">
-                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 mb-3">
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 text-purple-600 mb-3 border border-purple-100">
                                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path
                                                         strokeLinecap="round"
                                                         strokeLinejoin="round"
                                                         strokeWidth="2"
-                                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                                     />
                                                 </svg>
                                             </div>
-                                            <h4 className="text-sm font-semibold text-gray-700">Tidak ada data sarana inventaris</h4>
-                                            <p className="mt-1 text-xs text-gray-400">
-                                                {search || conditionFilter
-                                                    ? 'Coba sesuaikan kata kunci pencarian atau ubah filter kondisi Anda.'
-                                                    : 'Belum ada aset peralatan yang terdaftar di dalam inventaris.'}
+                                            <h4 className="text-sm font-semibold text-gray-800">
+                                                {search || conditionFilter ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Data Inventaris'}
+                                            </h4>
+                                            <p className="mt-1 text-xs text-gray-500 max-w-sm mx-auto">
+                                                {search || conditionFilter ? (
+                                                    <>
+                                                        Tidak ada aset peralatan yang cocok dengan kata kunci{' '}
+                                                        <span className="font-semibold text-purple-700">"{search}"</span>
+                                                        {conditionFilter ? ` pada filter ${KONDISI_FILTER_OPTIONS[conditionFilter] || conditionFilter}` : ''}.
+                                                    </>
+                                                ) : (
+                                                    'Belum ada aset peralatan yang terdaftar di dalam inventaris.'
+                                                )}
                                             </p>
+                                            {(search || conditionFilter) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResetFilter}
+                                                    className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+                                                >
+                                                    Bersihkan Pencarian & Filter
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
                                     <>
-                                        {inventories.data.map((item, index) => (
+                                        {paginatedInventories.map((item: InventoryItem, index: number) => (
                                             <tr
                                                 key={item.id}
                                                 className="odd:bg-white even:bg-gray-50/70 hover:bg-purple-50/40 transition-colors h-[58px]"
                                             >
                                                 <td className="py-3 px-3.5 border-r border-gray-200 text-center font-medium text-gray-600">
-                                                    {inventories.from ? inventories.from + index : index + 1}
+                                                    {(safePage - 1) * ITEMS_PER_PAGE + index + 1}
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200 font-mono text-xs font-bold text-purple-700 text-center">
@@ -466,18 +493,18 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="font-bold text-xs text-gray-900 block leading-snug break-words">
+                                                    <span className="font-bold text-xs text-gray-900 block w-full truncate" title={item.nama_barang}>
                                                         {item.nama_barang}
                                                     </span>
                                                     {item.keterangan && (
-                                                        <span className="text-[11px] text-gray-500 block break-words mt-0.5 leading-relaxed">
+                                                        <span className="text-[11px] text-gray-500 block w-full truncate mt-0.5" title={item.keterangan}>
                                                             {item.keterangan}
                                                         </span>
                                                     )}
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200">
-                                                    <span className="text-xs font-medium text-gray-800">
+                                                    <span className="text-xs font-medium text-gray-800 block w-full truncate" title={item.kategori}>
                                                         {item.kategori}
                                                     </span>
                                                 </td>
@@ -544,8 +571,8 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                                                 </td>
                                             </tr>
                                         ))}
-                                        {inventories.data.length > 0 && inventories.data.length < 5 &&
-                                            Array.from({ length: 5 - inventories.data.length }).map((_, idx) => (
+                                        {paginatedInventories.length > 0 && paginatedInventories.length < 5 &&
+                                            Array.from({ length: 5 - paginatedInventories.length }).map((_, idx) => (
                                                 <tr
                                                     key={`empty-${idx}`}
                                                     aria-hidden="true"
@@ -570,16 +597,20 @@ export default function InventoriesIndex({ inventories, filters }: InventoriesPa
                     <div className="flex flex-col gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50/30">
                         <p className="text-xs text-gray-500 font-medium">
                             Menampilkan{' '}
-                            <span className="font-bold text-gray-800">{inventories.from || 0}</span>{' '}
+                            <span className="font-bold text-gray-800">
+                                {filteredInventories.length === 0 ? 0 : (safePage - 1) * ITEMS_PER_PAGE + 1}
+                            </span>{' '}
                             hingga{' '}
-                            <span className="font-bold text-gray-800">{inventories.to || 0}</span>{' '}
+                            <span className="font-bold text-gray-800">
+                                {Math.min(safePage * ITEMS_PER_PAGE, filteredInventories.length)}
+                            </span>{' '}
                             dari total{' '}
-                            <span className="font-bold text-gray-800">{inventories.total}</span> unit peralatan.
+                            <span className="font-bold text-gray-800">{filteredInventories.length}</span> unit peralatan.
                         </p>
                         <Pagination
-                            links={inventories.links}
-                            currentPage={inventories.current_page}
-                            totalPages={inventories.last_page}
+                            currentPage={safePage}
+                            totalPages={totalPages}
+                            onPageChange={(p) => setCurrentPage(p)}
                         />
                     </div>
                 </div>

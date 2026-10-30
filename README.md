@@ -279,7 +279,7 @@ Aplikasi dibangun menggunakan kombinasi pustaka dan kerangka kerja modern versi 
 | **Iconography**         | **Lucide Icons**              |      `v1.16.0`      | Pustaka ikon SVG modern yang ringan dan konsisten                             |
 | **Type-Safe Routing**   | **Laravel Wayfinder**         |      `v0.1.23`      | Generator otomatis fungsi rute TypeScript langsung dari controller Laravel    |
 | **Database Engine**     | **MySQL / MariaDB**           |  `v8.0+ / v10.5+`   | Basis data relasional dengan indeks komposit pada tabel frekuensi tinggi      |
-| **Automated Testing**   | **Pest PHP**                  |      `v5.3.3`       | Kerangka pengujian fitur otomatis (75 Feature & Security Tests, 100% Passed)   |
+| **Automated Testing**   | **Pest PHP**                  |      `v5.3.4`       | Kerangka pengujian fitur otomatis                                             |
 | **Code Style Linter**   | **Laravel Pint**              |      `v1.32.1`      | Formatter kode otomatis berstandar PSR-12 dan panduan Laravel                 |
 | **Build Tooling**       | **Vite-Plus (VoidZero)**      |      `v1.4.0`       | Bundler modul berkas frontend super cepat untuk lingkungan produksi           |
 

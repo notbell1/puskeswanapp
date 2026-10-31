@@ -90,6 +90,32 @@ class User extends Authenticatable
     }
 
     /**
+     * Hitung total akun Super Administrator aktif dalam sistem.
+     */
+    public static function activeSuperAdminCount(): int
+    {
+        return self::whereHas('role', fn ($q) => $q->where('nama_role', 'SUPER_ADMIN'))
+            ->where('status_aktif', true)
+            ->count();
+    }
+
+    /**
+     * Hitung total akun Super Administrator dalam sistem (hanya yang berstatus aktif).
+     */
+    public static function superAdminCount(): int
+    {
+        return self::activeSuperAdminCount();
+    }
+
+    /**
+     * Cek apakah kuota Super Administrator (maksimal 2 akun) telah penuh.
+     */
+    public static function isSuperAdminQuotaFull(): bool
+    {
+        return self::superAdminCount() >= 2;
+    }
+
+    /**
      * Get the role associated with the user.
      */
     public function role(): BelongsTo
@@ -119,6 +145,22 @@ class User extends Authenticatable
     public function passkeys(): HasMany
     {
         return $this->hasMany(Passkey::class, 'user_id');
+    }
+
+    /**
+     * Pesan obrolan yang dikirim oleh pengguna ini.
+     */
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
+    }
+
+    /**
+     * Pesan obrolan pribadi yang diterima oleh pengguna ini.
+     */
+    public function receivedMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'receiver_id');
     }
 
     /**

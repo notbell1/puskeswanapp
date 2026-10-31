@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\RegistrationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Dokter\DokterDashboardController;
 use App\Http\Controllers\Dokter\DokterExaminationController;
 use App\Http\Controllers\Dokter\DokterHistoryController;
@@ -89,6 +90,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profil/foto', [ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
 
     Route::get('/api/realtime/queue-notifications', [DokterQueueController::class, 'realtimeQueue'])->name('realtime.queue');
+
+    // Sistem Obrolan Chat Internal Terpadu Antar-Role (Super Admin, Petugas Loket, Dokter)
+    Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('/contacts', [ChatController::class, 'getContacts'])->name('contacts');
+        Route::get('/messages', [ChatController::class, 'getMessages'])->name('messages');
+        Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
+        Route::post('/mark-read', [ChatController::class, 'markAsRead'])->name('mark-read');
+        Route::get('/unread-count', [ChatController::class, 'unreadCount'])->name('unread-count');
+        Route::delete('/messages/{id}', [ChatController::class, 'deleteMessage'])->name('delete-message');
+    });
 });
 
 Route::middleware('auth')->get('/dashboard', function () {
@@ -163,6 +174,8 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
     Route::patch('/rekam-medis/antrian/{visit}/status', [RegistrationController::class, 'updateStatus'])->name('rekam-medis.antrian.status');
 
     Route::get('/rekam-medis/hasil', [MedicalRecordResultController::class, 'index'])->name('rekam-medis.hasil');
+    Route::get('/rekam-medis/rekap-bulanan', [MedicalRecordResultController::class, 'rekapBulanan'])->name('rekam-medis.rekap-bulanan');
+    Route::get('/rekam-medis/{visit}/cetak', [MedicalRecordResultController::class, 'cetakKartu'])->name('rekam-medis.cetak');
 
     Route::get('/pendaftaran', fn () => redirect()->route('admin.rekam-medis.antrian'))->name('pendaftaran.index');
     Route::post('/pendaftaran', [RegistrationController::class, 'store'])->name('pendaftaran.store');

@@ -1,0 +1,36 @@
+@startuml 07-flowchart-dokter
+title Flowchart Alur Kerja Utama - Role Dokter
+
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam roundCorner 8
+
+skinparam activity {
+    BackgroundColor #F8FAFC
+    BorderColor #475569
+    FontColor #0F172A
+    FontSize 11
+    DiamondBackgroundColor #FEF08A
+    DiamondBorderColor #CA8A04
+    DiamondFontColor #713F12
+}
+
+skinparam note {
+    BackgroundColor #FEF9C3
+    BorderColor #EAB308
+    FontColor #713F12
+    FontSize 10
+}
+
+start
+:Login;
+:Menampilkan Dashboard Dokter;
+:Lihat Antrean Kunjungan;
+:Pilih Kunjungan Pasien;
+:Periksa Hewan dan Tinjau Riwayat RM;
+:Input Hasil Pemeriksaan Medis\n(Diagnosa, Terapi Pengobatan, dan Catatan Opsional);
+:Simpan Hasil Pemeriksaan ke Database (tabel examinations)\ndan Perbarui Status Kunjungan (status_antrean = Selesai);
+:Logout;
+stop
+
+@enduml

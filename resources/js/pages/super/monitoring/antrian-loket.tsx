@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Button, Dropdown, Modal, Pagination } from '@/components/ui';
@@ -71,10 +71,36 @@ export default function SuperMonitoringAntrianLoket({
 }: PageProps) {
     const [search, setSearch] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || '');
-    const [dateFilter, setDateFilter] = useState(filters.tanggal || new Date().toISOString().split('T')[0]);
+    const [dateFilter, setDateFilter] = useState(filters.tanggal || '');
+    const isFirstSearchRender = useRef(true);
 
     const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [selectedVisit, setSelectedVisit] = useState<VisitItem | null>(null);
+
+    useEffect(() => {
+        if (isFirstSearchRender.current) {
+            isFirstSearchRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                '/super/monitoring/antrian-loket',
+                {
+                    search: search || undefined,
+                    status: statusFilter || undefined,
+                    tanggal: dateFilter || undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                }
+            );
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,6 +110,19 @@ export default function SuperMonitoringAntrianLoket({
                 search: search || undefined,
                 status: statusFilter || undefined,
                 tanggal: dateFilter || undefined,
+            },
+            { preserveState: true, replace: true }
+        );
+    };
+
+    const handleDateChange = (val: string) => {
+        setDateFilter(val);
+        router.get(
+            '/super/monitoring/antrian-loket',
+            {
+                search: search || undefined,
+                status: statusFilter || undefined,
+                tanggal: val || undefined,
             },
             { preserveState: true, replace: true }
         );
@@ -105,9 +144,8 @@ export default function SuperMonitoringAntrianLoket({
     const handleResetFilter = () => {
         setSearch('');
         setStatusFilter('');
-        const today = new Date().toISOString().split('T')[0];
-        setDateFilter(today);
-        router.get('/super/monitoring/antrian-loket', { tanggal: today }, { preserveState: true, replace: true });
+        setDateFilter('');
+        router.get('/super/monitoring/antrian-loket', {}, { preserveState: true, replace: true });
     };
 
     return (
@@ -126,7 +164,7 @@ export default function SuperMonitoringAntrianLoket({
                                 {summary.total}
                             </span>
                             <span className="text-[11px] text-purple-600 font-semibold mt-0.5 block">
-                                Pasien pada tanggal terpilih
+                                {dateFilter ? 'Pasien pada tanggal terpilih' : 'Seluruh antrean terdaftar'}
                             </span>
                         </div>
                         <div className="h-10 w-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
@@ -221,9 +259,20 @@ export default function SuperMonitoringAntrianLoket({
                                     <input
                                         type="date"
                                         value={dateFilter}
-                                        onChange={(e) => setDateFilter(e.target.value)}
+                                        onChange={(e) => handleDateChange(e.target.value)}
                                         className="h-10 px-3 rounded-lg border border-gray-200 bg-white text-xs text-gray-700 transition-all focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        title="Filter tanggal kunjungan"
                                     />
+                                    {dateFilter && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDateChange('')}
+                                            className="h-10 px-2.5 rounded-lg border border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700 hover:bg-purple-100 transition-colors shrink-0"
+                                            title="Tampilkan seluruh data tanpa batasan tanggal"
+                                        >
+                                            Semua Tanggal
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[200px] shrink-0">

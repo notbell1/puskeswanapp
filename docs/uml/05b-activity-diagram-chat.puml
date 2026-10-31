@@ -1,0 +1,75 @@
+@startuml 05b-activity-diagram-chat
+title Activity Diagram - Alur Komunikasi Chat Internal (1-to-1 & Grup Staf)
+
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam roundCorner 8
+skinparam swimlaneWidth same
+skinparam swimlaneTitleFontStyle bold
+
+skinparam activity {
+    BackgroundColor #F8FAFC
+    BorderColor #475569
+    FontColor #0F172A
+    FontSize 11
+    DiamondBackgroundColor #FEF08A
+    DiamondBorderColor #CA8A04
+    DiamondFontColor #713F12
+}
+
+|#F1F5F9|Staf Pengirim|
+|#DBEAFE|Floating Chat UI|
+|#E0E7FF|Backend & Database|
+|#FEF3C7|Staf Penerima|
+
+|Staf Pengirim|
+start
+:Membuka Floating Chat Widget di pojok layar;
+
+|Floating Chat UI|
+:Menampilkan tab Grup Staf & Kontak Rekan Kerja;
+
+|Staf Pengirim|
+if (Pilih Jenis Saluran?) then (Grup Seluruh Staf)
+    :Memilih Saluran "Grup Puskeswan" (1-to-All);
+    |Floating Chat UI|
+    :Memuat riwayat chat grup (receiver_id = NULL);
+else (Pesan Pribadi)
+    :Memilih salah satu kontak rekan kerja (1-to-1);
+    |Floating Chat UI|
+    :Memuat riwayat chat pribadi (receiver_id = ID Rekan);
+endif
+
+|Staf Pengirim|
+:Mengetik pesan pada input bar;
+:Menekan tombol Kirim / Enter;
+
+|Floating Chat UI|
+:Menampilkan pesan secara optimis di layar;
+:Mengirim request POST ke Backend;
+
+|Backend & Database|
+:Validasi teks & simpan ke tabel chat_messages (is_read = false);
+:Mengembalikan status HTTP 200 OK;
+
+|Floating Chat UI|
+:Memperbarui status centang pesan terkirim;
+
+|Backend & Database|
+:Menerima polling berkala dari browser Staf Penerima;
+
+|Floating Chat UI|
+|Staf Penerima|
+:Badge notifikasi angka merah bertambah di widget floating chat;
+:Membuka pesan dari Staf Pengirim;
+
+|Backend & Database|
+:Memperbarui is_read = true dan read_at = NOW();
+
+|Staf Pengirim|
+|Floating Chat UI|
+:Tanda centang pesan berubah menjadi terbaca;
+
+stop
+@enduml
+

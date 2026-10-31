@@ -23,7 +23,9 @@ interface RabiesChartPoint {
 
 interface DashboardProps {
     metrics: {
+        total_antrean?: number;
         total_antrean_hari_ini: number;
+        menunggu_dokter?: number;
         menunggu_hari_ini: number;
         diperiksa_hari_ini: number;
         selesai_hari_ini: number;
@@ -158,12 +160,14 @@ export default function AdminDashboard({
                     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs flex items-center justify-between">
                         <div>
                             <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-                                Antrean Pasien Hari Ini
+                                Antrean Pasien
                             </span>
                             <span className="text-2xl font-black text-gray-900 mt-1 block">
-                                {metrics.total_antrean_hari_ini}
+                                {metrics.total_antrean ?? metrics.total_antrean_hari_ini}
                             </span>
-                            
+                            <span className="text-[11px] text-purple-600 font-semibold mt-0.5 block">
+                                Keseluruhan Pasien Terdaftar
+                            </span>
                         </div>
                         <div className="h-10 w-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
                             <svg
@@ -188,9 +192,11 @@ export default function AdminDashboard({
                                 Menunggu Dokter
                             </span>
                             <span className="text-2xl font-black text-amber-600 mt-1 block">
-                                {metrics.menunggu_hari_ini}
+                                {metrics.menunggu_dokter ?? metrics.menunggu_hari_ini}
                             </span>
-
+                            <span className="text-[11px] text-amber-600 font-semibold mt-0.5 block">
+                                Antrean Belum Diperiksa
+                            </span>
                         </div>
                         <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                             <svg
@@ -957,11 +963,10 @@ export default function AdminDashboard({
                                     </div>
                                     <div>
                                         <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
-                                            Antrean Pasien Hari Ini
+                                            Antrean Pasien Terkini
                                         </h3>
                                         <p className="text-[11px] text-gray-500">
-                                            Monitoring live pasien yang menunggu
-                                            giliran periksa dokter.
+                                            Monitoring live pasien antrean &amp; pemeriksaan rekam medis.
                                         </p>
                                     </div>
                                 </div>
@@ -1034,15 +1039,10 @@ export default function AdminDashboard({
                                                             </svg>
                                                         </div>
                                                         <p className="font-semibold text-gray-700 text-xs">
-                                                            Belum ada antrean
-                                                            pasien untuk hari
-                                                            ini
+                                                            Belum ada data antrean pasien
                                                         </p>
                                                         <p className="text-[11px] text-gray-400 mt-0.5">
-                                                            Klik tombol
-                                                            'Daftarkan Pasien
-                                                            Baru' untuk memulai
-                                                            registrasi antrean.
+                                                            Klik tombol 'Daftarkan Pasien Baru' untuk memulai registrasi antrean.
                                                         </p>
                                                     </div>
                                                 </td>

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Head, router } from "@inertiajs/react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { Button, Dropdown, Modal, Pagination } from "@/components/ui";
+import { Button, Dropdown, Modal, Pagination, Select } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import {
     formatIndonesianDate,
     formatDoctorName,
+    printMedicalRecordCard,
 } from "@/lib/printMedicalRecord";
 
 interface HistoricalRecord {
@@ -315,6 +316,29 @@ function PatientHistoryPagination({
     );
 }
 
+const MONTH_NAMES = [
+    { value: 1, label: "Januari" },
+    { value: 2, label: "Februari" },
+    { value: 3, label: "Maret" },
+    { value: 4, label: "April" },
+    { value: 5, label: "Mei" },
+    { value: 6, label: "Juni" },
+    { value: 7, label: "Juli" },
+    { value: 8, label: "Agustus" },
+    { value: 9, label: "September" },
+    { value: 10, label: "Oktober" },
+    { value: 11, label: "November" },
+    { value: 12, label: "Desember" },
+];
+
+const currentYear = new Date().getFullYear();
+const YEAR_OPTIONS = [
+    currentYear - 2,
+    currentYear - 1,
+    currentYear,
+    currentYear + 1,
+];
+
 export default function RekamMedisHasil({
     results,
     animalTypes = [],
@@ -337,6 +361,10 @@ export default function RekamMedisHasil({
     const [selectedRecord, setSelectedRecord] =
         useState<MedicalRecordResultItem | null>(null);
     const [activeDetailHistoryIndex, setActiveDetailHistoryIndex] = useState(0);
+
+    const [monthlyRecapModalOpen, setMonthlyRecapModalOpen] = useState(false);
+    const [rekapMonth, setRekapMonth] = useState(new Date().getMonth() + 1);
+    const [rekapYear, setRekapYear] = useState(new Date().getFullYear());
 
     React.useEffect(() => {
         if (isFirstSearchRender.current) {
@@ -425,10 +453,18 @@ export default function RekamMedisHasil({
     };
 
     const handlePrintRecord = (item: MedicalRecordResultItem) => {
-        setSelectedRecord(item);
-        setTimeout(() => {
-            window.print();
-        }, 150);
+        window.open(
+            `/admin/rekam-medis/${item.id}/cetak?autoprint=1`,
+            "_blank",
+        );
+    };
+
+    const handlePrintMonthlyRecap = () => {
+        window.open(
+            `/admin/rekam-medis/rekap-bulanan?bulan=${rekapMonth}&tahun=${rekapYear}&autoprint=1`,
+            "_blank",
+        );
+        setMonthlyRecapModalOpen(false);
     };
 
     const emptyRowsCount = Math.max(0, 5 - results.data.length);
@@ -437,302 +473,7 @@ export default function RekamMedisHasil({
         <DashboardLayout>
             <Head title="Hasil Rekam Medis" />
 
-            <style>{`
-                @media print {
-                    @page {
-                        size: A4 portrait;
-                        margin: 0mm !important;
-                    }
-                    nav, header, aside, .no-print, button, form, footer {
-                        display: none !important;
-                    }
-                    body {
-                        background: white !important;
-                        color: black !important;
-                        font-family: 'Times New Roman', Times, serif !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                    }
-                    .print-record-only {
-                        display: block !important;
-                        width: 210mm !important;
-                        min-height: 297mm !important;
-                        margin: 0 auto !important;
-                        box-sizing: border-box !important;
-                        padding: 12mm 15mm !important;
-                        position: relative !important;
-                    }
-                    .content-wrapper {
-                        margin-bottom: 25mm !important;
-                    }
-                    .signature-section {
-                        position: absolute !important;
-                        bottom: 12mm !important;
-                        right: 15mm !important;
-                    }
-                }
-                .print-record-only {
-                    display: none;
-                }
-            `}</style>
-
-            {selectedRecord &&
-                (() => {
-                    const pastVisits = (
-                        selectedRecord.historical_records || []
-                    ).map((h) => ({
-                        id: h.id,
-                        tgl_kunjungan: h.tgl_kunjungan,
-                        berat_badan: h.berat_badan,
-                        suhu_tubuh: h.suhu_tubuh,
-                        anamnesa: h.anamnesa,
-                        diagnosa: h.diagnosa,
-                        terapi_pengobatan: h.terapi_pengobatan,
-                    }));
-
-                    const currentVisit = {
-                        id: selectedRecord.id,
-                        tgl_kunjungan: selectedRecord.tgl_kunjungan,
-                        berat_badan: selectedRecord.berat_badan,
-                        suhu_tubuh: selectedRecord.suhu_tubuh,
-                        anamnesa: selectedRecord.anamnesa,
-                        diagnosa: selectedRecord.diagnosa,
-                        terapi_pengobatan: selectedRecord.terapi_pengobatan,
-                    };
-
-                    const allVisits = [
-                        ...pastVisits.filter((p) => p.id !== currentVisit.id),
-                        currentVisit,
-                    ];
-                    allVisits.sort((a, b) => (a.id || 0) - (b.id || 0));
-
-                    const signatureDate = formatIndonesianDate(new Date());
-
-                    return (
-                        <div className="print-record-only max-w-4xl mx-auto bg-white font-serif text-black leading-relaxed">
-                            <div className="content-wrapper">
-                                <div className="flex items-center justify-between gap-3 pb-1">
-                                    <div className="w-[80px] shrink-0 flex items-center justify-center">
-                                        <img
-                                            src="/images/logo-pariaman.webp"
-                                            alt="Logo Kota Pariaman"
-                                            style={{
-                                                height: "64px",
-                                                width: "auto",
-                                                maxWidth: "76px",
-                                                objectFit: "contain",
-                                            }}
-                                        />
-                                    </div>
-
-                                    <div className="flex-1 text-center px-1">
-                                        <h3 className="text-sm sm:text-base font-extrabold uppercase tracking-wide leading-tight text-black font-serif">
-                                            DINAS PERTANIAN PANGAN DAN PERIKANAN
-                                        </h3>
-                                        <h2 className="text-base sm:text-lg font-black uppercase tracking-wide leading-tight text-black font-serif mt-0.5">
-                                            UPT. PUSKESWAN &amp; INSEMINASI
-                                            BUATAN
-                                        </h2>
-                                        <p className="text-[10px] font-medium leading-tight text-black font-serif mt-0.5">
-                                            JL. SENTOT ALI BASA JATI MUDIK
-                                            PARIAMAN TENGAH
-                                        </p>
-                                    </div>
-
-                                    <div className="w-[80px] shrink-0 flex items-center justify-center">
-                                        <img
-                                            src="/images/logo-puskeswan.png"
-                                            alt="Logo Puskeswan"
-                                            style={{
-                                                height: "64px",
-                                                width: "auto",
-                                                maxWidth: "76px",
-                                                objectFit: "contain",
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="border-b-[3px] border-black mt-1 mb-0.5" />
-                                <div className="border-b-[1px] border-black mb-3" />
-
-                                <div className="flex items-center justify-between font-serif mb-2">
-                                    <h1 className="text-sm font-bold uppercase tracking-wider underline">
-                                        KARTU REKAM MEDIS PASIEN
-                                    </h1>
-                                    <div className="text-sm font-bold">
-                                        <span>NO : </span>
-                                        <span className="font-mono text-sm font-black">
-                                            {selectedRecord.no_rm}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs font-serif mb-2.5">
-                                    <div className="space-y-1">
-                                        <div className="flex items-baseline">
-                                            <span className="w-16 shrink-0 font-semibold">
-                                                Pemilik
-                                            </span>
-                                            <span className="mr-1.5">:</span>
-                                            <span className="flex-1 border-b border-dotted border-gray-500 font-bold px-1">
-                                                {selectedRecord.pemilik}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-start">
-                                            <span className="w-16 shrink-0 font-semibold pt-0.5">
-                                                Alamat
-                                            </span>
-                                            <span className="mr-1.5 pt-0.5">
-                                                :
-                                            </span>
-                                            <div className="flex-1 border-b border-dotted border-gray-500 px-1 min-h-[16px] leading-snug break-words">
-                                                {selectedRecord.alamat_pemilik ||
-                                                    "-"}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-baseline">
-                                            <span className="w-16 shrink-0 font-semibold">
-                                                No. HP
-                                            </span>
-                                            <span className="mr-1.5">:</span>
-                                            <span className="flex-1 border-b border-dotted border-gray-500 font-mono px-1">
-                                                {selectedRecord.no_hp}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <div className="flex items-baseline">
-                                            <span className="w-20 shrink-0 font-semibold">
-                                                Nama Pasien
-                                            </span>
-                                            <span className="mr-1.5">:</span>
-                                            <span className="flex-1 border-b border-dotted border-gray-500 font-bold px-1">
-                                                {selectedRecord.nama_hewan}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-baseline">
-                                            <span className="w-20 shrink-0 font-semibold">
-                                                Spesies / Ras
-                                            </span>
-                                            <span className="mr-1.5">:</span>
-                                            <span className="flex-1 border-b border-dotted border-gray-500 px-1">
-                                                {selectedRecord.jenis_hewan}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-baseline">
-                                            <span className="w-20 shrink-0 font-semibold">
-                                                Kelamin / Umur
-                                            </span>
-                                            <span className="mr-1.5">:</span>
-                                            <span className="flex-1 border-b border-dotted border-gray-500 px-1">
-                                                {selectedRecord.jenis_kelamin} /{" "}
-                                                {selectedRecord.umur}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mb-4">
-                                    <table className="w-full border-collapse border border-black font-serif text-[9.5pt]">
-                                        <thead>
-                                            <tr className="bg-gray-100/60 font-bold text-center">
-                                                <th className="border border-black py-1 px-1.5 w-7 text-center font-bold">
-                                                    NO
-                                                </th>
-                                                <th className="border border-black py-1 px-1.5 w-20 text-center font-bold">
-                                                    TANGGAL
-                                                </th>
-                                                <th className="border border-black py-1 px-1.5 w-16 text-center font-bold">
-                                                    BB/SUHU
-                                                </th>
-                                                <th className="border border-black py-1 px-1.5 text-center font-bold">
-                                                    ANAMNESA
-                                                </th>
-                                                <th className="border border-black py-1 px-1.5 w-44 text-center font-bold">
-                                                    DIAGNOSA
-                                                </th>
-                                                <th className="border border-black py-1 px-1.5 w-48 text-center font-bold">
-                                                    TERAPI PENGOBATAN
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {allVisits.map((item, idx) => (
-                                                <tr
-                                                    key={idx}
-                                                    className="align-top"
-                                                >
-                                                    <td className="border border-black py-1 px-1.5 text-center font-bold">
-                                                        {idx + 1}
-                                                    </td>
-                                                    <td className="border border-black py-1 px-1.5 text-center whitespace-nowrap">
-                                                        {item.tgl_kunjungan?.split(
-                                                            " ",
-                                                        )[0] ||
-                                                            item.tgl_kunjungan}
-                                                    </td>
-                                                    <td className="border border-black py-1 px-1.5 text-center whitespace-nowrap">
-                                                        <div>
-                                                            {item.berat_badan ||
-                                                                "-"}{" "}
-                                                            kg
-                                                        </div>
-                                                        <div>
-                                                            {item.suhu_tubuh ||
-                                                                "-"}{" "}
-                                                            °C
-                                                        </div>
-                                                    </td>
-                                                    <td className="border border-black py-1 px-1.5 break-words leading-tight">
-                                                        {(
-                                                            item.anamnesa || "-"
-                                                        ).trim()}
-                                                    </td>
-                                                    <td className="border border-black py-1 px-1.5 font-medium break-words leading-tight">
-                                                        {(
-                                                            item.diagnosa || "-"
-                                                        ).trim()}
-                                                    </td>
-                                                    <td className="border border-black py-1 px-1.5 whitespace-pre-line break-words leading-tight">
-                                                        {(
-                                                            item.terapi_pengobatan ||
-                                                            "-"
-                                                        ).trim()}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div className="signature-section flex justify-end font-serif text-[9.5pt]">
-                                <div className="text-center w-68">
-                                    <p className="mb-0.5">
-                                        Pariaman, {signatureDate}
-                                    </p>
-                                    <p className="font-semibold leading-tight">
-                                        A.n Kepala UPTD Puskeswan dan IB
-                                    </p>
-                                    <p className="font-semibold leading-tight">
-                                        Kota Pariaman
-                                    </p>
-                                    <div className="h-10" />
-                                    <p className="font-bold underline text-sm">
-                                        drh. Reni Gusnita
-                                    </p>
-                                    <p className="text-[9pt] mt-0.5">
-                                        NIP. 19860826 201903 2 002
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })()}
-
-            <div className="no-print">
+            <div className="space-y-4">
                 <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
                     <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-gray-200 border-b border-gray-200 bg-white">
                         <div className="p-3 sm:px-4 sm:py-3 flex items-center justify-between">
@@ -851,7 +592,7 @@ export default function RekamMedisHasil({
                                 )}
                             </div>
 
-                            <div className="w-full sm:w-44 shrink-0">
+                            <div className="flex items-center gap-1.5 shrink-0">
                                 <input
                                     type="date"
                                     value={dateFilter}
@@ -872,8 +613,29 @@ export default function RekamMedisHasil({
                                             },
                                         );
                                     }}
-                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                                    className="h-[38px] px-3 border border-gray-200 rounded-xl text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                                    title="Filter tanggal rekam medis"
                                 />
+                                {dateFilter && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setDateFilter("");
+                                            router.get(
+                                                "/admin/rekam-medis/hasil",
+                                                {
+                                                    search: search || undefined,
+                                                    id_jenis_hewan: typeFilter || undefined,
+                                                },
+                                                { preserveState: true, replace: true }
+                                            );
+                                        }}
+                                        className="h-[38px] px-2.5 rounded-xl border border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors shrink-0 cursor-pointer"
+                                        title="Tampilkan seluruh data tanpa batasan tanggal"
+                                    >
+                                        Semua
+                                    </button>
+                                )}
                             </div>
 
                             <div className="w-full sm:w-52 shrink-0">
@@ -945,6 +707,20 @@ export default function RekamMedisHasil({
                                         ))}
                                     </Dropdown.Content>
                                 </Dropdown>
+                            </div>
+
+                            <div className="shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => setMonthlyRecapModalOpen(true)}
+                                    className="h-[38px] px-3.5 rounded-xl border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 font-semibold text-xs flex items-center justify-center gap-2 shadow-2xs transition-colors shrink-0 cursor-pointer"
+                                    title="Cetak Rekapitulasi Pelaporan Bulanan (Format Landscape)"
+                                >
+                                    <svg className="w-4 h-4 text-purple-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    <span>Cetak Rekap Bulanan</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1569,6 +1345,79 @@ export default function RekamMedisHasil({
                         </div>
                     </div>
                 )}
+            </Modal>
+
+            {/* Modal Dialog Cetak Rekapitulasi Pelaporan Bulanan (Landscape) */}
+            <Modal
+                isOpen={monthlyRecapModalOpen}
+                onClose={() => setMonthlyRecapModalOpen(false)}
+                title="Cetak Rekapitulasi Pelaporan Pengobatan Pasien Hewan"
+                size="md"
+            >
+                <div className="space-y-4 text-xs">
+                    <p className="text-gray-600 leading-relaxed">
+                        Cetak seluruh data rekam medis pasien yang telah selesai diperiksa pada bulan dan tahun terpilih dengan format resmi dinas berorientasi <strong>Landscape</strong>.
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                                Pilih Bulan Pelaporan
+                            </label>
+                            <Select
+                                value={rekapMonth}
+                                onChange={(val) => setRekapMonth(Number(val))}
+                                options={MONTH_NAMES}
+                                placeholder="Pilih Bulan..."
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                                Pilih Tahun
+                            </label>
+                            <Select
+                                value={rekapYear}
+                                onChange={(val) => setRekapYear(Number(val))}
+                                options={YEAR_OPTIONS.map((y) => ({ value: y, label: String(y) }))}
+                                placeholder="Pilih Tahun..."
+                            />
+                        </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-100 text-purple-900 space-y-1.5">
+                        <div className="font-bold flex items-center gap-1.5 text-purple-800 text-xs">
+                            <span>📄</span>
+                            <span>Format Laporan: Cetak Landscape A4</span>
+                        </div>
+                        <p className="text-[11px] text-purple-700 leading-relaxed">
+                            Header dokumen: <strong>REKAPITULASI PELAPORAN PENGOBATAN PENYAKIT HEWAN</strong> (Baris 1) &amp; <strong>UPT PUSKESWAN DAN IB KOTA PARIAMAN</strong> (Baris 2). Menampilkan tabel: NO, Tanggal, Jumlah Hewan, Spesies, Tanda/Anamnesa, Nama Pemilik, Alamat, Diagnosa, dan Terapi.
+                        </p>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setMonthlyRecapModalOpen(false)}
+                            className="px-3.5 py-1.5 text-xs cursor-pointer"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="button"
+                            size="sm"
+                            onClick={handlePrintMonthlyRecap}
+                            className="px-4 py-1.5 text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold cursor-pointer flex items-center gap-1.5"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            <span>Buka &amp; Cetak Laporan Landscape</span>
+                        </Button>
+                    </div>
+                </div>
             </Modal>
         </DashboardLayout>
     );

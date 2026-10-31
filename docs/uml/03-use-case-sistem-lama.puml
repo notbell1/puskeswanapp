@@ -1,0 +1,78 @@
+@startuml 03-use-case-sistem-lama
+title Use Case Diagram - Sistem Pelayanan Puskeswan Manual (Sistem Lama)
+
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam roundCorner 8
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 65
+
+skinparam actor {
+    BackgroundColor #E2E8F0
+    BorderColor #475569
+    FontColor #0F172A
+    FontSize 11
+}
+
+skinparam usecase {
+    BackgroundColor #F8FAFC
+    BorderColor #475569
+    FontColor #0F172A
+    FontSize 11
+    ArrowColor #475569
+}
+
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+    BorderColor #334155
+    FontColor #0F172A
+}
+
+actor "Admin" as ADM
+actor "Dokter" as DOK
+
+ADM -[hidden]> DOK
+
+rectangle "Sistem Pelayanan Puskeswan Manual" {
+    usecase "Mencari Arsip Pasien" as UC_ADM1
+    usecase "Mencatat Data Pemilik dan Hewan" as UC_ADM2
+    usecase "Mencatat Pendaftaran Kunjungan" as UC_ADM3
+    usecase "Mengatur Antrean Manual" as UC_ADM4
+    usecase "Menyimpan Arsip Rekam Medis" as UC_ADM5
+
+    usecase "Menyampaikan Informasi Pemilik dan Hewan" as UC_PAS1
+    usecase "Mengonfirmasi Data" as UC_PAS2
+    usecase "Mengajukan Pelayanan melalui Admin" as UC_PAS3
+
+    usecase "Memeriksa Hewan" as UC_DOK1
+    usecase "Mencatat Hasil Pemeriksaan" as UC_DOK2
+    usecase "Mencatat Diagnosis dan Pengobatan" as UC_DOK3
+    usecase "Menelusuri Riwayat Pelayanan dari Arsip" as UC_DOK4
+    usecase "Menghadiri Pemeriksaan Hewan" as UC_PAS4
+}
+
+actor "Pasien" as PAS
+
+ADM -- UC_ADM1
+ADM -- UC_ADM2
+ADM -- UC_ADM3
+ADM -- UC_ADM4
+ADM -- UC_ADM5
+ADM -- UC_PAS1
+ADM -- UC_PAS2
+ADM -- UC_PAS3
+
+DOK -- UC_DOK1
+DOK -- UC_DOK2
+DOK -- UC_DOK3
+DOK -- UC_DOK4
+DOK -- UC_PAS4
+
+UC_PAS1 -- PAS
+UC_PAS2 -- PAS
+UC_PAS3 -- PAS
+UC_PAS4 -- PAS
+
+@enduml

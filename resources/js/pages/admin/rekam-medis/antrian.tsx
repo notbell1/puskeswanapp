@@ -44,9 +44,13 @@ interface PageProps {
         total: number;
     };
     summary: {
+        total?: number;
         total_today: number;
+        antri?: number;
         antri_today: number;
+        periksa?: number;
         periksa_today: number;
+        selesai?: number;
         selesai_today: number;
     };
     filters: {
@@ -73,7 +77,7 @@ export default function RekamMedisAntrian({
 
     const [search, setSearch] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || '');
-    const [dateFilter, setDateFilter] = useState(filters.tanggal || new Date().toISOString().split('T')[0]);
+    const [dateFilter, setDateFilter] = useState(filters.tanggal || '');
     const isFirstSearchRender = useRef(true);
 
     const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -133,9 +137,8 @@ export default function RekamMedisAntrian({
     const handleResetFilter = () => {
         setSearch('');
         setStatusFilter('');
-        const today = new Date().toISOString().split('T')[0];
-        setDateFilter(today);
-        router.get('/admin/rekam-medis/antrian', { tanggal: today }, { preserveState: true, replace: true });
+        setDateFilter('');
+        router.get('/admin/rekam-medis/antrian', {}, { preserveState: true, replace: true });
     };
 
     const handleUpdateStatus = (visit: VisitItem, newStatus: string) => {
@@ -205,17 +208,17 @@ export default function RekamMedisAntrian({
             )}
 
             <div className="space-y-4 max-w-[1600px] mx-auto no-print">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs flex items-center justify-between">
                         <div>
                             <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-                                Total Pasien Hari Ini
+                                Total Pasien
                             </span>
                             <span className="text-2xl font-black text-gray-900 mt-1 block">
-                                {summary.total_today}
+                                {summary.total ?? summary.total_today}
                             </span>
                             <span className="text-[11px] text-purple-600 font-semibold mt-0.5 block">
-                                Terdaftar di loket
+                                {dateFilter ? 'Sesuai tanggal filter' : 'Seluruh antrean terdaftar'}
                             </span>
                         </div>
                         <div className="h-10 w-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
@@ -231,10 +234,10 @@ export default function RekamMedisAntrian({
                                 Antre Menunggu
                             </span>
                             <span className="text-2xl font-black text-amber-600 mt-1 block">
-                                {summary.antri_today}
+                                {summary.antri ?? summary.antri_today}
                             </span>
                             <span className="text-[11px] text-amber-600 font-semibold mt-0.5 block">
-                                Di ruang tunggu
+                                Menunggu giliran periksa
                             </span>
                         </div>
                         <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
@@ -247,29 +250,10 @@ export default function RekamMedisAntrian({
                     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs flex items-center justify-between">
                         <div>
                             <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-                                Sedang Diperiksa
-                            </span>
-                            <span className="text-2xl font-black text-blue-600 mt-1 block">
-                                {summary.periksa_today}
-                            </span>
-                            <span className="text-[11px] text-blue-600 font-semibold mt-0.5 block">
-                                Di ruang tindakan dokter
-                            </span>
-                        </div>
-                        <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs flex items-center justify-between">
-                        <div>
-                            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-                                Selesai Hari Ini
+                                Selesai Pelayanan
                             </span>
                             <span className="text-2xl font-black text-emerald-600 mt-1 block">
-                                {summary.selesai_today}
+                                {summary.selesai ?? summary.selesai_today}
                             </span>
                             <span className="text-[11px] text-emerald-600 font-semibold mt-0.5 block">
                                 Telah diperiksa &amp; berobat
@@ -320,7 +304,18 @@ export default function RekamMedisAntrian({
                                         value={dateFilter}
                                         onChange={(e) => handleDateChange(e.target.value)}
                                         className="h-10 px-3 rounded-lg border border-gray-200 bg-white text-xs text-gray-700 transition-all focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                        title="Filter tanggal kunjungan"
                                     />
+                                    {dateFilter && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDateChange('')}
+                                            className="h-10 px-2.5 rounded-lg border border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700 hover:bg-purple-100 transition-colors shrink-0"
+                                            title="Tampilkan seluruh data tanpa batasan tanggal"
+                                        >
+                                            Semua Tanggal
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[200px] shrink-0">

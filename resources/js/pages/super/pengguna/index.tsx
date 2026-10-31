@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Head, router, useForm } from "@inertiajs/react";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import {
@@ -51,6 +51,12 @@ interface UsersPageProps {
     };
     roles: RoleItem[];
     staffList: StaffItem[];
+    superAdminCount?: number;
+    maxSuperAdmin?: number;
+    isSuperAdminQuotaFull?: boolean;
+    currentUserId?: number;
+    isRateLimited?: boolean;
+    lockoutSeconds?: number;
 }
 
 export default function UsersIndex({
@@ -58,6 +64,12 @@ export default function UsersIndex({
     filters,
     roles,
     staffList,
+    superAdminCount = 0,
+    maxSuperAdmin = 2,
+    isSuperAdminQuotaFull = false,
+    currentUserId,
+    isRateLimited = false,
+    lockoutSeconds = 0,
 }: UsersPageProps) {
     const { success, error, warning } = useToast();
 
@@ -74,6 +86,43 @@ export default function UsersIndex({
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState<UserItem | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const [sudoModalOpen, setSudoModalOpen] = useState(false);
+    const [sudoPassword, setSudoPassword] = useState("");
+    const [sudoError, setSudoError] = useState("");
+    const [isSudoLoading, setIsSudoLoading] = useState(false);
+    const [sudoAction, setSudoAction] = useState<{
+        type: "delete" | "toggle-status";
+        user: UserItem;
+    } | null>(null);
+
+    const [cooldown, setCooldown] = useState<number>(lockoutSeconds || 0);
+
+    useEffect(() => {
+        if (lockoutSeconds && lockoutSeconds > 0) {
+            setCooldown(lockoutSeconds);
+        }
+    }, [lockoutSeconds]);
+
+    useEffect(() => {
+        if (cooldown <= 0) return;
+        const timer = setInterval(() => {
+            setCooldown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [cooldown]);
+
+    const formatCooldown = (secs: number) => {
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    };
 
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -92,6 +141,7 @@ export default function UsersIndex({
         status_aktif: true,
         foto: null as File | null,
         hapus_foto: false,
+        sudo_password: "",
     });
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,11 +253,17 @@ export default function UsersIndex({
             status_aktif: true,
             foto: null,
             hapus_foto: false,
+            sudo_password: "",
         });
         setFormModalOpen(true);
     };
 
     const openEditModal = (user: UserItem) => {
+        if (user.role_name === "SUPER_ADMIN" && user.id !== currentUserId && cooldown > 0) {
+            error(`Fitur tindakan kritis sedang dibekukan sementara (${formatCooldown(cooldown)}).`);
+            return;
+        }
+
         setEditingUser(user);
         setPhotoFile(null);
         setPhotoPreview(user.foto || null);
@@ -229,6 +285,7 @@ export default function UsersIndex({
             status_aktif: user.status_aktif,
             foto: null,
             hapus_foto: false,
+            sudo_password: "",
         });
         setFormModalOpen(true);
     };
@@ -278,6 +335,23 @@ export default function UsersIndex({
         if (!data.id_role) {
             notifyValidation("Hak Akses peran wajib dipilih!");
             return false;
+        }
+
+        const selectedRole = roles.find((r) => String(r.id) === String(data.id_role));
+        if (selectedRole?.nama_role === "SUPER_ADMIN") {
+            const quotaFull = isSuperAdminQuotaFull || superAdminCount >= maxSuperAdmin;
+            if (!editingUser && quotaFull) {
+                notifyValidation(
+                    "Batas kuota Super Administrator telah tercapai (maksimal 2 akun)! Hak akses Super Admin tidak dapat ditambahkan lagi.",
+                );
+                return false;
+            }
+            if (editingUser && editingUser.role_name !== "SUPER_ADMIN" && quotaFull) {
+                notifyValidation(
+                    "Batas kuota Super Administrator telah tercapai (maksimal 2 akun)! Akun ini tidak dapat dipromosikan menjadi Super Admin.",
+                );
+                return false;
+            }
         }
 
         if (!editingUser) {
@@ -346,6 +420,17 @@ export default function UsersIndex({
         setIsSubmitting(true);
 
         if (editingUser) {
+            if (
+                editingUser.role_name === "SUPER_ADMIN" &&
+                editingUser.id !== currentUserId &&
+                !data.sudo_password?.trim()
+            ) {
+                notifyValidation(
+                    "Kata sandi akun Anda wajib dimasukkan untuk mengonfirmasi perubahan akun Super Admin ini!"
+                );
+                return;
+            }
+
             router.post(
                 `/super/pengguna/${editingUser.id}`,
                 {
@@ -359,6 +444,7 @@ export default function UsersIndex({
                     status_aktif: data.status_aktif ? 1 : 0,
                     foto: photoFile,
                     hapus_foto: data.hapus_foto ? 1 : 0,
+                    sudo_password: data.sudo_password,
                 },
                 {
                     forceFormData: true,
@@ -371,11 +457,18 @@ export default function UsersIndex({
                     onError: (errs) => {
                         setSaveConfirmModalOpen(false);
                         const firstErr = Object.values(errs)[0];
-                        error(
+                        const errString =
                             typeof firstErr === "string"
                                 ? firstErr
-                                : "Gagal memperbarui data.",
-                        );
+                                : "Gagal memperbarui data.";
+                        error(errString);
+                        if (
+                            errString.includes("dibekukan") ||
+                            errString.includes("Terlalu banyak percobaan")
+                        ) {
+                            setCooldown(300);
+                            setFormModalOpen(false);
+                        }
                     },
                     onFinish: () => {
                         isSubmittingRef.current = false;
@@ -423,10 +516,31 @@ export default function UsersIndex({
     };
 
     const handleToggleStatus = (user: UserItem) => {
+        if (user.id === currentUserId) {
+            warning("Anda tidak dapat menonaktifkan akun Anda sendiri!");
+            return;
+        }
+
         if (user.role_name === "SUPER_ADMIN") {
-            warning(
-                "Keamanan Sistem: Akun Super Admin dilindungi dan harus selalu aktif.",
-            );
+            if (user.status_aktif && superAdminCount <= 1) {
+                warning("Sistem wajib memiliki minimal 1 Super Admin aktif! Akun ini tidak dapat dinonaktifkan.");
+                return;
+            }
+
+            if (!user.status_aktif && superAdminCount >= (maxSuperAdmin ?? 2)) {
+                warning("Kuota Super Admin aktif telah penuh (2/2). Nonaktifkan atau ubah akun lain terlebih dahulu.");
+                return;
+            }
+
+            if (cooldown > 0) {
+                error(`Fitur tindakan kritis sedang dibekukan sementara (${formatCooldown(cooldown)}).`);
+                return;
+            }
+
+            setSudoAction({ type: "toggle-status", user });
+            setSudoPassword("");
+            setSudoError("");
+            setSudoModalOpen(true);
             return;
         }
 
@@ -437,16 +551,37 @@ export default function UsersIndex({
                 preserveScroll: true,
                 onSuccess: () =>
                     success(`Status akun ${user.name} berhasil diubah!`),
-                onError: () => error("Gagal mengubah status akun pengguna."),
+                onError: (errs) => {
+                    const msg = Object.values(errs)[0];
+                    error(typeof msg === "string" ? msg : "Gagal mengubah status akun pengguna.");
+                },
             },
         );
     };
 
     const confirmDelete = (user: UserItem) => {
+        if (user.id === currentUserId) {
+            warning("Anda tidak dapat menghapus akun Anda sendiri!");
+            return;
+        }
+
         if (user.role_name === "SUPER_ADMIN") {
-            warning(
-                "Keamanan Sistem: Akun Super Admin dilindungi dan tidak dapat dihapus!",
-            );
+            if (superAdminCount <= 1) {
+                warning("Sistem wajib memiliki minimal 1 Super Admin aktif! Akun ini terkunci dari penghapusan demi integritas sistem.");
+                return;
+            }
+
+            if (cooldown > 0) {
+                error(`Fitur tindakan kritis sedang dibekukan sementara (${formatCooldown(cooldown)}).`);
+                return;
+            }
+
+            setFormModalOpen(false);
+            setSaveConfirmModalOpen(false);
+            setSudoAction({ type: "delete", user });
+            setSudoPassword("");
+            setSudoError("");
+            setSudoModalOpen(true);
             return;
         }
 
@@ -466,9 +601,76 @@ export default function UsersIndex({
                 setDeleteModalOpen(false);
                 setUserToDelete(null);
             },
-            onError: () => error("Gagal menghapus akun pengguna."),
+            onError: (errs) => {
+                const msg = Object.values(errs)[0];
+                error(typeof msg === "string" ? msg : "Gagal menghapus akun pengguna.");
+            },
             onFinish: () => setIsDeleting(false),
         });
+    };
+
+    const handleSudoSubmit = (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (!sudoAction || isSudoLoading) return;
+
+        if (!sudoPassword.trim()) {
+            setSudoError("Kata sandi akun Anda wajib dimasukkan!");
+            return;
+        }
+
+        setIsSudoLoading(true);
+        setSudoError("");
+
+        if (sudoAction.type === "delete") {
+            router.delete(`/super/pengguna/${sudoAction.user.id}`, {
+                data: { sudo_password: sudoPassword },
+                preserveScroll: true,
+                onSuccess: () => {
+                    success(`Akun Super Admin ${sudoAction.user.name} berhasil dihapus.`);
+                    setSudoModalOpen(false);
+                    setSudoAction(null);
+                    setSudoPassword("");
+                },
+                onError: (errs) => {
+                    const msg = Object.values(errs)[0];
+                    const strMsg = typeof msg === "string" ? msg : "Kata sandi konfirmasi salah.";
+                    setSudoError(strMsg);
+                    error(strMsg);
+                    if (strMsg.includes("dibekukan") || strMsg.includes("Terlalu banyak percobaan")) {
+                        setCooldown(300);
+                        setSudoModalOpen(false);
+                        setSudoAction(null);
+                    }
+                },
+                onFinish: () => setIsSudoLoading(false),
+            });
+        } else if (sudoAction.type === "toggle-status") {
+            router.patch(
+                `/super/pengguna/${sudoAction.user.id}/toggle-status`,
+                { sudo_password: sudoPassword },
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        success(`Status akun Super Admin ${sudoAction.user.name} berhasil diubah.`);
+                        setSudoModalOpen(false);
+                        setSudoAction(null);
+                        setSudoPassword("");
+                    },
+                    onError: (errs) => {
+                        const msg = Object.values(errs)[0];
+                        const strMsg = typeof msg === "string" ? msg : "Kata sandi konfirmasi salah.";
+                        setSudoError(strMsg);
+                        error(strMsg);
+                        if (strMsg.includes("dibekukan") || strMsg.includes("Terlalu banyak percobaan")) {
+                            setCooldown(300);
+                            setSudoModalOpen(false);
+                            setSudoAction(null);
+                        }
+                    },
+                    onFinish: () => setIsSudoLoading(false),
+                }
+            );
+        }
     };
 
     const getRoleBadgeClass = (roleName: string) => {
@@ -487,6 +689,30 @@ export default function UsersIndex({
             <Head title="Manajemen Pengguna" />
 
             <div className="space-y-4 max-w-[1600px] mx-auto">
+                {cooldown > 0 && (
+                    <div className="rounded-xl border border-rose-200 bg-rose-50/90 p-3 sm:p-4 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-100 text-rose-600">
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 className="text-xs font-bold text-rose-900 leading-snug">
+                                    Tindakan Keamanan Super Admin Terkunci Sementara
+                                </h5>
+                                <p className="text-[11px] text-rose-700 leading-tight mt-0.5">
+                                    Terlalu banyak percobaan kata sandi yang salah. Tombol ubah role, nonaktifkan, dan hapus akun Super Admin lain dibekukan.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 self-end sm:self-center font-mono text-xs font-bold bg-white text-rose-700 border border-rose-200 px-3 py-1.5 rounded-lg shadow-2xs">
+                            <span>Sisa Waktu:</span>
+                            <span className="text-rose-900">{formatCooldown(cooldown)}</span>
+                        </div>
+                    </div>
+                )}
+
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xs">
                     <div className="p-3 border-b border-gray-200 bg-white">
                         <div className="flex flex-col lg:flex-row gap-2.5 items-stretch lg:items-center justify-between">
@@ -751,9 +977,16 @@ export default function UsersIndex({
                                                             </div>
                                                         )}
                                                         <div className="min-w-0 flex-1">
-                                                            <p className="block w-full truncate text-xs font-bold text-gray-900 leading-snug" title={user.name}>
-                                                                {user.name}
-                                                            </p>
+                                                            <div className="flex items-center gap-1.5 min-w-0">
+                                                                <p className="block truncate text-xs font-bold text-gray-900 leading-snug" title={user.name}>
+                                                                    {user.name}
+                                                                </p>
+                                                                {user.id === currentUserId && (
+                                                                    <span className="shrink-0 text-[9.5px] font-bold text-purple-700 bg-purple-50 border border-purple-200 px-1.5 py-0.2 rounded">
+                                                                        Anda
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             <p className="mt-0.5 block w-full truncate text-[11px] text-gray-500 font-medium" title={user.email}>
                                                                 {user.email}
                                                             </p>
@@ -785,14 +1018,41 @@ export default function UsersIndex({
                                                 </td>
 
                                                 <td className="py-3 px-3.5 border-r border-gray-200 text-center">
-                                                    {user.role_name ===
-                                                    "SUPER_ADMIN" ? (
+                                                    {user.id === currentUserId ? (
                                                         <span
                                                             className="text-xs font-semibold text-emerald-600 cursor-default select-none inline-flex items-center gap-1"
-                                                            title="Akun Super Admin dilindungi dan harus selalu aktif demi keamanan sistem"
+                                                            title="Akun Anda yang sedang aktif tidak dapat dinonaktifkan demi keselamatan akses"
                                                         >
                                                             Aktif
                                                         </span>
+                                                    ) : user.role_name === "SUPER_ADMIN" ? (
+                                                        user.status_aktif && superAdminCount <= 1 ? (
+                                                            <span
+                                                                className="text-xs font-semibold text-gray-400 cursor-not-allowed select-none inline-flex items-center gap-1"
+                                                                title="Sistem membutuhkan minimal 1 Super Admin aktif (Terkunci otomatis demi integritas sistem)"
+                                                            >
+                                                                <svg className="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                                </svg>
+                                                                Aktif
+                                                            </span>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                disabled={cooldown > 0}
+                                                                onClick={() => handleToggleStatus(user)}
+                                                                className={`text-xs font-semibold focus:outline-none transition-colors hover:underline ${
+                                                                    cooldown > 0
+                                                                        ? "opacity-50 cursor-not-allowed text-gray-400"
+                                                                        : user.status_aktif
+                                                                        ? "text-emerald-600 hover:text-emerald-700"
+                                                                        : "text-rose-600 hover:text-rose-700"
+                                                                }`}
+                                                                title={cooldown > 0 ? `Fitur dibekukan sementara (${formatCooldown(cooldown)})` : "Klik untuk ubah status aktif akun (Memerlukan verifikasi sandi)"}
+                                                            >
+                                                                {user.status_aktif ? "Aktif" : "Nonaktif"}
+                                                            </button>
+                                                        )
                                                     ) : (
                                                         <button
                                                             type="button"
@@ -823,13 +1083,18 @@ export default function UsersIndex({
                                                     <div className="flex items-center justify-center gap-1.5">
                                                         <button
                                                             type="button"
-                                                            onClick={() =>
-                                                                openEditModal(
-                                                                    user,
-                                                                )
+                                                            disabled={user.role_name === "SUPER_ADMIN" && user.id !== currentUserId && cooldown > 0}
+                                                            onClick={() => openEditModal(user)}
+                                                            className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${
+                                                                user.role_name === "SUPER_ADMIN" && user.id !== currentUserId && cooldown > 0
+                                                                    ? "text-gray-300 border-gray-150 bg-gray-50/80 cursor-not-allowed"
+                                                                    : "text-gray-500 border-gray-200 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-700 focus:outline-none"
+                                                            }`}
+                                                            title={
+                                                                user.role_name === "SUPER_ADMIN" && user.id !== currentUserId && cooldown > 0
+                                                                    ? `Fitur dibekukan sementara (${formatCooldown(cooldown)})`
+                                                                    : "Edit Akun"
                                                             }
-                                                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 border border-gray-200 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-700 transition-all focus:outline-none"
-                                                            title="Edit Akun"
                                                         >
                                                             <svg
                                                                 className="h-4 w-4"
@@ -845,13 +1110,12 @@ export default function UsersIndex({
                                                                 />
                                                             </svg>
                                                         </button>
-                                                        {user.role_name ===
-                                                        "SUPER_ADMIN" ? (
+                                                        {user.id === currentUserId ? (
                                                             <button
                                                                 type="button"
                                                                 disabled
                                                                 className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-300 border border-gray-150 bg-gray-50/80 cursor-not-allowed transition-all"
-                                                                title="Akun Super Admin dilindungi dan tidak dapat dihapus"
+                                                                title="Anda tidak dapat menghapus akun Anda sendiri"
                                                             >
                                                                 <svg
                                                                     className="h-3.5 w-3.5 text-gray-400"
@@ -867,6 +1131,59 @@ export default function UsersIndex({
                                                                     />
                                                                 </svg>
                                                             </button>
+                                                        ) : user.role_name === "SUPER_ADMIN" ? (
+                                                            superAdminCount <= 1 ? (
+                                                                <button
+                                                                    type="button"
+                                                                    disabled
+                                                                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-300 border border-gray-150 bg-gray-50/80 cursor-not-allowed transition-all"
+                                                                    title="Sistem wajib memiliki minimal 1 Super Admin aktif (Terkunci otomatis)"
+                                                                >
+                                                                    <svg
+                                                                        className="h-3.5 w-3.5 text-gray-400"
+                                                                        fill="none"
+                                                                        viewBox="0 0 24 24"
+                                                                        stroke="currentColor"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth="2"
+                                                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                                                        />
+                                                                    </svg>
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={cooldown > 0}
+                                                                    onClick={() => confirmDelete(user)}
+                                                                    className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all ${
+                                                                        cooldown > 0
+                                                                            ? "text-gray-300 border-gray-150 bg-gray-50/80 cursor-not-allowed"
+                                                                            : "text-gray-400 border-gray-200 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 focus:outline-none"
+                                                                    }`}
+                                                                    title={
+                                                                        cooldown > 0
+                                                                            ? `Fitur dibekukan sementara (${formatCooldown(cooldown)})`
+                                                                            : "Hapus Akun Super Admin (Memerlukan verifikasi sandi)"
+                                                                    }
+                                                                >
+                                                                    <svg
+                                                                        className="h-4 w-4"
+                                                                        fill="none"
+                                                                        viewBox="0 0 24 24"
+                                                                        stroke="currentColor"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth="2"
+                                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                                        />
+                                                                    </svg>
+                                                                </button>
+                                                            )
                                                         ) : (
                                                             <button
                                                                 type="button"
@@ -888,7 +1205,7 @@ export default function UsersIndex({
                                                                         strokeLinecap="round"
                                                                         strokeLinejoin="round"
                                                                         strokeWidth="2"
-                                                                        d="M4 7h16M10 11v6m4-6v6M5.5 7l.8 13h11.4l.8-13M9 7V4h6v3"
+                                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                                                     />
                                                                 </svg>
                                                             </button>
@@ -1114,6 +1431,33 @@ export default function UsersIndex({
                                         </div>
                                     )}
                                 </div>
+
+                                {editingUser?.role_name === "SUPER_ADMIN" && editingUser?.id !== currentUserId && (
+                                    <div className="mt-3 p-3 rounded-xl border border-purple-200 bg-purple-50/70 space-y-2">
+                                        <div className="flex items-center gap-1.5 text-xs font-bold text-purple-900">
+                                            <svg className="h-4 w-4 text-purple-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <span>Konfirmasi Keamanan Super Admin</span>
+                                        </div>
+                                        <p className="text-[11px] text-gray-600 leading-snug">
+                                            Anda sedang memperbarui data akun Super Admin lain. Masukkan kata sandi akun Anda untuk mengonfirmasi tindakan ini:
+                                        </p>
+                                        <input
+                                            type="password"
+                                            autoFocus
+                                            value={data.sudo_password || ""}
+                                            onChange={(e) => setData("sudo_password", e.target.value)}
+                                            placeholder="Ketik kata sandi akun Anda..."
+                                            className="h-9 w-full rounded-lg border border-purple-200 bg-white px-3 text-xs text-gray-800 placeholder:text-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all"
+                                        />
+                                        {errors.sudo_password && (
+                                            <p className="text-[10.5px] font-medium text-rose-600">
+                                                {errors.sudo_password}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -1190,10 +1534,39 @@ export default function UsersIndex({
                                 </div>
                             </div>
 
-                            {editingUser?.role_name === "SUPER_ADMIN" ? (
+                            {editingUser?.id === currentUserId ? (
+                                <div
+                                    className="flex items-center gap-2 select-none bg-gray-50/80 py-1 px-2.5 sm:py-1.5 sm:px-3 rounded-lg border border-gray-200 shrink-0 shadow-2xs cursor-not-allowed"
+                                    title="Akun Anda yang sedang aktif tidak dapat dinonaktifkan demi keselamatan akses"
+                                >
+                                    <div className="text-right">
+                                        <span className="block text-[10px] sm:text-[11px] font-bold text-gray-800 leading-tight">
+                                            Status
+                                        </span>
+                                        <span className="block text-[9.5px] sm:text-[10px] font-semibold leading-tight text-emerald-600">
+                                            Aktif (Akun Anda)
+                                        </span>
+                                    </div>
+                                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                                        <svg
+                                            className="h-3 w-3"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2.5"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                            ) : editingUser?.role_name === "SUPER_ADMIN" && superAdminCount <= 1 && data.status_aktif ? (
                                 <div
                                     className="flex items-center gap-2 select-none bg-emerald-50/70 py-1 px-2.5 sm:py-1.5 sm:px-3 rounded-lg border border-emerald-200 shrink-0 shadow-2xs"
-                                    title="Status akun Super Admin dilindungi dan harus selalu aktif"
+                                    title="Sistem membutuhkan minimal 1 Super Admin aktif (Terkunci otomatis)"
                                 >
                                     <div className="text-right">
                                         <span className="block text-[10px] sm:text-[11px] font-bold text-emerald-800 leading-tight">
@@ -1338,34 +1711,41 @@ export default function UsersIndex({
 
                             <div className="space-y-2 sm:space-y-3">
                                 <div className="space-y-1 min-w-0">
-                                    <label className="text-[10px] sm:text-xs font-bold text-gray-750 block truncate">
-                                        Hak Akses{" "}
-                                        <span className="text-rose-500">*</span>
-                                    </label>
-                                    {editingUser?.role_name === "SUPER_ADMIN" ? (
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-[10px] sm:text-xs font-bold text-gray-750 block truncate">
+                                            Hak Akses{" "}
+                                            <span className="text-rose-500">*</span>
+                                        </label>
+                                        {(isSuperAdminQuotaFull || superAdminCount >= maxSuperAdmin) && !editingUser && (
+                                            <span className="text-[10px] font-semibold text-purple-700 bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded">
+                                                Kuota Super Admin Penuh (2/2)
+                                            </span>
+                                        )}
+                                    </div>
+                                    {editingUser?.id === currentUserId ? (
                                         <div
                                             className="flex h-9 sm:h-10 w-full items-center justify-between rounded-lg sm:rounded-xl border border-gray-200 bg-gray-50/90 px-3 text-[11px] sm:text-xs font-bold text-gray-700 cursor-not-allowed select-none"
-                                            title="Hak akses Super Admin dilindungi dan tidak dapat diubah"
+                                            title="Hak akses Super Admin pada akun Anda sendiri dilindungi dan tidak dapat diubah"
                                         >
                                             <span className="flex items-center gap-1.5">
                                                 <span className="h-2 w-2 rounded-full bg-purple-600" />
                                                 SUPER ADMIN
                                             </span>
                                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded-md border border-purple-200">
-                                                <svg
-                                                    className="h-3 w-3 text-purple-650"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="2.5"
-                                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                                    />
-                                                </svg>
-                                                Terkunci
+                                                Akun Anda
+                                            </span>
+                                        </div>
+                                    ) : editingUser?.role_name === "SUPER_ADMIN" && superAdminCount <= 1 ? (
+                                        <div
+                                            className="flex h-9 sm:h-10 w-full items-center justify-between rounded-lg sm:rounded-xl border border-gray-200 bg-gray-50/90 px-3 text-[11px] sm:text-xs font-bold text-gray-700 cursor-not-allowed select-none"
+                                            title="Sistem wajib memiliki minimal 1 Super Admin aktif"
+                                        >
+                                            <span className="flex items-center gap-1.5">
+                                                <span className="h-2 w-2 rounded-full bg-purple-600" />
+                                                SUPER ADMIN
+                                            </span>
+                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded-md border border-purple-200">
+                                                Terkunci (Sisa 1)
                                             </span>
                                         </div>
                                     ) : (
@@ -1381,13 +1761,24 @@ export default function UsersIndex({
                                             error={!!errors.id_role}
                                             placeholder="Pilih hak akses..."
                                             showCheckmark={false}
-                                            options={roles.map((role) => ({
-                                                value: role.id,
-                                                label: role.nama_role.replace(
-                                                    /_/g,
-                                                    " ",
-                                                ),
-                                            }))}
+                                            options={roles.map((role) => {
+                                                const isRoleSuperAdmin = role.nama_role === "SUPER_ADMIN";
+                                                const quotaFull = isSuperAdminQuotaFull || superAdminCount >= maxSuperAdmin;
+                                                const shouldDisable = isRoleSuperAdmin && (
+                                                    !editingUser ? quotaFull : (editingUser.role_name !== "SUPER_ADMIN" && quotaFull)
+                                                );
+
+                                                return {
+                                                    value: role.id,
+                                                    label: shouldDisable
+                                                        ? `${role.nama_role.replace(/_/g, " ")} (Penuh - Maks. 2)`
+                                                        : role.nama_role.replace(/_/g, " "),
+                                                    disabled: shouldDisable,
+                                                    sublabel: shouldDisable
+                                                        ? "Batas kuota 2 Super Admin telah terisi penuh"
+                                                        : undefined,
+                                                };
+                                            })}
                                         />
                                     )}
                                     {errors.id_role && (
@@ -1650,6 +2041,98 @@ export default function UsersIndex({
                         </div>
                     </div>
                 </div>
+            </Modal>
+
+            <Modal
+                isOpen={sudoModalOpen}
+                onClose={() => !isSudoLoading && setSudoModalOpen(false)}
+                title="Konfirmasi Keamanan Super Admin"
+                type={sudoAction?.type === "delete" ? "danger" : "default"}
+                size="sm"
+                footer={
+                    <div className="flex w-full justify-end gap-2 border-t border-gray-100 pt-3">
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => setSudoModalOpen(false)}
+                            disabled={isSudoLoading}
+                            className="h-9 px-4 text-xs font-semibold rounded-md"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="button"
+                            variant={sudoAction?.type === "delete" ? "danger" : "primary"}
+                            onClick={handleSudoSubmit}
+                            isLoading={isSudoLoading}
+                            disabled={isSudoLoading || !sudoPassword.trim()}
+                            className="h-9 px-4 text-xs font-semibold rounded-md"
+                        >
+                            {sudoAction?.type === "delete" ? "Konfirmasi Hapus" : "Konfirmasi Ubah Status"}
+                        </Button>
+                    </div>
+                }
+            >
+                <form onSubmit={handleSudoSubmit} className="p-1 space-y-3.5">
+                    <div className="flex gap-3">
+                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
+                            sudoAction?.type === "delete" 
+                                ? "bg-rose-50 text-rose-600 border-rose-200/60" 
+                                : "bg-purple-50 text-purple-600 border-purple-200/60"
+                        }`}>
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <p className="text-xs leading-relaxed text-gray-700 font-medium">
+                                {sudoAction?.type === "delete" ? (
+                                    <>Anda akan <strong>menghapus permanen</strong> akun Super Admin:</>
+                                ) : (
+                                    <>Anda akan <strong>mengubah status akses</strong> akun Super Admin:</>
+                                )}
+                            </p>
+                            <div className="mt-1.5 p-2 rounded-lg bg-gray-50 border border-gray-200/80">
+                                <p className="text-xs font-bold text-gray-900 truncate">
+                                    {sudoAction?.user.name}
+                                </p>
+                                <p className="text-[11px] font-mono text-gray-500 truncate">
+                                    {sudoAction?.user.email}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                        <label className="text-xs font-bold text-gray-800 block">
+                            Masukkan Kata Sandi Akun Anda <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                            type="password"
+                            autoFocus
+                            value={sudoPassword}
+                            onChange={(e) => {
+                                setSudoPassword(e.target.value);
+                                if (sudoError) setSudoError("");
+                            }}
+                            placeholder="Ketik kata sandi akun Anda..."
+                            className={`h-9 w-full rounded-lg border px-3 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                                sudoError
+                                    ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/20"
+                                    : "border-gray-300 focus:border-purple-500 focus:ring-purple-500/20"
+                            }`}
+                        />
+                        {sudoError ? (
+                            <p className="text-[11px] font-medium text-rose-600 leading-tight">
+                                {sudoError}
+                            </p>
+                        ) : (
+                            <p className="text-[10.5px] text-gray-500 leading-tight">
+                                Tindakan ini memerlukan otentikasi kata sandi akun Super Admin Anda yang sedang aktif demi keamanan sistem.
+                            </p>
+                        )}
+                    </div>
+                </form>
             </Modal>
         </DashboardLayout>
     );

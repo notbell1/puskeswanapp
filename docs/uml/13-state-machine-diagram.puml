@@ -1,0 +1,27 @@
+@startuml 13-state-machine-diagram
+title State Machine Diagram - Siklus Status Kunjungan / Antrean
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+
+[*] --> Terdaftar : Admin input klinis awal & simpan kunjungan
+
+state Terdaftar {
+  state "Antri\n(Menunggu Pemeriksaan)" as Antri
+  state "Sedang Diperiksa\n(Dipilih oleh Dokter)" as Diperiksa
+
+  [*] --> Antri
+  Antri --> Diperiksa : Dokter memilih kunjungan di Dashboard
+}
+
+Diperiksa --> Selesai : Dokter input diagnosa, terapi & simpan pemeriksaan (examinations)
+
+state Selesai {
+  [*] --> Tercatat
+  Tercatat : Rekam medis tersimpan di examinations,\nstatus_antrean = 'Selesai' terupdate di Admin & Dokter
+}
+
+Selesai --> [*] : Kunjungan ditutup
+
+@enduml

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Head, router } from '@inertiajs/react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { Button, Dropdown, Modal, Pagination } from '@/components/ui';
@@ -66,7 +66,7 @@ interface PageProps {
 }
 
 const STATUS_FILTER_OPTIONS: Record<string, string> = {
-    Semua: 'Semua Status Layanan',
+    '': 'Semua Status Layanan',
     Antri: 'Menunggu Pemeriksaan',
     Pemeriksaan: 'Sedang Berlangsung',
     Selesai: 'Pemeriksaan Selesai',
@@ -78,12 +78,38 @@ export default function SuperMonitoringPelayananDokter({
     filters,
 }: PageProps) {
     const [search, setSearch] = useState(filters.search || '');
-    const [statusFilter, setStatusFilter] = useState(filters.status || 'Antri');
-    const [dateFilter, setDateFilter] = useState(filters.tanggal || new Date().toISOString().split('T')[0]);
+    const [statusFilter, setStatusFilter] = useState(filters.status || '');
+    const [dateFilter, setDateFilter] = useState(filters.tanggal || '');
+    const isFirstSearchRender = useRef(true);
 
     const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [historyModalOpen, setHistoryModalOpen] = useState(false);
     const [selectedVisit, setSelectedVisit] = useState<VisitItem | null>(null);
+
+    useEffect(() => {
+        if (isFirstSearchRender.current) {
+            isFirstSearchRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                '/super/monitoring/pelayanan-dokter',
+                {
+                    search: search || undefined,
+                    status: statusFilter || undefined,
+                    tanggal: dateFilter || undefined,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                }
+            );
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -93,6 +119,19 @@ export default function SuperMonitoringPelayananDokter({
                 search: search || undefined,
                 status: statusFilter || undefined,
                 tanggal: dateFilter || undefined,
+            },
+            { preserveState: true, replace: true }
+        );
+    };
+
+    const handleDateChange = (val: string) => {
+        setDateFilter(val);
+        router.get(
+            '/super/monitoring/pelayanan-dokter',
+            {
+                search: search || undefined,
+                status: statusFilter || undefined,
+                tanggal: val || undefined,
             },
             { preserveState: true, replace: true }
         );
@@ -113,10 +152,9 @@ export default function SuperMonitoringPelayananDokter({
 
     const handleResetFilter = () => {
         setSearch('');
-        setStatusFilter('Semua');
-        const today = new Date().toISOString().split('T')[0];
-        setDateFilter(today);
-        router.get('/super/monitoring/pelayanan-dokter', { tanggal: today, status: 'Semua' }, { preserveState: true, replace: true });
+        setStatusFilter('');
+        setDateFilter('');
+        router.get('/super/monitoring/pelayanan-dokter', {}, { preserveState: true, replace: true });
     };
 
     return (
@@ -135,7 +173,7 @@ export default function SuperMonitoringPelayananDokter({
                                 {summary.total}
                             </span>
                             <span className="text-[11px] text-teal-600 font-semibold mt-0.5 block">
-                                Pada tanggal terpilih
+                                {dateFilter ? 'Pada tanggal terpilih' : 'Seluruh antrean terdaftar'}
                             </span>
                         </div>
                         <div className="h-10 w-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
@@ -230,9 +268,20 @@ export default function SuperMonitoringPelayananDokter({
                                     <input
                                         type="date"
                                         value={dateFilter}
-                                        onChange={(e) => setDateFilter(e.target.value)}
+                                        onChange={(e) => handleDateChange(e.target.value)}
                                         className="h-10 px-3 rounded-lg border border-gray-200 bg-white text-xs text-gray-700 transition-all focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                                        title="Filter tanggal pelayanan"
                                     />
+                                    {dateFilter && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDateChange('')}
+                                            className="h-10 px-2.5 rounded-lg border border-teal-200 bg-teal-50 text-xs font-semibold text-teal-700 hover:bg-teal-100 transition-colors shrink-0"
+                                            title="Tampilkan seluruh data tanpa batasan tanggal"
+                                        >
+                                            Semua Tanggal
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="w-full sm:w-[220px] shrink-0">

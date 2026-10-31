@@ -27,6 +27,12 @@ class AdminDashboardController extends Controller
             $period = '30d';
         }
 
+        // Statistik antrean keseluruhan & realtime
+        $totalAntrean = Visit::count();
+        $menungguDokter = Visit::where('status_antrean', 'Antri')->count();
+        $diperiksaDokter = Visit::where('status_antrean', 'Pemeriksaan')->count();
+        $selesaiPelayanan = Visit::where('status_antrean', 'Selesai')->count();
+
         $todaySummary = Visit::query()
             ->whereDate('tgl_kunjungan', $today)
             ->selectRaw('
@@ -52,7 +58,6 @@ class AdminDashboardController extends Controller
             'animal.pemilik:id,nama_lengkap,no_hp_wa',
             'animal.jenisHewan:id,nama_jenis',
         ])
-            ->whereDate('tgl_kunjungan', $today)
             ->orderBy('tgl_kunjungan', 'desc')
             ->take(5)
             ->get([
@@ -267,10 +272,12 @@ class AdminDashboardController extends Controller
 
         return Inertia::render('admin/dashboard', [
             'metrics' => [
-                'total_antrean_hari_ini' => $totalAntreanHariIni,
-                'menunggu_hari_ini' => $antreHariIni,
-                'diperiksa_hari_ini' => $periksaHariIni,
-                'selesai_hari_ini' => $selesaiHariIni,
+                'total_antrean' => $totalAntrean,
+                'total_antrean_hari_ini' => $totalAntrean,
+                'menunggu_dokter' => $menungguDokter,
+                'menunggu_hari_ini' => $menungguDokter,
+                'diperiksa_hari_ini' => $diperiksaDokter,
+                'selesai_hari_ini' => $selesaiPelayanan,
                 'total_pemilik' => $totalPemilik,
                 'total_hewan' => $totalHewan,
                 'total_rabies' => $totalRabies,

@@ -7,6 +7,9 @@ interface MetricProps {
     total_staff: number;
     total_animals: number;
     total_visits: number;
+    total_antrean?: number;
+    antri_menunggu?: number;
+    sedang_periksa?: number;
     total_medicines: number;
     critical_medicines: number;
     total_inventories: number;
@@ -118,6 +121,19 @@ export default function SuperDashboard({
             ),
         },
         {
+            label: 'Antrean Pasien',
+            value: metrics?.total_antrean ?? metrics?.total_visits ?? 0,
+            unit: 'Antrean',
+            trend: `${metrics?.antri_menunggu ?? 0} Menunggu Dokter`,
+            color: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+            href: '/super/monitoring/antrian-loket',
+            icon: (
+                <svg className="w-5 h-5 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            ),
+        },
+        {
             label: 'Total Kunjungan Medis',
             value: metrics?.total_visits ?? 0,
             unit: 'Pasien',
@@ -222,7 +238,7 @@ export default function SuperDashboard({
         <DashboardLayout title="Dashboard Super Admin">
             <Head title="Dashboard Super Admin" />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 mb-6">
                 {stats.map((item, idx) => (
                     <Link
                         key={idx}

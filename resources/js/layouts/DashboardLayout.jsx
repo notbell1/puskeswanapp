@@ -3,6 +3,7 @@ import { usePage, router } from '@inertiajs/react';
 import Sidebar from './Sidebar';
 import { Dropdown, Modal, Button } from '@/components/ui';
 import NotificationBell from '@/components/NotificationBell';
+import FloatingChatWidget from '@/components/FloatingChatWidget';
 import { cn } from '@/lib/utils';
 
 /**
@@ -276,6 +277,9 @@ export default function DashboardLayout({
                         Apakah Anda yakin ingin keluar dari akun <strong className="text-gray-900">{user.name}</strong>? Pastikan seluruh data transaksi atau rekam medis telah tersimpan dengan benar sebelum meninggalkan sistem.
                     </p>
                 </Modal>
+
+                {/* Floating Chat Widget untuk komunikasi antar-staf internal (1-to-1 & 1-to-All) */}
+                <FloatingChatWidget />
             </div>
     );
 }

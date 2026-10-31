@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AnimalType;
+use App\Models\Staff;
 use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Http\Request;
@@ -164,6 +165,96 @@ class MedicalRecordResultController extends Controller
                 'id_jenis_hewan' => $idJenisHewan,
                 'tanggal' => $dateFilter,
             ],
+        ]);
+    }
+
+    /**
+     * Cetak dokumen resmi rekapitulasi pelaporan pengobatan penyakit hewan bulanan (Format Landscape).
+     */
+    public function rekapBulanan(Request $request)
+    {
+        $bulan = (int) $request->input('bulan', now()->month);
+        $tahun = (int) $request->input('tahun', now()->year);
+
+        if ($bulan < 1 || $bulan > 12) {
+            $bulan = now()->month;
+        }
+
+        if ($tahun < 2020 || $tahun > 2099) {
+            $tahun = now()->year;
+        }
+
+        $namaBulanList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $namaBulan = $namaBulanList[$bulan] ?? 'Januari';
+
+        $records = Visit::with([
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan',
+            'animal.pemilik:id,nama_lengkap,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+            'examination:id,id_kunjungan,diagnosa,terapi_pengobatan',
+        ])
+            ->where('status_antrean', 'Selesai')
+            ->whereYear('tgl_kunjungan', $tahun)
+            ->whereMonth('tgl_kunjungan', $bulan)
+            ->orderBy('tgl_kunjungan', 'asc')
+            ->get();
+
+        $now = now();
+        $signatureDate = $now->day.' '.$namaBulanList[$now->month].' '.$now->year;
+        $pimpinan = Staff::getPimpinan();
+
+        return view('print.rekap-rekam-medis', [
+            'records' => $records,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'namaBulan' => $namaBulan,
+            'signatureDate' => $signatureDate,
+            'pimpinan' => $pimpinan,
+        ]);
+    }
+
+    /**
+     * Cetak dokumen kartu rekam medis pasien hewan tunggal (Format Portrait A4).
+     */
+    public function cetakKartu(Visit $visit, Request $request)
+    {
+        $visit->load([
+            'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
+            'animal.pemilik:id,nama_lengkap,nik,no_hp_wa,alamat_lengkap',
+            'animal.jenisHewan:id,nama_jenis',
+            'animal.visits' => function ($q) {
+                $q->where('status_antrean', 'Selesai')
+                    ->with([
+                        'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+                    ])
+                    ->orderBy('tgl_kunjungan', 'asc');
+            },
+            'examination:id,id_kunjungan,id_dokter,diagnosa,terapi_pengobatan,catatan',
+        ]);
+
+        $pastVisits = $visit->animal?->visits ?? collect();
+        $allVisits = $pastVisits->filter(fn ($v) => $v->id !== $visit->id)->push($visit)->sortBy('tgl_kunjungan')->values();
+
+        $namaBulanList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $now = now();
+        $signatureDate = $now->day.' '.$namaBulanList[$now->month].' '.$now->year;
+        $pimpinan = Staff::getPimpinan();
+
+        return view('print.kartu-rekam-medis', [
+            'visit' => $visit,
+            'allVisits' => $allVisits,
+            'signatureDate' => $signatureDate,
+            'pimpinan' => $pimpinan,
         ]);
     }
 }

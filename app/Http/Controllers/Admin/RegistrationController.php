@@ -24,7 +24,7 @@ class RegistrationController extends Controller
     {
         $search = trim((string) $request->input('search', ''));
         $statusFilter = $request->input('status');
-        $dateFilter = $request->input('tanggal', now()->toDateString());
+        $dateFilter = $request->input('tanggal');
 
         $query = Visit::with([
             'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
@@ -100,10 +100,12 @@ class RegistrationController extends Controller
         $animalTypes = AnimalType::all(['id', 'nama_jenis']);
         $nextNoRm = Animal::generateNextNoRm();
 
-        $today = now()->toDateString();
-        $summaryData = Visit::query()
-            ->whereDate('tgl_kunjungan', $today)
-            ->selectRaw('
+        $summaryQuery = Visit::query()
+            ->when($dateFilter, function ($q, $date) {
+                $q->whereDate('tgl_kunjungan', $date);
+            });
+
+        $summaryData = $summaryQuery->selectRaw('
                 COUNT(*) as total,
                 SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as antri,
                 SUM(CASE WHEN status_antrean = ? THEN 1 ELSE 0 END) as periksa,
@@ -112,9 +114,13 @@ class RegistrationController extends Controller
             ->first();
 
         $summary = [
+            'total' => (int) ($summaryData->total ?? 0),
             'total_today' => (int) ($summaryData->total ?? 0),
+            'antri' => (int) ($summaryData->antri ?? 0),
             'antri_today' => (int) ($summaryData->antri ?? 0),
+            'periksa' => (int) ($summaryData->periksa ?? 0),
             'periksa_today' => (int) ($summaryData->periksa ?? 0),
+            'selesai' => (int) ($summaryData->selesai ?? 0),
             'selesai_today' => (int) ($summaryData->selesai ?? 0),
         ];
 

@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -54,6 +55,13 @@ class UserController extends Controller
 
         $roles = Role::select(['id', 'nama_role', 'deskripsi'])->get();
         $staffList = Staff::select(['id', 'nama_staf', 'jabatan'])->get();
+        $superAdminCount = User::superAdminCount();
+        $isSuperAdminQuotaFull = User::isSuperAdminQuotaFull();
+
+        $authId = (int) Auth::id();
+        $rateLimitKey = 'critical-action:'.$authId;
+        $isRateLimited = RateLimiter::tooManyAttempts($rateLimitKey, 3);
+        $lockoutSeconds = $isRateLimited ? RateLimiter::availableIn($rateLimitKey) : 0;
 
         return Inertia::render('super/pengguna/index', [
             'users' => $users,
@@ -63,6 +71,12 @@ class UserController extends Controller
             ],
             'roles' => $roles,
             'staffList' => $staffList,
+            'superAdminCount' => $superAdminCount,
+            'maxSuperAdmin' => 2,
+            'isSuperAdminQuotaFull' => $isSuperAdminQuotaFull,
+            'currentUserId' => $authId,
+            'isRateLimited' => $isRateLimited,
+            'lockoutSeconds' => $lockoutSeconds,
         ]);
     }
 
@@ -88,13 +102,20 @@ class UserController extends Controller
             ],
         ]);
 
+        $role = Role::find($validated['id_role']);
+        $roleName = strtoupper((string) ($role?->nama_role ?? ''));
+
+        if ($roleName === 'SUPER_ADMIN' && User::isSuperAdminQuotaFull()) {
+            throw ValidationException::withMessages([
+                'id_role' => 'Batas kuota Super Administrator telah tercapai (maksimal 2 akun). Hak akses Super Admin tidak dapat ditambahkan lagi.',
+            ]);
+        }
+
         $photoPath = $this->handleProfilePhotoUpload($request);
         $cleanName = strip_tags($validated['name']);
         $staffId = $validated['id_staf'] ?? null;
 
         if (! $staffId) {
-            $role = Role::find($validated['id_role']);
-            $roleName = strtoupper((string) ($role?->nama_role ?? ''));
             $isSuperAdmin = $roleName === 'SUPER_ADMIN';
             $nextOrder = ((int) Staff::where('tampil_publik', true)->max('urutan')) + 1;
 
@@ -141,6 +162,7 @@ class UserController extends Controller
             'id_role' => ['required', 'exists:roles,id'],
             'id_staf' => ['nullable', 'exists:staff,id'],
             'status_aktif' => ['boolean'],
+            'sudo_password' => ['nullable', 'string'],
             'foto' => [
                 'nullable',
                 'file',
@@ -152,15 +174,78 @@ class UserController extends Controller
             'hapus_foto' => ['nullable', 'boolean'],
         ]);
 
-        $isSuperAdmin = $user->isSuperAdmin();
+        $targetRole = Role::find($validated['id_role']);
+        $targetRoleName = strtoupper((string) ($targetRole?->nama_role ?? ''));
+
+        // Cek jika akun target adalah Super Admin
+        if ($user->isSuperAdmin()) {
+            if ($user->id === Auth::id()) {
+                // Pengguna mengedit akunnya sendiri: tidak boleh menurunkan role dan tidak boleh nonaktifkan diri
+                $roleId = $user->id_role;
+                $statusAktif = true;
+            } else {
+                // Mengedit akun Super Admin lain: Wajib konfirmasi password akun yang sedang aktif (sudo mode)
+                $key = 'critical-action:'.Auth::id();
+                if (RateLimiter::tooManyAttempts($key, 3)) {
+                    $seconds = RateLimiter::availableIn($key);
+                    throw ValidationException::withMessages([
+                        'sudo_password' => "Terlalu banyak percobaan verifikasi yang salah. Fitur tindakan kritis dinonaktifkan sementara selama {$seconds} detik.",
+                    ]);
+                }
+
+                $sudoPassword = $request->input('sudo_password');
+                if (! $sudoPassword || ! Hash::check($sudoPassword, Auth::user()->password)) {
+                    RateLimiter::hit($key, 300);
+                    $remaining = RateLimiter::retriesLeft($key, 3);
+                    $msg = $remaining > 0
+                        ? "Kata sandi konfirmasi Anda salah! Sisa percobaan: {$remaining} kali."
+                        : 'Kata sandi salah! Fitur tindakan kritis dibekukan selama 5 menit demi keamanan sistem.';
+
+                    throw ValidationException::withMessages([
+                        'sudo_password' => $msg,
+                    ]);
+                }
+
+                RateLimiter::clear($key);
+
+                // Cek jika hendak menurunkan peran (demote) dari SUPER_ADMIN
+                if ($targetRoleName !== 'SUPER_ADMIN' && User::activeSuperAdminCount() <= 1) {
+                    throw ValidationException::withMessages([
+                        'id_role' => 'Keamanan Sistem: Sistem wajib memiliki minimal 1 Super Admin aktif! Hak akses akun ini tidak dapat diturunkan.',
+                    ]);
+                }
+
+                // Cek jika hendak menonaktifkan akun
+                $targetStatus = (bool) ($validated['status_aktif'] ?? true);
+                if (! $targetStatus && User::activeSuperAdminCount() <= 1) {
+                    throw ValidationException::withMessages([
+                        'status_aktif' => 'Keamanan Sistem: Sistem wajib memiliki minimal 1 Super Admin aktif! Akun ini tidak dapat dinonaktifkan.',
+                    ]);
+                }
+
+                $roleId = $validated['id_role'];
+                $statusAktif = $targetStatus;
+            }
+        } else {
+            // Akun bukan Super Admin: cek kuota jika hendak dipromosikan jadi Super Admin
+            if ($targetRoleName === 'SUPER_ADMIN' && User::isSuperAdminQuotaFull()) {
+                throw ValidationException::withMessages([
+                    'id_role' => 'Batas kuota Super Administrator telah tercapai (maksimal 2 akun). Akun pengguna tidak dapat dipromosikan menjadi Super Admin.',
+                ]);
+            }
+
+            $roleId = $validated['id_role'];
+            $statusAktif = (bool) ($validated['status_aktif'] ?? true);
+        }
+
         $photoPath = $this->handleProfilePhotoUpload($request, $user->foto);
 
         $updateData = [
             'name' => strip_tags($validated['name']),
             'email' => strtolower(trim($validated['email'])),
-            'id_role' => $isSuperAdmin ? $user->id_role : $validated['id_role'],
+            'id_role' => $roleId,
             'id_staf' => $validated['id_staf'] ?? null,
-            'status_aktif' => $isSuperAdmin ? true : ($validated['status_aktif'] ?? true),
+            'status_aktif' => $statusAktif,
             'foto' => $photoPath,
         ];
 
@@ -186,14 +271,40 @@ class UserController extends Controller
     /**
      * Toggle status aktif/non-aktif akun secara instan.
      */
-    public function toggleStatus(User $user): RedirectResponse
+    public function toggleStatus(Request $request, User $user): RedirectResponse
     {
-        if ($user->isSuperAdmin()) {
-            return back()->with('error', 'Keamanan Sistem: Status akun Super Admin dilindungi dan tidak dapat dinonaktifkan demi integritas operasional!');
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Keamanan: Anda tidak dapat menonaktifkan akun Anda sendiri!');
         }
 
-        if ($user->id === Auth::id()) {
-            return back()->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri!');
+        if ($user->isSuperAdmin()) {
+            if ($user->status_aktif && User::activeSuperAdminCount() <= 1) {
+                return back()->with('error', 'Keamanan Sistem: Sistem wajib memiliki minimal 1 Super Admin aktif! Akun ini tidak dapat dinonaktifkan.');
+            }
+
+            if (! $user->status_aktif && User::activeSuperAdminCount() >= 2) {
+                return back()->with('error', 'Kuota Super Admin aktif telah penuh (maksimal 2 akun). Nonaktifkan atau ubah peran akun Super Admin lain terlebih dahulu.');
+            }
+
+            $key = 'critical-action:'.Auth::id();
+            if (RateLimiter::tooManyAttempts($key, 3)) {
+                $seconds = RateLimiter::availableIn($key);
+
+                return back()->with('error', "Terlalu banyak percobaan verifikasi yang salah. Fitur tindakan kritis dinonaktifkan sementara selama {$seconds} detik.");
+            }
+
+            $sudoPassword = $request->input('sudo_password');
+            if (! $sudoPassword || ! Hash::check($sudoPassword, Auth::user()->password)) {
+                RateLimiter::hit($key, 300);
+                $remaining = RateLimiter::retriesLeft($key, 3);
+                $msg = $remaining > 0
+                    ? "Kata sandi konfirmasi salah! Sisa percobaan: {$remaining} kali."
+                    : 'Kata sandi salah! Fitur tindakan kritis dibekukan selama 5 menit demi keamanan sistem.';
+
+                return back()->with('error', $msg);
+            }
+
+            RateLimiter::clear($key);
         }
 
         $user->update([
@@ -208,14 +319,36 @@ class UserController extends Controller
     /**
      * Hapus akun pengguna secara aman beserta berkas foto profilnya.
      */
-    public function destroy(User $user): RedirectResponse
+    public function destroy(Request $request, User $user): RedirectResponse
     {
-        if ($user->isSuperAdmin()) {
-            return back()->with('error', 'Keamanan Sistem: Akun Super Admin dilindungi dan tidak dapat dihapus dari sistem!');
-        }
-
         if ($user->id === Auth::id()) {
             return back()->with('error', 'Keamanan: Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif!');
+        }
+
+        if ($user->isSuperAdmin()) {
+            if (User::activeSuperAdminCount() <= 1) {
+                return back()->with('error', 'Keamanan Sistem: Sistem wajib memiliki minimal 1 Super Admin aktif! Akun ini terkunci dari penghapusan demi integritas operasional.');
+            }
+
+            $key = 'critical-action:'.Auth::id();
+            if (RateLimiter::tooManyAttempts($key, 3)) {
+                $seconds = RateLimiter::availableIn($key);
+
+                return back()->with('error', "Terlalu banyak percobaan verifikasi yang salah. Fitur tindakan kritis dinonaktifkan sementara selama {$seconds} detik.");
+            }
+
+            $sudoPassword = $request->input('sudo_password');
+            if (! $sudoPassword || ! Hash::check($sudoPassword, Auth::user()->password)) {
+                RateLimiter::hit($key, 300);
+                $remaining = RateLimiter::retriesLeft($key, 3);
+                $msg = $remaining > 0
+                    ? "Kata sandi konfirmasi salah! Sisa percobaan: {$remaining} kali."
+                    : 'Kata sandi salah! Fitur tindakan kritis dibekukan selama 5 menit demi keamanan sistem.';
+
+                return back()->with('error', $msg);
+            }
+
+            RateLimiter::clear($key);
         }
 
         $userName = $user->name;

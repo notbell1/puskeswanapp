@@ -2,8 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ChatMessage;
+use App\Models\User;
 use App\Models\Visit;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -63,7 +67,7 @@ class HandleInertiaRequests extends Middleware
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'foto' => $user->foto,
+                'foto' => User::resolvePhotoUrl($user->foto ?: $user->staf?->foto),
                 'role' => $normalizedRole,
                 'role_raw' => $rawRole,
                 'role_display' => $roleDisplay,
@@ -126,11 +130,119 @@ class HandleInertiaRequests extends Middleware
             ];
         }
 
+        // Shared Props untuk Fitur Chat (Model Rekam Medis: Data Kontak & Unread Langsung Ada di Awal)
+        $chatSummary = [
+            'total_unread' => 0,
+            'direct_unread' => 0,
+            'group_unread' => 0,
+            'contacts' => [],
+            'group' => null,
+        ];
+
+        if ($user) {
+            $currentUserId = $user->id;
+
+            // Sumber kebenaran tunggal langsung dari database MySQL
+            $allUsers = User::where('status_aktif', true)
+                ->where('id', '!=', $currentUserId)
+                ->select(['id', 'name', 'email', 'foto', 'id_role', 'id_staf'])
+                ->with([
+                    'role:id,nama_role',
+                    'staf:id,nama_staf,foto',
+                ])
+                ->orderBy('id_role', 'asc')
+                ->orderBy('name', 'asc')
+                ->get();
+
+            $unreadCounts = ChatMessage::where('receiver_id', $currentUserId)
+                ->where('is_read', false)
+                ->selectRaw('sender_id, count(*) as count')
+                ->groupBy('sender_id')
+                ->pluck('count', 'sender_id')
+                ->toArray();
+
+            $recentMessages = ChatMessage::whereNotNull('receiver_id')
+                ->where(function ($q) use ($currentUserId) {
+                    $q->where('sender_id', $currentUserId)
+                        ->orWhere('receiver_id', $currentUserId);
+                })
+                ->latest('id')
+                ->take(100)
+                ->get();
+
+            $lastMessageMap = [];
+            foreach ($recentMessages as $msg) {
+                $partnerId = $msg->sender_id === $currentUserId ? $msg->receiver_id : $msg->sender_id;
+                if (! isset($lastMessageMap[$partnerId])) {
+                    $lastMessageMap[$partnerId] = $msg;
+                }
+            }
+
+            $contacts = $allUsers->map(function ($u) use ($unreadCounts, $lastMessageMap) {
+                $isOnline = Cache::has('user-online-'.$u->id);
+                $unreadCount = (int) ($unreadCounts[$u->id] ?? 0);
+                $lastMsg = $lastMessageMap[$u->id] ?? null;
+
+                return [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'email' => $u->email,
+                    'foto' => User::resolvePhotoUrl($u->foto ?: $u->staf?->foto),
+                    'role_name' => $u->role?->nama_role ?? 'USER',
+                    'staf_name' => $u->staf?->nama_staf,
+                    'is_online' => $isOnline,
+                    'unread_count' => $unreadCount,
+                    'last_message' => $lastMsg ? $lastMsg->message : null,
+                    'last_message_time' => $lastMsg ? $lastMsg->created_at->setTimezone('Asia/Jakarta')->format('H:i').' WIB' : null,
+                    'last_message_date' => $lastMsg ? $lastMsg->created_at->setTimezone('Asia/Jakarta')->format('d M Y') : null,
+                ];
+            });
+
+            $lastGroupRead = (int) Cache::get('user-group-read-at-'.$currentUserId, 0);
+            $groupUnreadCount = ChatMessage::whereNull('receiver_id')
+                ->where('sender_id', '!=', $currentUserId)
+                ->where('created_at', '>', Carbon::createFromTimestamp($lastGroupRead))
+                ->count();
+
+            $lastGroupMsg = ChatMessage::whereNull('receiver_id')
+                ->with(['sender:id,name'])
+                ->latest('id')
+                ->first();
+
+            $totalDirectUnread = array_sum($unreadCounts);
+
+            $latestIncomingMessage = ChatMessage::where(function ($q) use ($currentUserId) {
+                $q->where('receiver_id', $currentUserId)
+                    ->orWhereNull('receiver_id');
+            })
+                ->where('sender_id', '!=', $currentUserId)
+                ->latest('id')
+                ->first(['id']);
+            $latestIncomingId = $latestIncomingMessage?->id ?? 0;
+
+            $chatSummary = [
+                'contacts' => $contacts->all(),
+                'group' => [
+                    'name' => 'Grup Staf Puskeswan',
+                    'description' => 'Saluran koordinasi seluruh tenaga staf Puskeswan',
+                    'unread_count' => $groupUnreadCount,
+                    'last_message' => $lastGroupMsg ? $lastGroupMsg->message : null,
+                    'last_sender_name' => $lastGroupMsg?->sender?->name,
+                    'last_message_time' => $lastGroupMsg ? $lastGroupMsg->created_at->setTimezone('Asia/Jakarta')->format('H:i').' WIB' : null,
+                ],
+                'direct_unread' => $totalDirectUnread,
+                'group_unread' => $groupUnreadCount,
+                'total_unread' => $totalDirectUnread + $groupUnreadCount,
+                'latest_incoming_id' => $latestIncomingId,
+            ];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
                 'user' => $sharedUser,
+                'chat_summary' => $chatSummary,
             ],
             'queue_summary' => $queueSummary,
             'flash' => [

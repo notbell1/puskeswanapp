@@ -374,7 +374,7 @@ export default function PendaftaranIndex({
             )}
 
             <div className="space-y-4 max-w-[1600px] mx-auto no-print">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs flex items-center justify-between">
                         <div>
                             <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
@@ -409,25 +409,6 @@ export default function PendaftaranIndex({
                         <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs flex items-center justify-between">
-                        <div>
-                            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-                                Sedang Diperiksa
-                            </span>
-                            <span className="text-2xl font-black text-blue-600 mt-1 block">
-                                {summary.periksa_today}
-                            </span>
-                            <span className="text-[11px] text-blue-600 font-semibold mt-0.5 block">
-                                Di ruang tindakan dokter
-                            </span>
-                        </div>
-                        <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                         </div>
                     </div>

@@ -23,6 +23,9 @@ class SuperDashboardController extends Controller
         $totalStaff = Staff::count();
         $totalAnimals = Animal::count();
         $totalVisits = Visit::count();
+        $totalAntrean = $totalVisits;
+        $antriMenunggu = Visit::where('status_antrean', 'Antri')->count();
+        $sedangPeriksa = Visit::where('status_antrean', 'Pemeriksaan')->count();
         $totalMedicines = Medicine::count();
         $criticalMedicines = Medicine::where('stok', '<=', 10)->count();
         $totalInventories = Inventory::count();
@@ -264,6 +267,9 @@ class SuperDashboardController extends Controller
                 'total_staff' => $totalStaff,
                 'total_animals' => $totalAnimals,
                 'total_visits' => $totalVisits,
+                'total_antrean' => $totalAntrean,
+                'antri_menunggu' => $antriMenunggu,
+                'sedang_periksa' => $sedangPeriksa,
                 'total_medicines' => $totalMedicines,
                 'critical_medicines' => $criticalMedicines,
                 'total_inventories' => $totalInventories,

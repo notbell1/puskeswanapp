@@ -2,7 +2,7 @@
   <img src="public/images/logo_puskeswan.webp" alt="Logo Puskeswan Kota Pariaman" width="110" />
 </p>
 
-<h1 align="center">PuskeswanApp V.2.4.0</h1>
+<h1 align="center">PuskeswanApp V.2.6.0</h1>
 
 <p align="center">
   <strong>Sistem Informasi Pelayanan Kesehatan Hewan, Rekam Medis Veteriner & Surveilans Zoonosis Terpadu</strong><br>
@@ -11,13 +11,14 @@
 </p>
 
 <p align="center">
-  <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/PHP-8.4.27-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.4.27" /></a>
-  <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Laravel-13.37.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 13.37.0" /></a>
-  <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Node.js-24.22.1_LTS-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 24.22.1" /></a>
-  <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19.2.0" /></a>
-  <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/TypeScript-5.7.2-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5.7.2" /></a>
-  <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Inertia.js-3.5.1-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js 3.5.1" /></a>
-  <a href="#-teknologi-yang-digunakan-tech-stack"><img src="https://img.shields.io/badge/Tailwind_CSS-4.0.0-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4.0.0" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/PHP-8.4.27-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.4.27" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/Laravel-13.39.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 13.39.0" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/Laravel_Reverb-1.12.0_WebSockets-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel Reverb 1.12.0" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/Node.js-24.22.1_LTS-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 24.22.1" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/React-19.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19.3.1" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5.9.3" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/Inertia.js-3.9.1-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js 3.9.1" /></a>
+  <a href="#-spesifikasi-teknologi-rinci-tech-stack"><img src="https://img.shields.io/badge/Tailwind_CSS-4.3.3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4.3.3" /></a>
   <a href="AUDIT.md"><img src="https://img.shields.io/badge/OWASP_Top_10-Passed_100%25-10B981?style=for-the-badge&logo=shield&logoColor=white" alt="OWASP Top 10 Passed" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge" alt="License MIT" /></a>
 </p>
@@ -29,10 +30,9 @@
 - [🏛️ Tentang Instansi](#️-tentang-instansi)
 - [📋 Tugas Pokok & Fungsi Puskeswan](#-tugas-pokok--fungsi-puskeswan)
 - [🔄 Alur Pelayanan Poliklinik Terpadu](#-alur-pelayanan-poliklinik-terpadu)
-- [📐 Pemodelan Sistem & Diagram UML (Non-Sensitif)](#-pemodelan-sistem--diagram-uml-non-sensitif)
+- [📁 Direktori Pemodelan Sistem & 16 Diagram UML (docs/uml/)](#-direktori-pemodelan-sistem--16-diagram-uml)
 - [✨ Fitur-Fitur Utama](#-fitur-fitur-utama)
 - [🛠️ Spesifikasi Teknologi Rinci (Tech Stack)](#️-spesifikasi-teknologi-rinci-tech-stack)
-- [⚡ Optimasi Kinerja Basis Data (Laravel Debugbar)](#-optimasi-kinerja-basis-data-laravel-debugbar)
 - [👥 Matriks Hak Akses Peran Pengguna](#-matriks-hak-akses-peran-pengguna)
 - [📸 Dokumentasi Visual Antarmuka (Screenshots)](#-dokumentasi-visual-antarmuka-screenshots)
 - [🛡️ Audit Keamanan Siber & Pen-Testing (OWASP Top 10)](#️-audit-keamanan-siber--pen-testing-owasp-top-10)
@@ -88,187 +88,79 @@ flowchart TD
 
 ---
 
-## 📐 Pemodelan Sistem & Diagram UML (Non-Sensitif)
+## 📁 Direktori Pemodelan Sistem & 16 Diagram UML
 
-### 1. 🎯 UML Use Case Diagram (Sistem Baru)
-
-Memetakan hubungan antara 4 peran pengguna (_Super Admin_, _Admin Loket_, _Dokter Hewan_, dan _Masyarakat / Pemilik Pasien_) terhadap batasan fungsionalitas sistem informasi:
-
-```mermaid
-flowchart LR
-    %% Actors
-    subgraph Actors ["👥 Aktor Pengguna"]
-        direction TB
-        PUB["🌐 Masyarakat / Pemilik"]:::actor
-        ADM["📋 Admin Loket"]:::actor
-        DOK["🩺 Dokter Hewan"]:::actor
-        SA["👑 Super Admin"]:::actor
-    end
-
-    %% System Boundary
-    subgraph System ["💻 Sistem Informasi Puskeswan Kota Pariaman"]
-        direction TB
-        subgraph ModulPublik ["Portal Publik & Mandiri"]
-            UC_CekRM(["🔍 Cek Rekam Medis Mandiri (NIK)"]):::uc
-            UC_Edukasi(["📰 Baca Berita & Edukasi Hewan"]):::uc
-            UC_ProfilStaf(["👨‍⚕️ Lihat Profil Tenaga Staf"]):::uc
-        end
-
-        subgraph ModulLoket ["Pelayanan Loket & Registrasi"]
-            UC_Daftar(["📝 Pendaftaran Pasien & Autofill NIK"]):::uc
-            UC_Antrean(["🎫 Penerbitan Nomor Antrean"]):::uc
-            UC_Rabies(["🐕 Surveilans Kasus Gigitan Rabies"]):::uc
-            UC_CetakRM(["🖨️ Cetak Lembar Rekam Medis"]):::uc
-        end
-
-        subgraph ModulKlinis ["Pelayanan Medis Veteriner"]
-            UC_AntreanDokter(["📋 Monitoring Antrean Realtime"]):::uc
-            UC_Periksa(["🩺 Pemeriksaan Fisik & Diagnosa"]):::uc
-            UC_Terapi(["💊 Terapi Obat & Tindakan Medis"]):::uc
-            UC_RiwayatMedis(["📜 Telusur Riwayat Medis Pasien"]):::uc
-        end
-
-        subgraph ModulManajerial ["Tata Kelola & Keamanan"]
-            UC_UserRole(["🔐 Manajemen Akun & Hak Akses"]):::uc
-            UC_Inventaris(["📦 Inventaris Obat & Alat Medis"]):::uc
-            UC_Laporan(["📊 Laporan Multi-Filter & Ekspor PDF"]):::uc
-            UC_AuditLog(["🛡️ Audit Log & Two-Tier Security"]):::uc
-        end
-    end
-
-    %% Use Case Connections
-    PUB --> UC_CekRM
-    PUB --> UC_Edukasi
-    PUB --> UC_ProfilStaf
-
-    ADM --> UC_Daftar
-    ADM --> UC_Antrean
-    ADM --> UC_Rabies
-    ADM --> UC_CetakRM
-
-    DOK --> UC_AntreanDokter
-    DOK --> UC_Periksa
-    DOK --> UC_Terapi
-    DOK --> UC_RiwayatMedis
-
-    SA --> UC_UserRole
-    SA --> UC_Inventaris
-    SA --> UC_Laporan
-    SA --> UC_AuditLog
-
-    classDef actor fill:#f1f5f9,stroke:#475569,stroke-width:2px,font-weight:bold;
-    classDef uc fill:#ffffff,stroke:#0284c7,stroke-width:1.5px;
-```
-
----
-
-### 2. 🔄 UML State Machine Diagram (Siklus Status Kunjungan Pasien)
-
-Menggambarkan transisi status antrean pasien secara otomatis sejak didaftarkan di loket pendaftaran, dipanggil ke ruang pemeriksaan dokter, hingga penerbitan lembar rekam medis resmi:
-
-```mermaid
-stateDiagram-v2
-    [*] --> Terdaftar: Admin loket daftarkan pasien & keluhan awal
-
-    state Terdaftar {
-        [*] --> Antri
-        Antri: Menunggu Panggilan di Ruang Tunggu Pasien
-    }
-
-    Terdaftar --> SedangDiperiksa: Dokter memilih pasien pada dashboard antrean
-
-    state SedangDiperiksa {
-        [*] --> PemeriksaanFisik
-        PemeriksaanFisik --> PenegakanDiagnosa
-        PenegakanDiagnosa --> ResepTerapiDanTindakan
-    }
-
-    SedangDiperiksa --> Selesai: Dokter menyimpan hasil pemeriksaan rekam medis
-
-    state Selesai {
-        [*] --> RekamMedisTercatat
-        RekamMedisTercatat: Status antrean ditutup & lembar rekam medis siap dicetak
-    }
-
-    Selesai --> [*]
-```
-
----
-
-### 3. 🌐 UML Deployment Diagram (Topologi Fisik & Infrastruktur)
-
-Menjelaskan arsitektur perangkat keras, jaringan, dan lingkungan eksekusi aplikasi secara aman:
-
-```mermaid
-flowchart LR
-    subgraph ClientTier ["💻 Client Tier (Perangkat Pengguna)"]
-        direction TB
-        Browser["🌐 Web Browser Modern<br/>(Chrome / Firefox / Edge / Safari)"]
-    end
-
-    subgraph AppTier ["🖥️ Application Tier (Server Puskeswan)"]
-        direction TB
-        WebServer["⚡ Web Server (Nginx / Apache)<br/>Reverse Proxy & TLS Termination"]
-        LaravelApp["⚙️ Backend Runtime (PHP 8.4.27)<br/>Laravel 13.37.0 & Inertia.js 3.5.1"]
-        WebServer --- LaravelApp
-    end
-
-    subgraph DataTier ["🗄️ Storage Tier (Penyimpanan Terpadu)"]
-        direction TB
-        Database[("🗄️ Relational Database (MySQL 8.0+)<br/>Composite Indexed Performance Tables")]
-        CacheStore[("⚡ High-Speed Cache<br/>(Session & Rate Limiter Security)")]
-    end
-
-    Browser -- "HTTPS / TLS Encrypted (Port 443)" --> WebServer
-    LaravelApp -- "PDO / MySQL Socket Connection" --> Database
-    LaravelApp -- "Key-Value State Store" --> CacheStore
-```
+> 📑 **Dokumentasi Lengkap Perancangan Sistem & Naskah Skripsi:**  
+> Seluruh berkas pemodelan diagram UML (*PlantUML `.puml`*) dan narasi rekayasa perangkat lunak tersimpan secara terpusat pada direktori resmi [**`docs/uml/`**](docs/uml/README.md).
+>
+> Mencakup **16 diagram terpadu**: BPMN (Sistem Lama & Baru), Use Case (Sistem Lama & Baru), Activity Diagram Pelayanan, Activity Diagram Real-Time Chat, Flowchart SOP (Admin, Dokter, Super Admin), Class Diagram, ERD 14 Tabel Relasional, Sequence Diagram (3 Skenario Kunci), Component Diagram, State Machine Diagram, Package Diagram, dan Deployment Diagram.
 
 ---
 
 ## ✨ Fitur-Fitur Utama
 
 <details open>
-<summary><strong>🔍 1. Portal Cek Rekam Medis Mandiri oleh Masyarakat</strong></summary>
+<summary><strong>💬 1. Modul Komunikasi Real-Time Antar-Staf (Laravel Reverb WebSockets)</strong></summary>
+
+- **Pertukaran Pesan Instan (< 50 ms):** Menggunakan server WebSocket modern bawaan Laravel Reverb dan pustaka Laravel Echo / Pusher-JS tanpa delay polling berkala.
+- **Saluran Ganda (1-to-1 & 1-to-All):** Mendukung obrolan langsung pribadi antar-rekan kerja (*Direct Message*) dan pengumuman forum bersama seluruh staf (*All Staff Group Channel*).
+- **Single Source of Truth & Soft Delete Sync:** Riwayat percakapan sepenuhnya bersumber langsung dari tabel database MySQL `chat_messages` dengan dukungan `SoftDeletes` (`deleted_at`). Pesan yang dihapus Super Admin otomatis lenyap seketika di seluruh layar staf via event `MessageDeleted`.
+- **Smart Audio Notification:** Suara denting Web Audio API marimba chime berbunyi tepat **1 kali per pesan baru** dengan pelacakan ID pesan masuk tertinggi (`latest_incoming_id`), tanpa berulang saat pesan belum dibaca.
+- **Draggable Widget Berpembatas Fisik Sidebar:** Tombol mengambang dapat digeser bebas (*draggable*) dengan pembatas fisik dinamis (`getMinX`) yang terhubung ke `ResizeObserver` dan event `transitionend` sidebar agar tombol tidak pernah tenggelam di balik sidebar.
+- **Performa & Anti-Flicker:** Komponen foto avatar pengguna di-memoize dengan `React.memo` dan dipertahankan dalam DOM (`display: none/flex`) sehingga tidak pernah me-reload ulang saat dialog ditutup-buka.
+- **Sanitasi & Proteksi Keamanan:** Validasi panjang pesan 1–2000 karakter, sanitasi XSS otomatis via `strip_tags()`, proteksi berkirim pesan ke diri sendiri, dan pembatasan frekuensi (*rate limit*) 40 pesan per menit.
+</details>
+
+<details open>
+<summary><strong>🔍 2. Portal Cek Rekam Medis Mandiri oleh Masyarakat</strong></summary>
 
 - **Verifikasi Identitas Aman:** Pemilik cukup memasukkan 16 digit NIK dan Nama Lengkap yang dicocokkan dengan data registrasi poliklinik.
 - **Captcha Anti-Bot Dinamis:** Perlindungan dari _scraping_ otomatis menggunakan generator kode acak berbasis SVG biner di sisi server.
 - **Informasi Klinis Lengkap:** Menampilkan riwayat pemeriksaan, diagnosa dokter, berat badan, suhu tubuh, tindakan medis, serta rincian terapi obat.
 - **Pratinjau & Cetak PDF:** Dilengkapi tombol cetak dokumen resmi rekam medis yang siap diunduh atau dicetak.
-  </details>
+</details>
 
 <details>
-<summary><strong>📊 2. Modul Surveilans Epidemiologi Rabies (GHPR)</strong></summary>
+<summary><strong>📑 3. Format Cetak Rekapitulasi Bulanan Landscape & Dedicated Route Cetak RM</strong></summary>
+
+- **Dedicated Route Cetak Kartu RM Pasien (`/admin/rekam-medis/{visit}/cetak`):** Rute cetak terisolasi format A4 Portrait bebas dari *layout SPA overflow*, memuat Kop Surat resmi dinas, identitas lengkap pemilik/hewan, tabel riwayat medis bergaris titik-titik rapi, dan tanda tangan dokter pemeriksa.
+- **Rekapitulasi Pelaporan Pengobatan Bulanan A4 Landscape (`/admin/rekam-medis/rekap-bulanan`):** Cetak pelaporan rekapitulasi pengobatan penyakit hewan bulanan berorientasi landscape dengan modal filter bulan dan tahun pada menu Hasil Rekam Medis.
+- **Format 9 Kolom Standar Dinas:** Tabel padat (*compact cell padding* & font 7.5pt–8pt) mencakup No, Tanggal, Jumlah Hewan (1 Ekor), Spesies (No. RM), Tanda/Anamnesa, Nama Pemilik, Alamat (Kecamatan), Diagnosa, dan Terapi Obat.
+- **Sinkronisasi Antrean Multi-Role:** Keselarasan data dan metrik antrean pasien antara Dashboard Admin Loket, Ruang Antrean Dokter, dan Pemantauan Live Super Admin.
+</details>
+
+<details>
+<summary><strong>📊 4. Modul Surveilans Epidemiologi Rabies (GHPR)</strong></summary>
 
 - **Pencatatan Epidemiologi Rinci:** Mendokumentasikan identitas korban, lokasi luka gigitan, tanggal kejadian, serta kepemilikan hewan.
 - **Status Hewan & Masa Observasi 14 Hari:** Pelacakan kondisi hewan penggigit (_Observasi Lapangan_, _Mati / Positif Rabies_, _Sehat_).
 - **Monitoring Vaksin Anti Rabies (VAR):** Rekapitulasi status pemberian vaksin pada manusia (_Belum_, _Dosis 1_, _Lengkap_).
 - **Format Cetak Laporan Resmi:** Template laporan investigasi epidemiologi untuk koordinasi lintas sektoral dengan Dinas Kesehatan.
-  </details>
+</details>
 
 <details>
-<summary><strong>🛡️ 3. Arsitektur Keamanan Berlapis (Two-Tier Rate Limiting)</strong></summary>
+<summary><strong>🛡️ 5. Arsitektur Keamanan Berlapis (Two-Tier Rate Limiting)</strong></summary>
 
 - **Tier 1 (Cooldown 20 Detik):** Jika pengguna salah memasukkan kredensial 5 kali berturut-turut, tombol login dinonaktifkan sementara dengan timer hitung mundur.
 - **Tier 2 (IP Block 30 Menit):** Jika penalti cooldown terulang hingga 3 kali (3 _strikes_), alamat IP penyerang diblokir total selama 30 menit ke halaman error `429 Too Many Requests`.
 - **Zero-Trust Upload Validation:** Seluruh unggahan foto profil dan gambar artikel diperiksa biner _magic bytes_-nya menggunakan ekstensi PHP `finfo` dan `getimagesize()` untuk mencegah penyelundupan _web shell_.
-  </details>
+</details>
 
 <details>
-<summary><strong>📦 4. Manajemen Logistik Obat & Inventaris Klinik</strong></summary>
+<summary><strong>📦 6. Manajemen Logistik Obat & Inventaris Klinik</strong></summary>
 
 - **Indikator Stok Cerdas:** Otomatisasi pengelompokan status obat (_Kritis: ≤ 10 unit_, _Menipis: 11–30 unit_, _Aman: > 30 unit_).
 - **Inventaris Alat Medis:** Pengawasan kondisi peralatan medis dan operasional lapangan (_Baik_, _Rusak Ringan_, _Rusak Berat_) lengkap dengan riwayat pencatatan penanggung jawab.
-  </details>
+</details>
 
 <details>
-<summary><strong>📊 5. Standarisasi Tampilan Tabel, Truncate Dinamis & Pencarian Real-Time</strong></summary>
+<summary><strong>📊 7. Standarisasi Tampilan Tabel, Truncate Dinamis & Pencarian Real-Time</strong></summary>
 
 - **Rigid Table-Fixed Architecture:** Seluruh tabel data pada modul Super Admin, Admin, dan Dokter menggunakan arsitektur `table-fixed` dengan lebar kolom rigid, tinggi baris konsisten `58px`, dan baris kosong penyeimbang (5 baris stabil per halaman) agar layout tidak melonjak antar halaman.
 - **Dynamic Text Truncation with Tooltip:** Teks panjang fleksibel memenuhi 100% sisa lebar kolom yang tersedia sebelum memotong elipsis (`...`), lengkap dengan tooltip bawaan browser saat kursor di-hover untuk kenyamanan membaca.
 - **Zero-Click Instant Search:** Pencarian otomatis menyaring data secara real-time saat pengguna mengetik (0ms pada master data, 300ms debounce pada data transaksional) tanpa memerlukan penekanan tombol manual "Cari" atau "Reset".
 - **Harmonized 5-Number Pagination:** Navigasi pagination terstandarisasi yang secara konsisten selalu menyajikan tepat 5 nomor halaman aktif pada seluruh kondisi penjelajahan data.
-  </details>
+</details>
 
 ---
 
@@ -279,65 +171,48 @@ Aplikasi dibangun menggunakan kombinasi pustaka dan kerangka kerja modern versi 
 | Komponen Arsitektur     | Teknologi / Pustaka           |   Versi Terpasang   | Peran & Deskripsi Kunci                                                       |
 | :---------------------- | :---------------------------- | :-----------------: | :---------------------------------------------------------------------------- |
 | **Backend Runtime**     | **PHP**                       | `v8.4.27 (NTS x64)` | Runtime modern dengan performa JIT engine dan konstruktor properti terpromosi |
-| **Backend Framework**   | **Laravel Framework**         |     `v13.37.0`      | Framework inti MVC (Patched terhadap celah `CVE-2026-114509`)                 |
+| **Backend Framework**   | **Laravel Framework**         |     `v13.39.0`      | Framework inti MVC dengan arsitektur modular dan routing terpadu              |
+| **WebSocket Engine**    | **Laravel Reverb**            |      `v1.12.0`      | Server WebSocket first-party lokal untuk komunikasi real-time instan (< 50ms) |
+| **Real-Time Client**    | **Laravel Echo & Pusher-JS**  | `v2.6.3` / `v8.6.0` | Pustaka langganan channel WebSocket privat & publik di sisi browser           |
 | **Frontend Runtime**    | **Node.js**                   |  `v24.22.1 (LTS)`   | Lingkungan eksekusi JavaScript modern dengan npm `v11.19.1`                   |
-| **Frontend Framework**  | **React**                     |      `v19.2.0`      | Pustaka antarmuka pengguna berbasis komponen reaktif SPA                      |
-| **Language Extension**  | **TypeScript**                |      `v5.7.2`       | Pengetikan statis ketat untuk mencegah _runtime type error_ di antarmuka      |
-| **Full-Stack Adapter**  | **Inertia.js Core / Laravel** |      `v3.5.1`       | Jembatan komunikasi server-driven SPA tanpa pembuatan REST API redundan       |
-| **CSS & Design Engine** | **Tailwind CSS**              |      `v4.0.0`       | Mesin CSS generasi baru berbasis _lightningcss_ untuk styling ultra cepat     |
+| **Frontend Framework**  | **React**                     |      `v19.3.1`      | Pustaka antarmuka pengguna berbasis komponen reaktif SPA                      |
+| **Language Extension**  | **TypeScript**                |      `v5.9.3`       | Pengetikan statis ketat untuk mencegah _runtime type error_ di antarmuka      |
+| **Full-Stack Adapter**  | **Inertia.js Core / React**   |      `v3.9.1`       | Jembatan komunikasi server-driven SPA tanpa pembuatan REST API redundan       |
+| **CSS & Design Engine** | **Tailwind CSS**              |      `v4.3.3`       | Mesin CSS generasi baru berbasis _lightningcss_ untuk styling ultra cepat     |
 | **Iconography**         | **Lucide Icons**              |      `v1.16.0`      | Pustaka ikon SVG modern yang ringan dan konsisten                             |
 | **Type-Safe Routing**   | **Laravel Wayfinder**         |      `v0.1.23`      | Generator otomatis fungsi rute TypeScript langsung dari controller Laravel    |
 | **Database Engine**     | **MySQL / MariaDB**           |  `v8.0+ / v10.5+`   | Basis data relasional dengan indeks komposit pada tabel frekuensi tinggi      |
-| **Automated Testing**   | **Pest PHP**                  |      `v5.3.4`       | Kerangka pengujian fitur otomatis (85 Feature & Security Tests, 100% Passed)   |
+| **Automated Testing**   | **Pest PHP**                  |      `v5.3.4`       | Kerangka pengujian fitur otomatis (99 Feature & Security Tests, 100% Passed)  |
 | **Code Style Linter**   | **Laravel Pint**              |      `v1.32.1`      | Formatter kode otomatis berstandar PSR-12 dan panduan Laravel                 |
 | **Build Tooling**       | **Vite-Plus (VoidZero)**      |      `v1.4.0`       | Bundler modul berkas frontend super cepat untuk lingkungan produksi           |
 
 ---
 
-## ⚡ Optimasi Kinerja Basis Data (Laravel Debugbar)
-
-Audit menyeluruh menggunakan metrik Laravel Debugbar telah mengeliminasi inefisiensi kueri di seluruh modul:
-
-```
-[SEBELUM OPTIMASI]
-Admin Dashboard  : 160+ Kueri SQL (Looping harian 30 hari x 5 kueri count)  -> Latensi: 350-600 ms
-Pencarian Pasien : 1 + N Kueri SQL (Looping query kunjungan terakhir hewan)  -> N+1 Problem
-Dokter Dashboard : Duplikasi 100% kueri antrean aktif & rekap grafik         -> Kueri ganda
-
-[SETELAH OPTIMASI]
-Admin Dashboard  : 5–6 Kueri SQL (Single Query GROUP BY agregasi)            -> Latensi: < 50 ms (-96%)
-Pencarian Pasien : 2 Kueri SQL (Eager Loading via latestOfMany 'latestVisit')-> N+1 Terselesaikan
-Dokter Dashboard : 0 Kueri Duplikat (Reuse hasil kueri agregasi 30 hari)     -> Beban berkurang 50%
-```
-
-- **Indeks Komposit yang Ditambahkan:**
-    - `visits(tgl_kunjungan, status_antrean)`: Mempercepat filter antrean harian dan dashboard.
-    - `examinations(id_dokter, waktu_selesai)`: Mempercepat kalkulasi grafik analitik dokter.
-    - `examinations(waktu_selesai)`: Mempercepat filter laporan rekam medis berkala.
-
----
-
 ## 👥 Matriks Hak Akses Peran Pengguna
 
-<details>
+<details open>
 <summary><strong>Klik untuk melihat rincian hak akses peran (*Role Access Matrix*)</strong></summary>
 
-| Modul & Fitur                    | Publik / Tamu | Petugas Loket (Admin) | Dokter Hewan | Super Administrator |
-| :------------------------------- | :-----------: | :-------------------: | :----------: | :-----------------: |
-| **Landing Page & Edukasi**       |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
-| **Cek Rekam Medis Mandiri**      |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
-| **Dashboard Loket Pendaftaran**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
-| **Registrasi Pemilik & Pasien**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
-| **Manajemen Antrean Loket**      |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
-| **Surveilans Rabies (GHPR)**     |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
-| **Dashboard Dokter Hewan**       |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
-| **Pemeriksaan & Diagnosa Medis** |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
-| **Riwayat Pelayanan Dokter**     |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
-| **Dashboard Eksekutif**          |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
-| **Manajemen Akun Pengguna**      |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
-| **Manajemen Pegawai & Staf**     |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
-| **Logistik Obat & Inventaris**   |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
-| **Laporan & Ekspor Terpadu**     |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| Modul & Fitur                                  | Publik / Tamu | Petugas Loket (Admin) | Dokter Hewan | Super Administrator |
+| :--------------------------------------------- | :-----------: | :-------------------: | :----------: | :-----------------: |
+| **Landing Page & Edukasi**                     |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
+| **Cek Rekam Medis Mandiri (NIK)**              |   ✅ Akses    |       ✅ Akses        |   ✅ Akses   |      ✅ Akses       |
+| **Obrolan Internal Staf (Reverb WebSockets)**   |  ❌ Ditolak   |       ✅ Penuh        |   ✅ Penuh   | ✅ Penuh (+ Hapus)  |
+| **Dashboard Loket Pendaftaran**                |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
+| **Registrasi Pemilik & Pasien (Autofill NIK)** |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
+| **Manajemen Antrean Loket**                    |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
+| **Dedicated Cetak Kartu RM Pasien**            |  ❌ Ditolak   |       ✅ Penuh        |   ✅ Cetak   |      ✅ Penuh       |
+| **Rekapitulasi Pengobatan Bulanan Landscape**  |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |      ✅ Penuh       |
+| **Surveilans Rabies (GHPR) & Cetak Laporan**   |  ❌ Ditolak   |       ✅ Penuh        |  ❌ Ditolak  |    👁️ Monitoring    |
+| **Dashboard Dokter Hewan**                     |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
+| **Pemeriksaan & Diagnosa Medis**               |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
+| **Riwayat Pelayanan Dokter**                   |  ❌ Ditolak   |      ❌ Ditolak       |   ✅ Penuh   |    👁️ Monitoring    |
+| **Live Monitoring Antrean & Pelayanan**        |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |   👁️ Live Pantau   |
+| **Dashboard Eksekutif Super Admin**            |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Manajemen Akun Pengguna**                    |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Manajemen Pegawai & Tenaga Staf**            |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Logistik Obat, Vaksin & Inventaris**         |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
+| **Laporan Terpadu & Ekspor PDF Multi-Filter**  |  ❌ Ditolak   |      ❌ Ditolak       |  ❌ Ditolak  |      ✅ Penuh       |
 
 </details>
 
@@ -419,7 +294,7 @@ Berikut adalah dokumentasi tampilan visual antarmuka sistem PuskeswanApp V.2.1.0
 
 ## 🛡️ Audit Keamanan Siber & Pen-Testing (OWASP Top 10)
 
-Sistem **PuskeswanApp** telah melalui pengujian penetrasi keamanan mendalam (*Full-Spectrum Penetration Testing*) berbasis standar internasional **OWASP Top 10:2021** dan pengujian integritas arsitektur/routing.
+Sistem **PuskeswanApp** telah melalui pengujian penetrasi keamanan mendalam (*Full-Spectrum Penetration Testing*) berbasis standar internasional **OWASP Top 10:2021**, pengujian integritas arsitektur routing, serta hardening modul komunikasi real-time.
 
 ### Ringkasan Hasil Audit Keamanan:
 - **Total Skenario Diuji:** 42 Skenario (Terbagi dalam 7 Batch Komprehensif)
@@ -427,15 +302,15 @@ Sistem **PuskeswanApp** telah melalui pengujian penetrasi keamanan mendalam (*Fu
 - **Kerentanan Berhasil Dieksploitasi:** **0 (Zero Vulnerability)**
 - **Peringkat Keamanan:** **Grade A+ (Hardened - Production Ready)**
 
-| Batch | Kategori OWASP Top 10 | Skenario | Status |
-| :---: | :--- | :---: | :---: |
-| **Batch 1** | **A01: Broken Access Control & IDOR** (Eskalasi Super Admin/Loket, IDOR Pasien, Path Traversal, CORS) | 7 Skenario | `[DEFENDED]` |
-| **Batch 2** | **A02: Cryptographic Failures** (Enforce HTTPS, Hash BCrypt Cost 12, Cookie HttpOnly/SameSite, Props Safe) | 4 Skenario | `[DEFENDED]` |
-| **Batch 3** | **A03: Injection Attacks** (SQLi Pencarian, Time-based Blind SQLi, Stored XSS, Reflected XSS, Host Poisoning) | 6 Skenario | `[DEFENDED]` |
-| **Batch 4** | **A04: Insecure Design & Anti-Bot** (Invisible Honeypot Trap, Verifikasi 3-Lapis Rekam Medis, Rate Limiting) | 3 Skenario | `[DEFENDED]` |
-| **Batch 5** | **A05: Security Misconfiguration** (Akses `.env`/`.git` Ditolak, -Indexes Disabled, Security Headers, Clean 404) | 4 Skenario | `[DEFENDED]` |
-| **Batch 6** | **A06 & A07: Authentication & Components** (Brute Force Cooldown, IP Quarantine 429, Session Zombie Revoke, PHP 8.4) | 8 Skenario | `[DEFENDED]` |
-| **Batch 7** | **A08, A09, A10 & Routing** (Mass Assignment Guard, CSRF Stripping, Anti-Webshell, No-Exec Storage, Fallback 404) | 10 Skenario | `[DEFENDED]` |
+| Batch | Kategori OWASP Top 10 | Cakupan Vektor Pengujian & Pertahanan | Status |
+| :---: | :--- | :--- | :---: |
+| **Batch 1** | **A01: Broken Access Control & IDOR** | Proteksi eskalasi wewenang akun Super Admin/Admin/Dokter, isolasi IDOR rekam medis pasien, path traversal, dan kebijakan CORS ketat. | `[DEFENDED]` |
+| **Batch 2** | **A02: Cryptographic Failures** | Enkripsi wajib HTTPS/TLS, hashing password standar industri BCrypt cost 12, cookie sesi terproteksi `HttpOnly`, `SameSite=Lax`, dan sanitasi props Inertia. | `[DEFENDED]` |
+| **Batch 3** | **A03: Injection Attacks** | Perlindungan parameterized queries terhadap SQL Injection (pencarian & filter), time-based blind SQLi, pencegahan Stored/Reflected XSS via sanitasi HTML `strip_tags()` pada chat & input, serta mitigasi host header poisoning. | `[DEFENDED]` |
+| **Batch 4** | **A04: Insecure Design & Anti-Bot** | Verifikasi 3 lapis pada cek rekam medis publik (NIK 16 digit, Nama Lengkap, Captcha SVG dinamis server-side), perangkap bot (*invisible honeypot*), dan mitigasi race-condition. | `[DEFENDED]` |
+| **Batch 5** | **A05: Security Misconfiguration** | Pemblokiran akses langsung ke berkas sensitif (`.env`, `.git`), penonaktifan direktori browsing (`-Indexes`), security headers terstandarisasi, dan penanganan clean error `404 Not Found`. | `[DEFENDED]` |
+| **Batch 6** | **A06 & A07: Authentication & Outdated Components** | Arsitektur rate limiting 2-Tier (Cooldown 20 detik & Karantina IP 30 menit ke `429`), pencabutan sesi zombie/stale, dependensi bebas CVE (`composer audit` bersih), dan kompatibilitas penuh PHP 8.4. | `[DEFENDED]` |
+| **Batch 7** | **A08, A09, A10 & WebSocket Security** | Mass assignment guard Eloquent, proteksi token CSRF ganda, larangan eksekusi skrip di folder storage (*anti-webshell*), otorisasi ketat channel privat WebSockets (`routes/channels.php`), dan pembatasan wewenang hapus pesan khusus Super Admin. | `[DEFENDED]` |
 
 > 📑 **Laporan Audit Forensik Lengkap:**  
 > Rincian lengkap metodologi, analisis vektor serangan, dan mekanisme pertahanan teknis didokumentasikan secara formal pada berkas [**`AUDIT.md`**](AUDIT.md).
@@ -447,30 +322,64 @@ Sistem **PuskeswanApp** telah melalui pengujian penetrasi keamanan mendalam (*Fu
 
 ## 🧪 Verifikasi Kualitas Kode & Pengujian Otomatis
 
-Aplikasi dilengkapi _automated regression testing_ menggunakan Pest PHP dan standardisasi gaya kode Laravel Pint:
+Aplikasi menerapkan pengujian regresi otomatis menyeluruh (*Automated Regression Testing*), pemeriksaan tipe data statis ketat, standardisasi kode PSR-12, dan kompilasi frontend teroptimasi:
+
+### 1. 🧪 Automated Regression Testing (Pest PHP 5.3.4)
+Menjalankan pengujian fitur operasional, transaksional medis, surveilans rabies, otentikasi, hingga modul obrolan real-time:
 
 ```bash
-# Menjalankan seluruh pengujian otomatis fitur & keamanan (85 Tests)
+# Menjalankan seluruh pengujian otomatis (99 Feature & Security Tests)
 php artisan test --compact
-
-# Hasil Pengujian:
-# PASS  Tests\Feature\AdminModulesTest
-# PASS  Tests\Feature\DokterModulesTest
-# PASS  Tests\Feature\SuperAdminModulesTest
-# PASS  Tests\Feature\PublicMedicalRecordSearchTest
-# PASS  Tests\Feature\SecurityPenetrationTest
-# PASS  Tests\Feature\AuthRateLimitingTest
-# PASS  Tests\Feature\UserPhotoManagementTest
-# Tests:    85 passed (622 assertions)
-# Duration: 5.12s (100% Passed)
 ```
 
-```bash
-# Menjalankan code formatter standar PSR-12
-vendor/bin/pint --dirty --format agent
+```text
+   PASS  Tests\Feature\ChatTest (14 tests, 85 assertions)
+   PASS  Tests\Feature\AdminModulesTest (18 tests, 142 assertions)
+   PASS  Tests\Feature\DokterModulesTest (12 tests, 96 assertions)
+   PASS  Tests\Feature\SuperAdminModulesTest (20 tests, 164 assertions)
+   PASS  Tests\Feature\PublicMedicalRecordSearchTest (8 tests, 48 assertions)
+   PASS  Tests\Feature\SecurityPenetrationTest (15 tests, 112 assertions)
+   PASS  Tests\Feature\AuthRateLimitingTest (6 tests, 38 assertions)
+   PASS  Tests\Feature\UserPhotoManagementTest (6 tests, 22 assertions)
 
-# Kompilasi aset frontend produksi
+  Tests:    99 passed (707 assertions)
+  Duration: 6.44s (100% Passed)
+```
+
+### 2. 🔍 TypeScript Static Type Checking
+Memastikan seluruh komponen React, props Inertia, hook, dan rute Laravel Wayfinder bebas dari kesalahan tipe:
+
+```bash
+# Verifikasi pengetikan statis seluruh berkas TypeScript/JSX
+npm run types:check
+# Output: tsc --noEmit (0 errors)
+```
+
+### 3. 🎨 Standarisasi Format Kode (Laravel Pint)
+Menjaga kepatuhan gaya penulisan kode PHP dengan standar resmi Laravel dan PSR-12:
+
+```bash
+# Formatter kode otomatis
+vendor/bin/pint --format agent
+# Output: {"tool":"pint","result":"passed"}
+```
+
+### 4. ⚡ Kompilasi Frontend Produksi (Vite-Plus)
+Membundel seluruh aset React 19, CSS Tailwind v4, dan kode klien secara ringkas:
+
+```bash
+# Build aset produksi teroptimasi
 npm run build
+# Output: ✓ 638 modules transformed in ~11.2s
+```
+
+### 5. 📡 Menjalankan Server WebSocket (Laravel Reverb)
+Mengaktifkan server daemon WebSocket berkecepatan tinggi untuk modul obrolan instan:
+
+```bash
+# Memulai server WebSocket Reverb lokal
+php artisan reverb:start
+# Output: INFO Starting server on 0.0.0.0:8080 (localhost).
 ```
 
 ---

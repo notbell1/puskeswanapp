@@ -25,6 +25,8 @@ export interface PrintableMedicalRecord {
     catatan?: string;
     dokter?: string;
     dokter_nama?: string;
+    pimpinan_nama?: string;
+    pimpinan_nip?: string;
     historical_records?: Array<{
         id: number;
         tgl_kunjungan: string;
@@ -158,16 +160,17 @@ export function generateMedicalCardHtml(
 
     const signatureDate = formatIndonesianDate(new Date()); // Tanggal cetak adalah tanggal saat itu juga
 
-    // Baris tabel kunjungan (Tanpa kolom Dokter, Anamnesa/Diagnosa/Terapi berukuran sama rata 24%)
+    // Baris tabel kunjungan (NO, Tanggal, BB/Suhu, Anamnesa, Diagnosa, Terapi Pengobatan)
     const rowsHtml = allVisits
         .map(
-            (item) => `
+            (item, idx) => `
         <tr style="vertical-align: top;">
-            <td style="border: 1px solid #000; padding: 4px 3px; text-align: center; white-space: nowrap; width: 14%;">${formatDateOnly(item.tgl_kunjungan)}</td>
-            <td style="border: 1px solid #000; padding: 4px 3px; text-align: center; white-space: nowrap; width: 14%;">${item.berat_badan} kg / ${item.suhu_tubuh}&deg;C</td>
-            <td style="border: 1px solid #000; padding: 4px 5px; line-height: 1.25; width: 24%; word-break: break-word;">${(item.anamnesa || "-").trim()}</td>
-            <td style="border: 1px solid #000; padding: 4px 5px; font-weight: 500; line-height: 1.25; width: 24%; word-break: break-word;">${(item.diagnosa || "-").trim()}</td>
-            <td style="border: 1px solid #000; padding: 4px 5px; white-space: pre-line; line-height: 1.25; width: 24%; word-break: break-word;">${(item.terapi_pengobatan || "-").trim()}</td>
+            <td style="border: 1px solid #000; padding: 4px 3px; text-align: center; font-weight: bold; width: 5%;">${idx + 1}</td>
+            <td style="border: 1px solid #000; padding: 4px 3px; text-align: center; white-space: nowrap; width: 13%;">${formatDateOnly(item.tgl_kunjungan)}</td>
+            <td style="border: 1px solid #000; padding: 4px 3px; text-align: center; white-space: nowrap; width: 14%;">${item.berat_badan} kg<br>${item.suhu_tubuh}&deg;C</td>
+            <td style="border: 1px solid #000; padding: 4px 5px; line-height: 1.25; width: 23%; word-break: break-word;">${(item.anamnesa || "-").trim()}</td>
+            <td style="border: 1px solid #000; padding: 4px 5px; font-weight: 500; line-height: 1.25; width: 22%; word-break: break-word;">${(item.diagnosa || "-").trim()}</td>
+            <td style="border: 1px solid #000; padding: 4px 5px; white-space: pre-line; line-height: 1.25; width: 23%; word-break: break-word;">${(item.terapi_pengobatan || "-").trim()}</td>
         </tr>
     `,
         )
@@ -177,11 +180,11 @@ export function generateMedicalCardHtml(
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Kartu Rekam Medis - ${record.no_rm}</title>
     <style>
         @page {
             size: A4 portrait;
-            margin: 0mm !important; /* Wajib 0 agar browser TIDAK mencetak about:blank, waktu, tanggal, dan URL di atas kertas */
+            margin: 0 !important;
         }
         *, *::before, *::after {
             box-sizing: border-box;
@@ -202,18 +205,14 @@ export function generateMedicalCardHtml(
             width: 100%;
             margin: 0 auto;
             background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
         .content-wrapper {
-            flex: 1 0 auto;
             width: 100%;
         }
         .signature-section {
-            flex-shrink: 0;
-            margin-top: auto !important;
-            padding-top: 14px !important;
+            margin-top: 18px !important;
+            display: flex;
+            justify-content: flex-end;
             break-inside: avoid !important;
             page-break-inside: avoid !important;
         }
@@ -237,23 +236,30 @@ export function generateMedicalCardHtml(
             }
             .print-page {
                 max-width: 210mm;
-                min-height: 270mm;
                 padding: 10mm 15mm 15mm 15mm;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             }
         }
         @media print {
-            body {
-                background: #ffffff !important;
-                padding: 0 !important;
+            @page {
+                size: A4 portrait;
                 margin: 0 !important;
             }
-            .print-page {
+            html, body {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
                 width: 100% !important;
-                max-width: 210mm !important;
-                min-height: 270mm !important; /* Posisi tanda tangan konsisten di bawah pada lembar A4 */
-                padding: 10mm 15mm 15mm 15mm !important; /* Margin fisik resmi pada kertas A4 */
-                margin: 0 auto !important;
+                height: 100% !important;
+            }
+            .print-page {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                width: 100% !important;
+                min-height: 100% !important;
+                padding: 10mm 15mm 12mm 15mm !important;
+                margin: 0 !important;
                 box-shadow: none !important;
             }
         }
@@ -360,15 +366,16 @@ export function generateMedicalCardHtml(
             </div>
         </div>
 
-        <!-- Tabel Rekam Medis (Kolom Anamnesa, Diagnosa & Terapi Berukuran Sama Rata 24%) -->
+        <!-- Tabel Rekam Medis (Kolom Proporsional Sesuai Standar Pelayanan) -->
         <table style="width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 8px; table-layout: fixed;">
             <thead>
-                <tr style="background-color: #f3f4f6; text-transform: uppercase; text-align: center; font-weight: bold;">
-                    <th style="border: 1px solid #000; padding: 4px 4px; width: 14%;">TANGGAL</th>
-                    <th style="border: 1px solid #000; padding: 4px 4px; width: 14%;">BB/SUHU</th>
-                    <th style="border: 1px solid #000; padding: 4px 4px; width: 24%;">ANAMNESA</th>
-                    <th style="border: 1px solid #000; padding: 4px 4px; width: 24%;">DIAGNOSA</th>
-                    <th style="border: 1px solid #000; padding: 4px 4px; width: 24%;">TERAPI</th>
+                <tr style="background-color: #ffffff; text-transform: uppercase; text-align: center; font-weight: bold;">
+                    <th style="border: 1px solid #000; padding: 4px 3px; width: 5%;">NO</th>
+                    <th style="border: 1px solid #000; padding: 4px 3px; width: 13%;">TANGGAL</th>
+                    <th style="border: 1px solid #000; padding: 4px 3px; width: 14%;">BB/SUHU</th>
+                    <th style="border: 1px solid #000; padding: 4px 4px; width: 23%;">ANAMNESA</th>
+                    <th style="border: 1px solid #000; padding: 4px 4px; width: 22%;">DIAGNOSA</th>
+                    <th style="border: 1px solid #000; padding: 4px 4px; width: 23%;">TERAPI PENGOBATAN</th>
                 </tr>
             </thead>
             <tbody>
@@ -394,11 +401,9 @@ export function generateMedicalCardHtml(
                 <div style="height: 42px;"></div>
 
                 <div style="font-weight: bold; text-decoration: underline; font-size: 10.5pt;">
-                    drh. Reni Gusnita
+                    ${(record.pimpinan_nama || "").trim() || "Penanggung Jawab"}
                 </div>
-                <div style="font-size: 9pt; margin-top: 1px;">
-                    NIP. 19860826 201903 2 002
-                </div>
+                ${(record.pimpinan_nip || "").trim() ? `<div style="font-size: 9pt; margin-top: 1px;">${(record.pimpinan_nip || "").trim()}</div>` : ""}
             </div>
         </div>
     </div>

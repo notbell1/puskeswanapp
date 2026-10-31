@@ -4,7 +4,81 @@ Semua perubahan dan pembaruan penting pada proyek **PuskeswanApp** dicatat dalam
 
 ---
 
+## [2.6.0] - 2026-10-31
+
+### 💬 Modul Komunikasi Real-Time Antar-Staf (WebSockets via Laravel Reverb), Single Source of Truth Database & UI Resilient
+
+- **Mesin WebSocket Real-Time Tanpa Polling (Laravel Reverb & Echo)**:
+  - Mengintegrasikan server WebSocket lokal berkecepatan tinggi via Laravel Reverb (`php artisan reverb:start`) pada port 8080.
+  - Memanfaatkan Laravel Echo (`resources/js/echo.ts`) dengan private channel otorisasi (`chat.user.{id}`) dan presence/group channel (`chat.group`).
+  - Mengeliminasi delay berkala HTTP polling (sebelumnya 5–15 detik) menjadi latensi instan (< 50ms) menggunakan event broadcast `MessageSent` dan `MessageDeleted` (`ShouldBroadcastNow`).
+
+- **Arsitektur Basis Data Tunggal & Sinkronisasi Soft Deletes**:
+  - Menghilangkan ketergantungan pada `sessionStorage` pesan yang rentan basi/desinkronisasi; MySQL `chat_messages` ditetapkan sebagai *Single Source of Truth*.
+  - Menambahkan migrasi database `deleted_at` (`SoftDeletes`) pada tabel `chat_messages`.
+  - Sinkronisasi penghapusan pesan instan: Ketika Super Admin menghapus pesan pelanggaran, pesan terhapus di seluruh layar pengguna seketika via event WebSocket broadcast `MessageDeleted`.
+
+- **Proteksi Boundary Fisik Sidebar & Anti-Tenggelam (Draggable Widget)**:
+  - Mengimplementasikan kalkulasi pembatas koordinat dinamis (`getMinX`) yang mengukur sisi kanan elemen sidebar `<aside>` (`rect.right + 16px`).
+  - Mengunci pergerakan tombol melayang agar tidak dapat diseret masuk ke area menu sidebar pada semua resolusi layar (desktop maupun split-screen).
+  - Menghubungkan listener `ResizeObserver` dan `transitionend` sehingga saat sidebar di-minimize (72px) atau di-maximize (260px), posisi tombol otomatis terdorong secara responsif tanpa tertinggal.
+  - Menyelaraskan layer rendering `z-index` menjadi `z-50` agar widget tidak tertimpa background sidebar.
+
+- **Notifikasi Suara Cerdas 1x Per Pesan Masuk**:
+  - Merombak logika audio chime dari pembanding jumlah total unread menjadi pelacakan ketat ID pesan tertinggi (`latest_incoming_id`).
+  - Suara notifikasi Web Audio API marimba chime hanya berbunyi tepat 1 kali ketika ada pesan baru (`msgId > lastNotifiedId`), dan tidak akan berulang secara periodik saat pesan dibiarkan belum dibaca.
+  - Baseline ID diinisialisasi otomatis saat pertama kali halaman dimuat tanpa membunyikan riwayat unread lawas.
+
+- **Optimasi Performa Rendering & Anti-Flicker Foto Profil**:
+  - Memindahkan dan me-memoize komponen `UserAvatar` ke luar komponen utama menggunakan `React.memo` dengan atribut `loading="eager"` dan `decoding="async"`.
+  - Mempertahankan mount DOM widget obrolan via `display: isOpen ? 'flex' : 'none'` untuk menjaga status GPU cache foto pengguna saat widget ditutup-buka.
+  - Menerapkan *referential equality check* pada pembaruan state daftar kontak dan balon pesan untuk mencegah siklus *layout thrashing*.
+
+- **Validasi Keamanan & Sanitasi Input Ketat**:
+  - Validasi pesan 1–2000 karakter di sisi backend dan frontend (dilengkapi indikator counter peringatan).
+  - Sanitasi XSS otomatis menggunakan `strip_tags()`.
+  - Proteksi pengiriman pesan ke diri sendiri (`Rule::notIn([$currentUserId])`).
+  - Rate limiter keamanan 40 pesan per menit per akun (HTTP 429).
+
+- **Dokumentasi Lengkap 16 Diagram Rekayasa Sistem di `docs/uml/`**:
+  - Memindahkan seluruh diagram PlantUML (`.puml`) dan README arsitektur sistem ke direktori resmi `docs/uml/`.
+
+---
+
+## [2.5.0] - 2026-10-31
+
+### 📑 Fitur Cetak Rekapitulasi Bulanan Landscape, Dedicated Route Cetak Rekam Medis & Sinkronisasi Antrean Multi-Role
+
+- **Dedicated Route Cetak Kartu Rekam Medis Pasien Tunggal (`/admin/rekam-medis/{visit}/cetak`)**:
+  - Menyediakan rute cetak mandiri format A4 Portrait (`/admin/rekam-medis/{visit}/cetak?autoprint=1`).
+  - Mengatasi kendala cetak sebelumnya (preview terdorong ke lembar 2 dan tanda tangan menimpa tabel) dengan merender halaman Blade cetak mandiri (`kartu-rekam-medis.blade.php`) bebas dari pembungkus *overflow* SPA.
+  - Memuat Kop Surat resmi UPTD Puskeswan & IB Kota Pariaman, identitas pemilik dan hewan bergaris titik-titik rapi, riwayat kunjungan tabel lengkap, serta tanda tangan resmi dinas drh. Reni Gusnita.
+
+- **Fitur Rekapitulasi Pelaporan Pengobatan Bulanan Format Landscape (`/admin/rekam-medis/rekap-bulanan`)**:
+  - Menghadirkan cetak laporan bulanan berorientasi **A4 Landscape** dengan filter bulan dan tahun melalui modal dialog di menu Hasil Rekam Medis.
+  - Header standar dinas: `REKAPITULASI PELAPORAN PENGOBATAN PENYAKIT HEWAN UPT PUSKESWAN DAN IB KOTA PARIAMAN [TAHUN]`.
+  - Format 9 kolom tabel yang padat dan terstruktur:
+    1. **NO**: Nomor urut.
+    2. **TANGGAL**: Tanggal kunjungan berformat `DD/MM/YYYY`.
+    3. **JUMLAH HEWAN**: Standar `1 Ekor`.
+    4. **SPESIES**: Format ringkas `Spesies (No. RM)`, contoh: `Kucing (RM0001)` (tanpa nama hewan).
+    5. **TANDA/ANAMNESA**: Keluhan/anamnesa murni (tanpa atribut klinis BB & Suhu).
+    6. **NAMA PEMILIK**: Nama pemilik hewan terdaftar.
+    7. **ALAMAT**: Ekstraksi alamat ringkas yang dimulai langsung dari `Kec.` (misal: `Kec. Pariaman Tengah`).
+    8. **DIAGNOSA**: Diagnosa dokter pemeriksa.
+    9. **TERAPI**: Terapi dan pengobatan yang diberikan.
+  - Desain tabel padat (*compact cell padding* 2.5px 3.5px & font 7.5pt–8pt) guna memaksimalkan kapasitas baris data pada tiap lembar kertas A4 Landscape.
+
+- **Penyelarasan & Sinkronisasi Antrean Pasien Lintas Role**:
+  - **Admin Dashboard**: Mengubah kartu *"Antrean Pasien Hari Ini"* menjadi *"Antrean Pasien"* yang menghitung seluruh antrean aktif menunggu penanganan medis.
+  - **Penghapusan Kartu 'Sedang Diperiksa'**: Menghilangkan kartu status "Sedang Diperiksa" pada Admin Dashboard dan modul Antrean Rekam Medis karena siklus antrean berpindah langsung dari Menunggu ke Selesai setelah diperiksa dokter. Grid metrik disesuaikan menjadi 3 kolom seimbang.
+  - **Modul Antrian Rekam Medis Admin**: Menampilkan seluruh riwayat dan data antrean menunggu secara menyeluruh, tidak dibatasi hari ini saja.
+  - **Super Admin (Monitoring & Dashboard)**: Menyelaraskan data statistik dan tabel pemantauan pada *Pantau Antrean Loket* dan *Pantau Pelayanan Dokter* dengan database terkini serta menambahkan kartu metrik antrean pasien pada Dashboard Super Admin.
+
+---
+
 ## [2.4.0] - 2026-10-30
+
 
 ### 🎨 Standarisasi Layout Tabel, Truncate Dinamis & Pagination Konsisten 5 Nomor
 

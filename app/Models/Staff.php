@@ -85,4 +85,15 @@ class Staff extends Model
             $user->update(['id_staf' => $staff->id]);
         }
     }
+
+    /**
+     * Ambil data staf pimpinan aktif (Kepala UPTD Puskeswan dan IB Kota Pariaman).
+     */
+    public static function getPimpinan(): ?self
+    {
+        return self::whereRaw('LOWER(jabatan) = ?', ['kepala uptd puskeswan dan ib kota pariaman'])
+            ->orWhereRaw('LOWER(jabatan) LIKE ?', ['%kepala uptd%'])
+            ->orderBy('id', 'asc')
+            ->first();
+    }
 }

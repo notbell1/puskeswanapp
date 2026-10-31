@@ -1,0 +1,85 @@
+@startuml 02-bpmn-sistem-baru
+title BPMN Konseptual Pelayanan Puskeswan - Sistem Baru (Berbasis Aplikasi)
+
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+skinparam roundCorner 8
+skinparam swimlaneWidth same
+skinparam swimlaneTitleFontStyle bold
+
+skinparam activity {
+    BackgroundColor #F8FAFC
+    BorderColor #475569
+    FontColor #0F172A
+    FontSize 11
+    DiamondBackgroundColor #E0F2FE
+    DiamondBorderColor #0284C7
+    DiamondFontColor #0369A1
+}
+
+skinparam note {
+    BackgroundColor #FEF9C3
+    BorderColor #EAB308
+    FontColor #713F12
+    FontSize 10
+}
+
+|#F1F5F9|Pasien|
+|#E2E8F0|Admin|
+|#DBEAFE|Sistem Informasi|
+|#E0E7FF|Dokter|
+
+|Pasien|
+start
+:1. Datang membawa hewan;
+:2. Menyampaikan informasi pemilik\ndan hewan kepada Admin;
+
+|Admin|
+:3. Mencari data pemilik atau hewan\nmelalui aplikasi (berdasarkan NIK / RM);
+
+|Sistem Informasi|
+:4. Mencari data di database dan menampilkan\nhasil pencarian pemilik serta hewan;
+
+|Admin|
+if (5. Apakah data sudah terdaftar?) then (Belum Terdaftar / Baru)
+    :6. Menginput data pemilik dan hewan baru\n(memilih jenis hewan dari dropdown);
+    |Sistem Informasi|
+    :7. Menyimpan data baru ke database dan\nmenetapkan nomor RM permanen (RM0001);
+else (Sudah Terdaftar / Kunjungan Ulang)
+    |Admin|
+    :8. Sistem melakukan Autofill berkelanjutan\n(Data pemilik, hewan, dan RM0001 terisi otomatis);
+    note right
+      Admin tidak perlu mengetik ulang
+      data pemilik dan identitas hewan.
+    end note
+endif
+
+|Admin|
+:9. Menginput data klinis kunjungan hari ini\n(Berat badan, suhu tubuh, dan anamnesa);
+:10. Mendaftarkan kunjungan baru;
+
+|Sistem Informasi|
+:11. Menyimpan kunjungan baru ke database\n(memasukkannya ke antrean);
+:12. Menampilkan kunjungan pada antrean Dokter;
+
+|Pasien|
+:13. Menunggu giliran pemeriksaan;
+
+|Dokter|
+:14. Membuka antrean dan memilih kunjungan;\nmeninjau data inputan Admin & riwayat RM;
+
+|Sistem Informasi|
+:15. Menampilkan riwayat rekam medis\nterdahulu dari database;
+
+|Dokter|
+:16. Memeriksa hewan secara langsung;
+:17. Menginput hasil pemeriksaan medis:\n- Diagnosa\n- Terapi / Pengobatan\n- Catatan Klinis (Opsional);
+
+|Sistem Informasi|
+:18. Menyimpan hasil pemeriksaan ke database (examinations);\n19. Memperbarui status kunjungan menjadi selesai\n(terupdate di Dashboard Dokter & Admin);
+
+|Dokter|
+:20. Menyelesaikan pelayanan;
+
+stop
+@enduml

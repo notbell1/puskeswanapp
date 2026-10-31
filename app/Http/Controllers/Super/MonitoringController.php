@@ -17,7 +17,7 @@ class MonitoringController extends Controller
     {
         $search = trim((string) $request->input('search', ''));
         $statusFilter = $request->input('status');
-        $dateFilter = $request->input('tanggal', now()->toDateString());
+        $dateFilter = $request->input('tanggal');
 
         $query = Visit::with([
             'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
@@ -91,9 +91,8 @@ class MonitoringController extends Controller
         });
 
         // Summary counts for monitoring indicators
-        $todayStr = now()->toDateString();
         $summaryCounts = Visit::query()
-            ->whereDate('tgl_kunjungan', $dateFilter ?: $todayStr)
+            ->when($dateFilter, fn ($q, $date) => $q->whereDate('tgl_kunjungan', $date))
             ->selectRaw("
                 COUNT(*) as total,
                 SUM(CASE WHEN status_antrean = 'Antri' THEN 1 ELSE 0 END) as antri,
@@ -126,8 +125,8 @@ class MonitoringController extends Controller
     public function pelayananDokter(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
-        $statusFilter = $request->input('status', 'Antri'); // Default show active waiting/examining
-        $dateFilter = $request->input('tanggal', now()->toDateString());
+        $statusFilter = $request->input('status'); // null = semua status antrean
+        $dateFilter = $request->input('tanggal');
 
         $query = Visit::with([
             'animal:id,id_pemilik,id_jenis_hewan,no_rm,nama_hewan,jenis_kelamin,umur,warna_hewan',
@@ -224,9 +223,8 @@ class MonitoringController extends Controller
         });
 
         // Summary counts
-        $todayStr = now()->toDateString();
         $summaryCounts = Visit::query()
-            ->whereDate('tgl_kunjungan', $dateFilter ?: $todayStr)
+            ->when($dateFilter, fn ($q, $date) => $q->whereDate('tgl_kunjungan', $date))
             ->selectRaw("
                 COUNT(*) as total,
                 SUM(CASE WHEN status_antrean = 'Antri' THEN 1 ELSE 0 END) as antri,

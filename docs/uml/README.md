@@ -1,6 +1,6 @@
 # Dokumentasi Analisis dan Perancangan Sistem Informasi Puskeswan
 
-> Dokumentasi Teknis dan Rekayasa Perangkat Lunak untuk Naskah Skripsi
+> Dokumentasi Teknis dan Rekayasa Perangkat Lunak
 
 Sistem Informasi Pusat Kesehatan Hewan (Puskeswan) dirancang untuk mendigitalisasi dan mengoptimalkan layanan operasional klinik hewan—mulai dari pendaftaran pasien, manajemen rekam medis dengan nomor rekam medis permanen, pencatatan klinis harian, surveilans epidemiologi zoonosis rabies (GHPR), komunikasi real-time antar-staf via WebSockets, hingga pengelolaan pelaporan manajerial oleh Super Admin.
 

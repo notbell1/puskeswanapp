@@ -90,7 +90,7 @@ flowchart TD
 
 ## 📁 Direktori Pemodelan Sistem & 16 Diagram UML
 
-> 📑 **Dokumentasi Lengkap Perancangan Sistem & Naskah Skripsi:**  
+> 📑 **Dokumentasi Lengkap Perancangan Sistem:**  
 > Seluruh berkas pemodelan diagram UML (*PlantUML `.puml`*) dan narasi rekayasa perangkat lunak tersimpan secara terpusat pada direktori resmi [**`docs/uml/`**](docs/uml/README.md).
 >
 > Mencakup **16 diagram terpadu**: BPMN (Sistem Lama & Baru), Use Case (Sistem Lama & Baru), Activity Diagram Pelayanan, Activity Diagram Real-Time Chat, Flowchart SOP (Admin, Dokter, Super Admin), Class Diagram, ERD 14 Tabel Relasional, Sequence Diagram (3 Skenario Kunci), Component Diagram, State Machine Diagram, Package Diagram, dan Deployment Diagram.

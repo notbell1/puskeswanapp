@@ -11,7 +11,7 @@ Sistem Informasi Pusat Kesehatan Hewan (Puskeswan) dirancang untuk mendigitalisa
 1. [Arsitektur & Aturan Bisnis Utama](#-aturan-bisnis-utama)
 2. [Struktur Aktor Sistem](#-struktur-aktor-sistem)
 3. [Struktur Basis Data Konseptual (ERD)](#-struktur-basis-data-konseptual-erd)
-4. [Daftar Lengkap 16 Diagram UML & Proses Bisnis](#-daftar-lengkap-16-diagram-uml--proses-bisnis)
+4. [Daftar Lengkap 16 Diagram Visual Rekayasa Sistem](#-daftar-lengkap-16-diagram-visual-rekayasa-sistem)
    - [Bagian 1: Analisis Proses Bisnis (Macro Level)](#bagian-1-analisis-proses-bisnis-macro-level)
    - [Bagian 2: Analisis Kebutuhan Fungsional (User & Boundary Level)](#bagian-2-analisis-kebutuhan-fungsional-user--boundary-level)
    - [Bagian 3: Pemodelan Proses & Alur Kerja (Process Level)](#bagian-3-pemodelan-proses--alur-kerja-process-level)
@@ -51,12 +51,12 @@ Sistem Informasi Pusat Kesehatan Hewan (Puskeswan) dirancang untuk mendigitalisa
 
 ## 🗄️ Struktur Basis Data Konseptual (ERD)
 
-Sistem dirancang dengan entitas relasional terpadu sesuai naskah `10-erd.puml`:
+Sistem dirancang dengan entitas relasional terpadu:
 `roles`, `staff`, `users`, `passkeys`, `owners`, `animal_types`, `animals`, `visits`, `examinations`, `medicines`, `inventories`, `categories`, `articles`, `rabies_cases`, dan `chat_messages`.
 
 ---
 
-## 📊 Daftar Lengkap 16 Diagram UML & Proses Bisnis
+## 📊 Daftar Lengkap 16 Diagram Visual Rekayasa Sistem
 
 ---
 
@@ -69,12 +69,6 @@ Alur proses pelayanan poliklinik dan pencatatan manual sebelum sistem terkompute
   <img src="img/01-bpmn-sistem-lama.png" alt="01 BPMN Sistem Lama" width="850" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>01-bpmn-sistem-lama.puml</code></summary>
-
-[Buka file 01-bpmn-sistem-lama.puml](01-bpmn-sistem-lama.puml)
-</details>
-
 ---
 
 #### 2. BPMN Sistem Pelayanan Terpadu Baru (Berbasis Sistem)
@@ -83,12 +77,6 @@ Alur proses bisnis terotomasi setelah aplikasi PuskeswanApp diterapkan.
 <p align="center">
   <img src="img/02-bpmn-sistem-baru.png" alt="02 BPMN Sistem Baru" width="850" />
 </p>
-
-<details>
-  <summary>📄 Berkas Sumber: <code>02-bpmn-sistem-baru.puml</code></summary>
-
-[Buka file 02-bpmn-sistem-baru.puml](02-bpmn-sistem-baru.puml)
-</details>
 
 ---
 
@@ -101,12 +89,6 @@ Batasan fungsionalitas dan interaksi aktor pada sistem manual sebelumnya.
   <img src="img/03-use-case-sistem-lama.png" alt="03 Use Case Sistem Lama" width="750" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>03-use-case-sistem-lama.puml</code></summary>
-
-[Buka file 03-use-case-sistem-lama.puml](03-use-case-sistem-lama.puml)
-</details>
-
 ---
 
 #### 4. Use Case Diagram Sistem Informasi Baru
@@ -115,12 +97,6 @@ Pemetaan lengkap batasan fungsionalitas sistem informasi terhadap 4 peran penggu
 <p align="center">
   <img src="img/04-use-case-sistem-baru.png" alt="04 Use Case Sistem Baru" width="900" />
 </p>
-
-<details>
-  <summary>📄 Berkas Sumber: <code>04-use-case-sistem-baru.puml</code></summary>
-
-[Buka file 04-use-case-sistem-baru.puml](04-use-case-sistem-baru.puml)
-</details>
 
 ---
 
@@ -133,12 +109,6 @@ Alur aktivitas terpadu mulai dari registrasi loket, autofill NIK, pemeriksaan do
   <img src="img/05-activity-diagram.png" alt="05 Activity Diagram" width="850" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>05-activity-diagram.puml</code></summary>
-
-[Buka file 05-activity-diagram.puml](05-activity-diagram.puml)
-</details>
-
 ---
 
 #### 6. Activity Diagram: Komunikasi Real-Time Chat Antar-Staf
@@ -147,12 +117,6 @@ Alur aktivitas pertukaran pesan instan antar-staf internal melalui WebSockets La
 <p align="center">
   <img src="img/05b-activity-diagram-chat.png" alt="05b Activity Diagram Chat" width="850" />
 </p>
-
-<details>
-  <summary>📄 Berkas Sumber: <code>05b-activity-diagram-chat.puml</code></summary>
-
-[Buka file 05b-activity-diagram-chat.puml](05b-activity-diagram-chat.puml)
-</details>
 
 ---
 
@@ -163,12 +127,6 @@ Prosedur operasional harian khusus Petugas Admin (Pencarian NIK/RM, Autofill, Kl
   <img src="img/06-flowchart-admin.png" alt="06 Flowchart Admin" width="800" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>06-flowchart-admin.puml</code></summary>
-
-[Buka file 06-flowchart-admin.puml](06-flowchart-admin.puml)
-</details>
-
 ---
 
 #### 8. Flowchart SOP Dokter Hewan
@@ -178,12 +136,6 @@ Prosedur operasional harian khusus Dokter Hewan (Antrean Pasien, Tinjau Riwayat,
   <img src="img/07-flowchart-dokter.png" alt="07 Flowchart Dokter" width="700" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>07-flowchart-dokter.puml</code></summary>
-
-[Buka file 07-flowchart-dokter.puml](07-flowchart-dokter.puml)
-</details>
-
 ---
 
 #### 9. Flowchart SOP Super Administrator
@@ -192,12 +144,6 @@ Prosedur operasional manajerial khusus Super Admin (Tata Kelola Pengguna, Master
 <p align="center">
   <img src="img/08-flowchart-super-admin.png" alt="08 Flowchart Super Admin" width="700" />
 </p>
-
-<details>
-  <summary>📄 Berkas Sumber: <code>08-flowchart-super-admin.puml</code></summary>
-
-[Buka file 08-flowchart-super-admin.puml](08-flowchart-super-admin.puml)
-</details>
 
 ---
 
@@ -210,12 +156,6 @@ Struktur kelas konseptual model Eloquent, atribut, tipe data, operasi, dan multi
   <img src="img/09-class-diagram.png" alt="09 Class Diagram" width="950" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>09-class-diagram.puml</code></summary>
-
-[Buka file 09-class-diagram.puml](09-class-diagram.puml)
-</details>
-
 ---
 
 #### 11. Entity Relationship Diagram (ERD)
@@ -224,12 +164,6 @@ Perancangan skema konseptual basis data relasional mencakup tabel relasional ter
 <p align="center">
   <img src="img/10-erd.png" alt="10 ERD" width="950" />
 </p>
-
-<details>
-  <summary>📄 Berkas Sumber: <code>10-erd.puml</code></summary>
-
-[Buka file 10-erd.puml](10-erd.puml)
-</details>
 
 ---
 
@@ -242,12 +176,6 @@ Skenario interaksi antar komponen sistem: Pendaftaran Pasien, Pemeriksaan Medis,
   <img src="img/11-sequence-diagram.png" alt="11 Sequence Diagram" width="900" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>11-sequence-diagram.puml</code></summary>
-
-[Buka file 11-sequence-diagram.puml](11-sequence-diagram.puml)
-</details>
-
 ---
 
 #### 13. Component Diagram
@@ -256,12 +184,6 @@ Dekomposisi modular sistem informasi (Modul Pelayanan, Antrean, Pemeriksaan Medi
 <p align="center">
   <img src="img/12-component-diagram.png" alt="12 Component Diagram" width="950" />
 </p>
-
-<details>
-  <summary>📄 Berkas Sumber: <code>12-component-diagram.puml</code></summary>
-
-[Buka file 12-component-diagram.puml](12-component-diagram.puml)
-</details>
 
 ---
 
@@ -274,12 +196,6 @@ Siklus hidup transisi status antrean pasien (*Terdaftar/Antri* $\rightarrow$ *Se
   <img src="img/13-state-machine-diagram.png" alt="13 State Machine Diagram" width="700" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>13-state-machine-diagram.puml</code></summary>
-
-[Buka file 13-state-machine-diagram.puml](13-state-machine-diagram.puml)
-</details>
-
 ---
 
 #### 15. Package Diagram: Arsitektur Aplikasi
@@ -288,12 +204,6 @@ Hierarki struktur paket arsitektur Laravel MVC, Inertia.js React, Controller, Ev
 <p align="center">
   <img src="img/14-package-diagram.png" alt="14 Package Diagram" width="900" />
 </p>
-
-<details>
-  <summary>📄 Berkas Sumber: <code>14-package-diagram.puml</code></summary>
-
-[Buka file 14-package-diagram.puml](14-package-diagram.puml)
-</details>
 
 ---
 
@@ -306,12 +216,6 @@ Topologi perangkat keras fisik server (*Client Tier Browser*, *Web & App Tier*, 
   <img src="img/15-deployment-diagram.png" alt="15 Deployment Diagram" width="800" />
 </p>
 
-<details>
-  <summary>📄 Berkas Sumber: <code>15-deployment-diagram.puml</code></summary>
-
-[Buka file 15-deployment-diagram.puml](15-deployment-diagram.puml)
-</details>
-
 ---
 
 ## 📁 Struktur Direktori Dokumentasi
@@ -321,38 +225,21 @@ docs/uml/
 │
 ├── README.md                          # Dokumentasi naratif utama & katalog diagram visual
 │
-├── img/                               # Direktori aset gambar hasil render (PNG beresolusi tinggi)
-│   ├── 01-bpmn-sistem-lama.png
-│   ├── 02-bpmn-sistem-baru.png
-│   ├── 03-use-case-sistem-lama.png
-│   ├── 04-use-case-sistem-baru.png
-│   ├── 05-activity-diagram.png
-│   ├── 05b-activity-diagram-chat.png
-│   ├── 06-flowchart-admin.png
-│   ├── 07-flowchart-dokter.png
-│   ├── 08-flowchart-super-admin.png
-│   ├── 09-class-diagram.png
-│   ├── 10-erd.png
-│   ├── 11-sequence-diagram.png
-│   ├── 12-component-diagram.png
-│   ├── 13-state-machine-diagram.png
-│   ├── 14-package-diagram.png
-│   └── 15-deployment-diagram.png
-│
-├── 01-bpmn-sistem-lama.puml           # Berkas kode sumber PlantUML
-├── 02-bpmn-sistem-baru.puml
-├── 03-use-case-sistem-lama.puml
-├── 04-use-case-sistem-baru.puml
-├── 05-activity-diagram.puml
-├── 05b-activity-diagram-chat.puml
-├── 06-flowchart-admin.puml
-├── 07-flowchart-dokter.puml
-├── 08-flowchart-super-admin.puml
-├── 09-class-diagram.puml
-├── 10-erd.puml
-├── 11-sequence-diagram.puml
-├── 12-component-diagram.puml
-├── 13-state-machine-diagram.puml
-├── 14-package-diagram.puml
-└── 15-deployment-diagram.puml
+└── img/                               # Direktori aset gambar hasil render (PNG beresolusi tinggi)
+    ├── 01-bpmn-sistem-lama.png
+    ├── 02-bpmn-sistem-baru.png
+    ├── 03-use-case-sistem-lama.png
+    ├── 04-use-case-sistem-baru.png
+    ├── 05-activity-diagram.png
+    ├── 05b-activity-diagram-chat.png
+    ├── 06-flowchart-admin.png
+    ├── 07-flowchart-dokter.png
+    ├── 08-flowchart-super-admin.png
+    ├── 09-class-diagram.png
+    ├── 10-erd.png
+    ├── 11-sequence-diagram.png
+    ├── 12-component-diagram.png
+    ├── 13-state-machine-diagram.png
+    ├── 14-package-diagram.png
+    └── 15-deployment-diagram.png
 ```

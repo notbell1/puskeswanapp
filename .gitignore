@@ -121,6 +121,10 @@ lerna-debug.log*
 /opencode.json
 /opencode.jsonc
 
+# PlantUML Source Files
+*.puml
+docs/uml/puml/
+
 # IDE, OS & Temporary Files
 start-tunnel.bat
 /.fleet
